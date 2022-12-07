@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/signup")
 public class AuthenticationController {
     @Autowired
-    private AuthenticationInterface authMicroservice;
+    private transient AuthenticationInterface authMicroservice;
 
     /**
      * Instantiates a new controller.
@@ -28,8 +28,9 @@ public class AuthenticationController {
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) {
         return authMicroservice.register(request);
     }
+
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request){
+    public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request) {
         return authMicroservice.authenticate(request);
     }
 }

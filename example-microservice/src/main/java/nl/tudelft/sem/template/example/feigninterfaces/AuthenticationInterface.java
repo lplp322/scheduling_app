@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface AuthenticationInterface {
     @PostMapping(value = "/register")
     ResponseEntity register(@RequestBody RegistrationRequestModel request);
+
     @PostMapping("/authenticate")
     ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request);
 }

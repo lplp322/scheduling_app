@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  */
 @RestController
-@RequestMapping("/auth")
 public class DefaultController {
 
     private final transient AuthManager authManager;
