@@ -24,9 +24,10 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().sameOrigin();
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/signup/**").permitAll()
+                .antMatchers("/signup/**", "/h2-console/**", "**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
