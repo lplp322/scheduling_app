@@ -4,10 +4,10 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
@@ -64,7 +64,7 @@ public class AppUser extends HasEvents {
         return password;
     }
 
-    public Role getRole(){
+    public Role getRole() {
         return role;
     }
 
