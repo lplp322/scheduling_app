@@ -6,6 +6,8 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
@@ -31,15 +33,21 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     /**
      * Create new application user.
      *
      * @param netId The NetId for the new user
      * @param password The password for the new user
+     * @param role The role of the new user
      */
-    public AppUser(NetId netId, HashedPassword password) {
+    public AppUser(NetId netId, HashedPassword password, Role role) {
         this.netId = netId;
         this.password = password;
+        this.role = role;
         this.recordThat(new UserWasCreatedEvent(netId));
     }
 
@@ -54,6 +62,10 @@ public class AppUser extends HasEvents {
 
     public HashedPassword getPassword() {
         return password;
+    }
+
+    public Role getRole(){
+        return role;
     }
 
     /**
