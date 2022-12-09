@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.config;
 
 import javax.sql.DataSource;
 import lombok.Getter;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
