@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="293c36de-927a-4186-9a35-d8ab6465f1b3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/HasEvents.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/RequestWasScheduledEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduledRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/.gitlab-ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/.gitlab-ci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/application/.keep" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/application/.keep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/authentication/AuthManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/authentication/AuthManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/authentication/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/authentication/JwtRequestFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/authentication/JwtRequestFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/authentication/JwtTokenVerifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/authentication/JwtTokenVerifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/config/H2Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/config/H2Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/config/RequestAuthenticationConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/config/RequestAuthenticationConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/DefaultController.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/controllers/ScheduleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/domain/.keep" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/.keep" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/authentication/AuthManagerTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/authentication/AuthManagerTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPointTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/authentication/JwtAuthenticationEntryPointTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/authentication/JwtRequestFilterTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/authentication/JwtRequestFilterTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/authentication/JwtTokenVerifierTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/authentication/JwtTokenVerifierTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/integration/ExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/integration/ExampleTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/profiles/MockAuthenticationManagerProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/profiles/MockAuthenticationManagerProfile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/test/java/nl/tudelft/sem/template/example/profiles/MockTokenVerifierProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/test/java/nl/tudelft/sem/template/schedule/profiles/MockTokenVerifierProfile.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2Ih9WTdVzBzJ9lGUmza3uaLEb4i" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="nl.tudelft.sem.template.schedule.domain" />
+      <recent name="nl.tudelft.sem.template.example.controllers" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.Application">
+    <configuration name="Application (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="template.example-microservice.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.schedule.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="template.authentication-microservice.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.authentication.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="293c36de-927a-4186-9a35-d8ab6465f1b3" name="Changes" comment="" />
+      <created>1670622983997</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1670622983997</updated>
+      <workItem from="1670622986523" duration="3261000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
