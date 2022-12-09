@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 @Entity
-public class Request {
+public class UserRequest {
     @Id
     @SequenceGenerator(
         name = "request_sequence",
@@ -21,13 +21,13 @@ public class Request {
         generator = "request_sequence"
     )
     private Long id;
-    private transient String user; //netId
-    private transient String description;
-    private transient double cpu;
-    private transient double gpu;
-    private transient double mem;
-    private transient Date date;
-    private transient String condition;
+    private String user; //netId
+    private String description;
+    private double cpu;
+    private double gpu;
+    private double memory;
+    private Date date;
+    private String condition;
 
     /**
      * Constructor for Request class, that is sent by  user and will be stored in database.
@@ -39,12 +39,12 @@ public class Request {
      * @param mem         - amount of memory requested
      * @param date        - due date/deadline
      */
-    public Request(String user, String description, double cpu, double gpu, double mem, Date date, String condition) {
+    public UserRequest(String user, String description, double cpu, double gpu, double mem, Date date, String condition) {
         this.user = user;
         this.description = description;
         this.cpu = cpu;
         this.gpu = gpu;
-        this.mem = mem;
+        this.memory = mem;
         this.date = date;
         this.condition = condition;
     }
@@ -52,79 +52,70 @@ public class Request {
     /**
      * Empty constructor for JPA repository.
      */
-    public Request() {
+    public UserRequest() {
     }
 
-    /**
-     * Getter.
-     *
-     * @return user
-     */
     public String getUser() {
         return user;
     }
 
-    /**
-     * Getter.
-     *
-     * @return description
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Getter.
-     *
-     * @return date
-     */
     public Date getDate() {
         return date;
     }
 
-    /**
-     * Getter.
-     *
-     * @return id
-     */
     public Long getId() {
         return id;
     }
 
-    /**
-     * Getter.
-     *
-     * @return user
-     */
     public String getCondition() {
         return condition;
     }
 
-    /**
-     * Getter.
-     *
-     * @return CPU
-     */
     public double getCpu() {
         return cpu;
     }
 
-    /**
-     * Getter GPU.
-     *
-     * @return gpu
-     */
     public double getGpu() {
         return gpu;
     }
 
-    /**
-     * Getter.
-     *
-     * @return memory
-     */
-    public double getMem() {
-        return mem;
+    public double getMemory() {
+        return memory;
     }
-    
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public void setCpu(double cpu) {
+        this.cpu = cpu;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setGpu(double gpu) {
+        this.gpu = gpu;
+    }
+
+    public void setMemory(double memory) {
+        this.memory = memory;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
