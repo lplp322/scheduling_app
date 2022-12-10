@@ -24,4 +24,8 @@ public class ScheduleService {
     public List<ScheduledRequest> getSchedule(Date date) {
         return requestRepository.findByDate(date);
     }
+
+    public void scheduleRequest(ScheduledRequest request) {
+        requestRepository.save(request);
+    }
 }

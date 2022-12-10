@@ -3,13 +3,17 @@ package nl.tudelft.sem.template.schedule.controllers;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
+import nl.tudelft.sem.template.schedule.models.GetScheduleRequestModel;
+import nl.tudelft.sem.template.schedule.models.GetScheduleResponseModel;
 import nl.tudelft.sem.template.schedule.models.ScheduleRequestModel;
-import nl.tudelft.sem.template.schedule.models.ScheduleResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
@@ -49,10 +53,28 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<ScheduleResponseModel> getSchedule(@RequestBody ScheduleRequestModel request) {
-        Date date = request.getDate();
-        List<ScheduledRequest> requests = scheduleService.getSchedule(date);
-        return ResponseEntity.ok(new ScheduleResponseModel(date, requests));
+    public ResponseEntity<GetScheduleResponseModel> getSchedule(@RequestBody GetScheduleRequestModel request) {
+        //Todo: check date and test
+        try {
+            Date date = new Date(request.getYear(), request.getMonth(), request.getDay());
+            List<ScheduledRequest> requests = scheduleService.getSchedule(date);
+            return ResponseEntity.ok(new GetScheduleResponseModel(date, requests));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/schedule")
+    public ResponseEntity scheduleRequest(@RequestBody ScheduleRequestModel request) {
+        try {
+            Date date = new Date(request.getYear(), request.getMonth(), request.getDay());
+            ScheduledRequest newRequest = new ScheduledRequest(request.getNetId(), date,
+                    request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage());
+            scheduleService.scheduleRequest(newRequest);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
     }
 
 }

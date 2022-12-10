@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleResponseModel {
+public class GetScheduleResponseModel {
     Date date;
     List<ScheduledRequest> requests;
 }

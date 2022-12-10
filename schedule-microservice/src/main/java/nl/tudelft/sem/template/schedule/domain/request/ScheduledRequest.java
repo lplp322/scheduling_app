@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 

@@ -5,13 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="293c36de-927a-4186-9a35-d8ab6465f1b3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/RequestRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduleService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/ScheduleRequestModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/ScheduleResponseModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/GetScheduleRequestModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/controllers/ScheduleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/controllers/ScheduleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduleService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduledRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/domain/request/ScheduledRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/ScheduleRequestModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/ScheduleRequestModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/ScheduleResponseModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-microservice/src/main/java/nl/tudelft/sem/template/schedule/models/GetScheduleResponseModel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +40,11 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -57,7 +62,7 @@
       <recent name="nl.tudelft.sem.template.example.controllers" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.Application">
+  <component name="RunManager" selected="Spring Boot.Application (1)">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="template.schedule-microservice" />
       <method v="2">
@@ -72,8 +77,10 @@
       </method>
     </configuration>
     <configuration name="Application (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="template.example-microservice.main" />
+      <module name="template.schedule-microservice.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.schedule.Application" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -81,10 +88,16 @@
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="template.authentication-microservice.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.authentication.Application" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Spring Boot.Application" />
+      <item itemvalue="Spring Boot.Application (1)" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
