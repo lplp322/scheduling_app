@@ -9,25 +9,25 @@ variables:
   # Disable the Gradle daemon to ensure isolated runs of the CI pipeline.
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
-build-example-microservice:
+build-waiting-list-microservice:
   stage: build
   script:
     gradle waiting-list-microservice:assemble waiting-list-microservice:testClasses
 
-checkStyle-example-microservice:
+checkStyle-waiting-list-microservice:
   stage: staticAnalysis
   script:
     gradle waiting-list-microservice:checkstyleMain waiting-list-microservice:checkStyleTest
   allow_failure: true
 
 
-PMD-example-microservice:
+PMD-waiting-list-microservice:
   stage: staticAnalysis
   script:
     gradle waiting-list-microservice:pmdMain
   allow_failure: true
 
-test-example-microservice:
+test-waiting-list-microservice:
   stage: test
   script:
     - gradle waiting-list-microservice:test waiting-list-microservice:jacocoTestReport
