@@ -28,7 +28,7 @@ public class H2Config {
     }
 
     /**
-     * Set up the connection to the nl.tudelft.sem.template.example.database.
+     * Set up the connection to the database.
      *
      * @return The data source.
      */

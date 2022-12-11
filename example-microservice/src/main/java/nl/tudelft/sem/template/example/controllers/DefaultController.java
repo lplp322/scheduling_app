@@ -31,7 +31,7 @@ public class DefaultController {
     /**
      * Gets example by id.
      *
-     * @return the example found in the nl.tudelft.sem.template.example.database with the given id
+     * @return the example found in the database with the given id
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
