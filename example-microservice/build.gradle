@@ -50,7 +50,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 
-	// Local test database (in-memory)
+	// Local test nl.tudelft.sem.template.example.database (in-memory)
 	implementation 'com.h2database:h2'
 	developmentOnly 'org.hibernate:hibernate-entitymanager'
 

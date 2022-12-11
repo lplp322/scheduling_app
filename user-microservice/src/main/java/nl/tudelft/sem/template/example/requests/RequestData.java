@@ -7,6 +7,7 @@ import lombok.Data;
 public class RequestData {
     private String user;
     private String description;
+    private String faculty;
     private double cpu;
     private double gpu;
     private double memory;

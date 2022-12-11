@@ -23,6 +23,7 @@ public class UserRequest {
     private Long id;
     private String user; //netId
     private String description;
+    private String faculty;
     private double cpu;
     private double gpu;
     private double memory;
@@ -30,7 +31,7 @@ public class UserRequest {
     private String condition;
 
     /**
-     * Constructor for Request class, that is sent by  user and will be stored in database.
+     * Constructor for Request class, that is sent by  user and will be stored in nl.tudelft.sem.template.example.database.
      *
      * @param user        - netId of user
      * @param description - description of request
@@ -39,9 +40,11 @@ public class UserRequest {
      * @param mem         - amount of memory requested
      * @param date        - due date/deadline
      */
-    public UserRequest(String user, String description, double cpu, double gpu, double mem, Date date, String condition) {
+    public UserRequest(String user, String description, String faculty, double cpu, double gpu, double mem,
+                       Date date, String condition) {
         this.user = user;
         this.description = description;
+        this.faculty = faculty;
         this.cpu = cpu;
         this.gpu = gpu;
         this.memory = mem;
@@ -61,6 +64,10 @@ public class UserRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getFaculty() {
+        return faculty;
     }
 
     public Date getDate() {
@@ -103,6 +110,10 @@ public class UserRequest {
         this.description = description;
     }
 
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
     public void setGpu(double gpu) {
         this.gpu = gpu;
     }
@@ -118,4 +129,5 @@ public class UserRequest {
     public void setId(Long id) {
         this.id = id;
     }
+
 }

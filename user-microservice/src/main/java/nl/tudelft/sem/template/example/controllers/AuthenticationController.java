@@ -14,15 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/signup")
+@RequestMapping("/login")
 public class AuthenticationController {
     @Autowired
     private transient AuthenticationInterface authMicroservice;
 
     /**
      * Instantiates a new controller.
-     *
-     *
      */
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) {
