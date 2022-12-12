@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import nl.tudelft.sem.common.models.ResourcesModel;
+import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 
 @Embeddable
 @NoArgsConstructor

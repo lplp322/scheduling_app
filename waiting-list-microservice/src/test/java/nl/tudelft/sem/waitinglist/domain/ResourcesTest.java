@@ -3,7 +3,7 @@ package nl.tudelft.sem.waitinglist.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import nl.tudelft.sem.common.models.ResourcesModel;
+import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import org.junit.jupiter.api.Test;
 
 class ResourcesTest {
