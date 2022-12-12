@@ -64,6 +64,11 @@ public class ScheduleController {
         }
     }
 
+    /**
+     * 
+     * @param request
+     * @return
+     */
     @PostMapping("/schedule")
     public ResponseEntity scheduleRequest(@RequestBody ScheduleRequestModel request) {
         try {
