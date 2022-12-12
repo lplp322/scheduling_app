@@ -65,9 +65,10 @@ public class ScheduleController {
     }
 
     /**
-     * 
-     * @param request
-     * @return
+     * Post mapping for scheduling a request on a specific day.
+     *
+     * @param request Object containing the request's information together with the date it should be scheduled on.
+     * @return An ok response entity if the request is scheduled, otherwise an exception.
      */
     @PostMapping("/schedule")
     public ResponseEntity scheduleRequest(@RequestBody ScheduleRequestModel request) {
@@ -82,4 +83,5 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
+    //TODO: Check for enough resources and if approved, subtract used resources from resources.
 }
