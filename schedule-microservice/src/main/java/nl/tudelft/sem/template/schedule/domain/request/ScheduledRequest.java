@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -27,11 +28,11 @@ public class ScheduledRequest extends HasEvents {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @Column(name = "net_id", nullable = false)
-    private String netId;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "date", nullable = false)
-    private Date date;
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
@@ -42,6 +43,12 @@ public class ScheduledRequest extends HasEvents {
     @Column(name = "memory_usage")
     private int memoryUsage;
 
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
+
+    @Column(name = "net_id", nullable = false)
+    private String netId;
+
     /**
      * Create new scheduled request.
      *
@@ -51,21 +58,16 @@ public class ScheduledRequest extends HasEvents {
      * @param gpuUsage The amount of GPU resources that is requested.
      * @param memoryUsage The amount of memory resources that is requested.
      */
-    public ScheduledRequest(String netId, Date date, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public ScheduledRequest(String name, String description, int cpuUsage, int gpuUsage,
+                            int memoryUsage, LocalDate date, String netId) {
+        this.name = name;
+        this.description = description;
         this.netId = netId;
         this.date = date;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
         this.recordThat(new RequestWasScheduledEvent(this));
-    }
-
-    public String getNetId() {
-        return netId;
-    }
-
-    public Date getDate() {
-        return date;
     }
 
     public int getCpuUsage() {
@@ -78,6 +80,14 @@ public class ScheduledRequest extends HasEvents {
 
     public int getMemoryUsage() {
         return memoryUsage;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getNetId() {
+        return netId;
     }
 
     /**

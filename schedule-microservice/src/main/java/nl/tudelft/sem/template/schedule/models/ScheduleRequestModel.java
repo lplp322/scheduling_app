@@ -10,11 +10,13 @@ import java.util.Date;
  */
 @Data
 public class ScheduleRequestModel {
-    private String netId;
+    private String name;
+    private String description;
     private int cpuUsage;
     private int gpuUsage;
     private int memoryUsage;
     private int day;
     private int month;
     private int year;
+    private String netId;
 }

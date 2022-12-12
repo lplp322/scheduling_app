@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -73,9 +75,13 @@ public class ScheduleController {
     @PostMapping("/schedule")
     public ResponseEntity scheduleRequest(@RequestBody ScheduleRequestModel request) {
         try {
-            Date date = new Date(request.getYear(), request.getMonth(), request.getDay());
-            ScheduledRequest newRequest = new ScheduledRequest(request.getNetId(), date,
-                    request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage());
+            LocalDate date = LocalDate.of(request.getYear(), request.getMonth(), request.getDay());
+            if (!date.isAfter(LocalDate.now())) { //TODO: Check if it's last 5 minutes of day.
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This date has already passed");
+            }
+            ScheduledRequest newRequest = new ScheduledRequest(request.getName(), request.getDescription(),
+                    request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage(),
+                    date ,request.getNetId());
             scheduleService.scheduleRequest(newRequest);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
