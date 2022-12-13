@@ -26,17 +26,17 @@ public class RegistrationService {
      *
      * @param netId    The NetID of the user
      * @param password The password of the user
-     * @param role     The role of the user
+     * @param roles     The role of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(NetId netId, Password password, Role role) throws Exception {
+    public AppUser registerUser(NetId netId, Password password, Roles roles) throws Exception {
 
         if (checkNetIdIsUnique(netId)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
 
             // Create new account
-            AppUser user = new AppUser(netId, hashedPassword, role);
+            AppUser user = new AppUser(netId, hashedPassword, roles);
             userRepository.save(user);
 
             return user;

@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
@@ -44,7 +43,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         var user = optionalUser.get();
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+        authorities.add(new SimpleGrantedAuthority(user.getRoles().toString()));
 
         return new User(user.getNetId().toString(), user.getPassword().toString(),
                 authorities); // imported role

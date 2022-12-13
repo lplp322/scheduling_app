@@ -35,19 +35,19 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = Role.SYSADMIN;
+        final Roles roles = new Roles("Sysadmin");
 
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         // Act
-        registrationService.registerUser(testUser, testPassword, role);
+        registrationService.registerUser(testUser, testPassword, roles);
 
         // Assert
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
-        assertThat(savedUser.getRole()).isEqualTo(Role.SYSADMIN);
+        assertThat(savedUser.getRoles()).isEqualTo(new Roles("Sysadmin"));
     }
 
     @Test
@@ -56,13 +56,13 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
-        final Role role = Role.FACULTYADMIN;
+        final Roles roles = new Roles("FacultyAdmin");
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, roles);
         userRepository.save(existingAppUser);
 
         // Act
-        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, role);
+        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, roles);
 
         // Assert
         assertThatExceptionOfType(Exception.class)

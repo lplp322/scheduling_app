@@ -34,9 +34,9 @@ public class JwtUserDetailsServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
-        final Role role = Role.EMPLOYEE;
+        final Roles roles = new Roles("Employee");
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, roles);
         userRepository.save(appUser);
 
         // Act
@@ -45,7 +45,7 @@ public class JwtUserDetailsServiceTests {
         // Assert
         assertThat(actual.getUsername()).isEqualTo(testUser.toString());
         assertThat(actual.getPassword()).isEqualTo(testHashedPassword.toString());
-        assertThat(actual.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + Role.EMPLOYEE.toString())));
+        assertThat(actual.getAuthorities().contains(new SimpleGrantedAuthority("Employee")));
     }
 
     @Test
@@ -55,9 +55,9 @@ public class JwtUserDetailsServiceTests {
 
         final NetId testUser = new NetId("AnotherUser");
         final String testPasswordHash = "password123Hash";
-        final Role role = Role.SYSADMIN;
+        final Roles roles = new Roles("Sysadmin");
 
-        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role);
+        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), roles);
         userRepository.save(appUser);
 
         // Act

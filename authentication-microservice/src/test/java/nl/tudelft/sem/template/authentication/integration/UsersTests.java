@@ -59,13 +59,13 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = Role.EMPLOYEE;
+        final Roles roles = new Roles("Employee");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
-        model.setRole(role.toString());
+        model.setRole(roles.toString());
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,9 +86,9 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
-        final Role role = Role.EMPLOYEE;
+        final Roles roles = new Roles("Sysadmin");
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, roles);
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
@@ -107,7 +107,7 @@ public class UsersTests {
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
-        assertThat(savedUser.getRole()).isEqualTo(role);
+        assertThat(savedUser.getRoles()).isEqualTo(roles);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = Role.FACULTYADMIN;
+        final Roles roles = new Roles("Sysadmin");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -129,7 +129,7 @@ public class UsersTests {
             argThat(userDetails -> userDetails.getUsername().equals(testUser.toString())))
         ).thenReturn(testToken);
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, roles);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -194,7 +194,7 @@ public class UsersTests {
         final String wrongPassword = "password1234";
         final String testPassword = "password123";
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = Role.EMPLOYEE;
+        final Roles roles = new Roles("Employee");
         when(mockPasswordEncoder.hash(new Password(testPassword))).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -202,7 +202,7 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, role);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, roles);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
