@@ -41,6 +41,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
+	implementation project(":common")
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -50,7 +52,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 
-	// Local test database (in-memory)
+	// Local test nl.tudelft.sem.template.example.database (in-memory)
 	implementation 'com.h2database:h2'
 	developmentOnly 'org.hibernate:hibernate-entitymanager'
 
