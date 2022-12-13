@@ -48,6 +48,6 @@ public class JwtUserDetailsService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + user.getRole().toString()));
 
         return new User(user.getNetId().toString(), user.getPassword().toString(),
-                authorities); // no authorities/roles
+                authorities); // imported role
     }
 }
