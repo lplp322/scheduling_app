@@ -4,19 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
+import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.template.example.domain.RequestRepository;
 import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @DataJpaTest
-public class RequestTest {
+public class RequestRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
@@ -24,9 +23,11 @@ public class RequestTest {
     private RequestRepository userRepository;
 
     @Test
+    @Transactional
     public void testSaveToDatabase() {
         // Save a user to the database
         UserRequest user = new UserRequest();
+        user.setId(1L);
         user.setUser("John");
         entityManager.persist(user);
 
@@ -36,17 +37,21 @@ public class RequestTest {
     }
 
     @Test
+    @Transactional
     public void testFindByUser() {
         UserRequest user = new UserRequest();
+        user.setId(1L);
         user.setUser("Ivans");
-        user.setCondition("test");
+        user.setStatus(RequestStatus.PENDING);
         entityManager.persist(user);
         UserRequest user2 = new UserRequest();
+        user2.setId(2L);
         user2.setUser("Ivans");
-        user2.setCondition("test");
+        user2.setStatus(RequestStatus.PENDING);
         entityManager.persist(user2);
         List<UserRequest> result = userRepository.findByUser("Ivans");
         assertEquals(2, result.size());
         assertEquals(result.get(0).getUser(), "Ivans");
+        assertEquals(result.get(0).getStatus(), RequestStatus.PENDING);
     }
 }

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.template.example.requests.RequestData;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import nl.tudelft.sem.template.example.requests.UserRequest;
@@ -18,7 +20,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-public class RequestServiceTest1 {
+public class RequestServiceTest {
 
     @Autowired
     private RequestService requestService;
@@ -28,28 +30,38 @@ public class RequestServiceTest1 {
     @Transactional
     public void testSaveRequest() {
         // Create an object to save to the database
-        RequestData obj = new RequestData();
-        obj.setUser("Ivans");
+        RequestModel obj = new RequestModel();
+        obj.setName("Ivans");
         obj.setFaculty("CSE");
-        obj.setCpu(1);
-        obj.setGpu(2);
-        obj.setMemory(3);
         obj.setDescription("Here");
 
         // Save the object using the service
-        Long id = requestService.saveRequest(obj);
+        Long id = requestService.saveRequest(obj, 1L);
 
         // Verify that the object was saved by fetching it from the database
         Optional<UserRequest> savedObj = requestService.findById(id);
         assertTrue(savedObj.isPresent());
         UserRequest returnedObj = savedObj.get();
-        assertEquals(obj.getUser(), returnedObj.getUser());
+        assertEquals(obj.getName(), returnedObj.getUser());
         assertEquals(obj.getFaculty(), returnedObj.getFaculty());
-        assertEquals(obj.getCpu(), returnedObj.getCpu());
-        assertEquals(obj.getGpu(), returnedObj.getGpu());
-        assertEquals(obj.getMemory(), returnedObj.getMemory());
         assertEquals(obj.getDescription(), returnedObj.getDescription());
+        assertEquals(RequestStatus.PENDING, returnedObj.getStatus());
     }
 
-
+    @Test
+    @Transactional
+    public void testGetAllRequestsByNetId() {
+        RequestModel obj = new RequestModel();
+        obj.setName("Ivans2");
+        RequestModel obj2 = new RequestModel();
+        obj2.setName("Ivans2");
+        RequestModel obj3 = new RequestModel();
+        obj3.setName("Ivans3");
+        requestService.saveRequest(obj, 1L);
+        requestService.saveRequest(obj2, 2L);
+        requestService.saveRequest(obj3, 3L);
+        List<UserRequest> result = requestService.getAllRequestsByNetId("Ivans2");
+        assertEquals(2, result.size());
+        assertEquals(result.get(0).getUser(), "Ivans2");
+    }
 }
