@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private static final String ROLE_PREFIX = "ROLE_";
     private final transient UserRepository userRepository;
 
     @Autowired
@@ -45,7 +44,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         var user = optionalUser.get();
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + user.getRole().toString()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 
         return new User(user.getNetId().toString(), user.getPassword().toString(),
                 authorities); // imported role
