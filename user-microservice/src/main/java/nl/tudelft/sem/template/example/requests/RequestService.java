@@ -36,13 +36,13 @@ public class RequestService {
     public Optional<UserRequest> findById(Long id) {
         return repository.findById(id);
     }
+
     /**
      * Used to get all requests of user with specific NetID.
      *
      * @param netId - netID of user
      * @return list with all requests
      */
-
     public List<UserRequest> getAllRequestsByNetId(String netId) {
         return repository.findByUser(netId);
     }

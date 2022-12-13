@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -90,10 +91,9 @@ public class RequestReceivingControllerTest {
             mockMvc
                 .perform(post("/request").header("Authorization", "Bearer MockedToken")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(serialisedRequest))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Your request returned error: 400 BAD_REQUEST \"Test this\";"
-                    + " nested exception is java.lang.Exception: Test this"));
+                    .content(serialisedRequest)).andExpect(result -> assertTrue(result.getResolvedException()
+                        instanceof ResponseStatusException));
+
         } catch (Exception e) {
             assertEquals(1, 0);
         }

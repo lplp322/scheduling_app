@@ -1,11 +1,15 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
+import java.util.Optional;
+import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import nl.tudelft.sem.template.example.requests.RequestData;
 import nl.tudelft.sem.template.example.requests.RequestService;
+import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +33,7 @@ public class RequestReceivingController {
     private final transient RequestService requestService;
 
     private final transient WaitingListInterface waitingListInterface;
+
     /**
      * Instantiates a new controller.
      *
@@ -72,11 +77,30 @@ public class RequestReceivingController {
             return ResponseEntity.ok("Your request returned: " + waitingListResponse.getStatusCode()
                 + " With body: " + waitingListResponse.getBody());
         } catch (Exception e) {
-            return ResponseEntity.ok("Your request returned error: "
-                 + e.getMessage());
-            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                //"Your request was raising an exception in waiting list: "+e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Your request was raising an exception in waiting list: " + e.getMessage(), e);
         }
     }
 
+    /**
+     * Check the status of request.
+     *
+     * @param id - id of request
+     * @return status
+     */
+    @GetMapping("/request-status")
+    public ResponseEntity<RequestStatus> getRequest(@RequestBody Long id) {
+        Optional<UserRequest> request = requestService.findById(id);
+        if (request.isPresent()) {
+            return ResponseEntity.ok(request.get().getStatus());
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide correct Id");
+        }
+    }
+
+    @GetMapping("/get-my-requests")
+    public ResponseEntity<List<UserRequest>> getMyRequests() {
+        String netId = authManager.getNetId();
+        return ResponseEntity.ok(requestService.getAllRequestsByNetId(netId));
+    }
 }
