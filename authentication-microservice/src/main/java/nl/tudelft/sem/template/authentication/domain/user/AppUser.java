@@ -31,15 +31,21 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
+    @Column(name = "role", nullable = false)
+    @Convert(converter = RolesAttributeConverter.class)
+    private Roles roles;
+
     /**
      * Create new application user.
      *
      * @param netId The NetId for the new user
      * @param password The password for the new user
+     * @param roles The role of the new user
      */
-    public AppUser(NetId netId, HashedPassword password) {
+    public AppUser(NetId netId, HashedPassword password, Roles roles) {
         this.netId = netId;
         this.password = password;
+        this.roles = roles;
         this.recordThat(new UserWasCreatedEvent(netId));
     }
 
@@ -54,6 +60,10 @@ public class AppUser extends HasEvents {
 
     public HashedPassword getPassword() {
         return password;
+    }
+
+    public Roles getRoles() {
+        return roles;
     }
 
     /**

@@ -45,6 +45,7 @@ public class JwtTokenGenerator {
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
                 .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
+                .claim("roles", userDetails.getAuthorities())
                 .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 }
