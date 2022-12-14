@@ -50,7 +50,7 @@ public class SingleTableWaitingList implements WaitingList {
 
     @Override
     public List<Request> getAllRequestsByFaculty(String faculty) {
-        List<Request> requestList = this.requestRepo.getRequestByByFaculty(faculty);
+        List<Request> requestList = this.requestRepo.getRequestByFaculty(faculty);
         return requestList;
 
 

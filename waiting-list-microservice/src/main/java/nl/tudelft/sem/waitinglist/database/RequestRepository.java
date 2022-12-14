@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
     @Query(value = "SELECT p FROM Request p WHERE p.faculty = ?1 ORDER BY p.id ASC")
-    List<Request> getRequestByByFaculty(String faculty);
+    List<Request> getRequestByFaculty(String faculty);
 }
 
 
