@@ -47,6 +47,12 @@ public class WaitingListController {
         }
     }
 
+    /**
+     * Gets a list of all the requests of a faculty.
+     *
+     * @param faculty - String - faculty for which the request is.
+     * @return List<Requests> - list of all the pending requests for the faculty
+     */
     @GetMapping("/get-requests-by-faculty")
     public ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty) {
         return ResponseEntity.ok(waitingList.getAllRequestsByFaculty(faculty));

@@ -1,29 +1,39 @@
 package nl.tudelft.sem.waitinglist.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import aj.org.objectweb.asm.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.domain.Request;
+import nl.tudelft.sem.waitinglist.domain.Resources;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.web.JsonPath;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -105,5 +115,86 @@ class WaitingListControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getRequestListSuccessfully() throws Exception {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 15);
+        LocalDate currentDate = LocalDate.of(2022, 12, 14);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("ewi"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$", hasSize(1)))
+                        .andExpect(jsonPath("$[0].name").value("name2"))
+                        .andReturn();
+    }
+
+    @Test
+    void getRequestListTwoDifferentFaculty() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 15);
+        LocalDate currentDate = LocalDate.of(2022, 12, 14);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        String name2 = "name2";
+        String description2 = "description2";
+        String faculty2 = "not-ewi";
+        Request request2 = new Request(name2, description2, faculty2, resources, deadline, currentDate);
+        repo.save(request2);
+        repo.save(request);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("ewi"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andReturn();
+    }
+    @Test
+    void getRequestListEmptyList() throws Exception {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "not-ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 15);
+        LocalDate currentDate = LocalDate.of(2022, 12, 14);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("ewi"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)))
+                .andReturn();
     }
 }
