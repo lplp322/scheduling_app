@@ -2,6 +2,7 @@ package nl.tudelft.sem.waitinglist.domain;
 
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -49,14 +50,18 @@ public class SingleTableWaitingList implements WaitingList {
 
     @Override
     public List<Request> getAllRequestsByFaculty(String faculty) {
-        List<Request> result = new ArrayList<>();
-        List<Request> requestList = getAllRequests();
-        for (int i = 0; i < requestList.size(); i++) {
-            if (requestList.get(i).getFaculty().equals(faculty)) {
-                result.add(requestList.get(i));
-            }
-        }
-        return result;
+        List<Request> requestList = this.requestRepo.getRequestByByFaculty(faculty);
+        return requestList;
+
+
+//        List<Request> result = new ArrayList<>();
+//        List<Request> requestList = getAllRequests();
+//        for (int i = 0; i < requestList.size(); i++) {
+//            if (requestList.get(i).getFaculty().equals(faculty)) {
+//                result.add(requestList.get(i));
+//            }
+//        }
+//        return result;
     }
 
 }

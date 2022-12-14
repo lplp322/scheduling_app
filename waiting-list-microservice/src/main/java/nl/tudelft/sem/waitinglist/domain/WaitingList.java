@@ -1,5 +1,7 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 
 public interface WaitingList {
@@ -26,4 +28,5 @@ public interface WaitingList {
      */
 
     public List<Request> getAllRequestsByFaculty(String faculty);
+
 }
