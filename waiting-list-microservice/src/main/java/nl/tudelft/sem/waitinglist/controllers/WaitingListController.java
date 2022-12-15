@@ -2,6 +2,7 @@ package nl.tudelft.sem.waitinglist.controllers;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.waitinglist.domain.Request;
@@ -9,6 +10,7 @@ import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +44,21 @@ public class WaitingListController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Rejects a request.
+     *
+     * @param id request id
+     * @return response
+     */
+    @DeleteMapping("/reject-request")
+    public ResponseEntity<String> rejectRequest(@RequestBody Long id) {
+        try {
+            waitingList.rejectRequest(id);
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        return ResponseEntity.ok().build();
     }
 }

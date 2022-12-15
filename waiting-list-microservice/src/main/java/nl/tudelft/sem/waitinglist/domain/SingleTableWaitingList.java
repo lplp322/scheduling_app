@@ -1,5 +1,6 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,17 @@ public class SingleTableWaitingList implements WaitingList {
 
         Request savedRequest = requestRepo.save(request);
         return savedRequest.getId();
+    }
+
+    @Override
+    public void rejectRequest(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        if (!requestRepo.existsById(id)) {
+            throw new NoSuchElementException("A request with such id does not exist");
+        }
+
+        requestRepo.deleteById(id);
     }
 }
