@@ -15,7 +15,7 @@ public interface WaitingList {
     /**
      * Gets a list of all the requests in the waiting list.
      *
-     * @return List<Request> - list with all pending requests.
+     * @return List of Request - list with all pending requests.
      */
 
     public List<Request> getAllRequests();
@@ -24,7 +24,7 @@ public interface WaitingList {
      * Gets a list of all the pending requests a faculty has.
      *
      * @param faculty - String - faculty the list is gotten for
-     * @return List<Request> - list with all the pending requests the faculty has.
+     * @return List of Request - list with all the pending requests the faculty has.
      */
 
     public List<Request> getAllRequestsByFaculty(String faculty);

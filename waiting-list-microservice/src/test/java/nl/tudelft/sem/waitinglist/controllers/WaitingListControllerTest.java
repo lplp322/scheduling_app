@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import aj.org.objectweb.asm.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -173,6 +173,7 @@ class WaitingListControllerTest {
                 .andExpect(jsonPath("$[0].name").value("name"))
                 .andReturn();
     }
+
     @Test
     void getRequestListEmptyList() throws Exception {
         String name = "name2";
