@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Objects;
 
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.HasEvents;
 
 import javax.persistence.Column;
@@ -33,6 +35,9 @@ public class ScheduledRequest extends HasEvents {
 
     @Column(name = "description", nullable = false)
     private String description;
+
+    @Column(name = "faculty", nullable = false)
+    private String faculty;
 
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
@@ -88,6 +93,11 @@ public class ScheduledRequest extends HasEvents {
 
     public String getNetId() {
         return netId;
+    }
+
+    public RequestModel convert() {
+        return new RequestModel(this.name, this.description, this.faculty,
+                new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date, this.netId);
     }
 
     /**

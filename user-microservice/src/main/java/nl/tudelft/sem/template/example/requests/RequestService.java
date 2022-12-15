@@ -1,13 +1,11 @@
 package nl.tudelft.sem.template.example.requests;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.common.RequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.template.example.domain.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service

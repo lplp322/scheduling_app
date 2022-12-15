@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationInterface;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationRequestModel;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationResponseModel;
@@ -22,7 +21,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 

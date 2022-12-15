@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.feigninterfaces;
 
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,11 +1,13 @@
 package nl.tudelft.sem.template.schedule.controllers;
 
+import nl.tudelft.sem.common.models.providers.TimeProvider;
+import nl.tudelft.sem.common.models.request.DateModel;
+import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.response.GetRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
-import nl.tudelft.sem.template.schedule.models.GetScheduleRequestModel;
-import nl.tudelft.sem.template.schedule.models.GetScheduleResponseModel;
-import nl.tudelft.sem.template.schedule.models.ScheduleRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Hello World example controller.
@@ -55,12 +58,15 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<GetScheduleResponseModel> getSchedule(@RequestBody GetScheduleRequestModel request) {
+    public ResponseEntity<GetRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
         //Todo: check date and test
         try {
-            Date date = new Date(request.getYear(), request.getMonth(), request.getDay());
-            List<ScheduledRequest> requests = scheduleService.getSchedule(date);
-            return ResponseEntity.ok(new GetScheduleResponseModel(date, requests));
+            List<ScheduledRequest> requests = scheduleService.getSchedule(request.getDate());
+            List<RequestModel> requestModels = new ArrayList<>();
+            for (ScheduledRequest scheduledRequest : requests) {
+                requestModels.add(scheduledRequest.convert());
+            }
+            return ResponseEntity.ok(new GetRequestsResponseModel(Optional.of(request.getDate()), requestModels));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -73,15 +79,16 @@ public class ScheduleController {
      * @return An ok response entity if the request is scheduled, otherwise an exception.
      */
     @PostMapping("/schedule")
-    public ResponseEntity scheduleRequest(@RequestBody ScheduleRequestModel request) {
+    public ResponseEntity scheduleRequest(@RequestBody RequestModel request) {
         try {
-            LocalDate date = LocalDate.of(request.getYear(), request.getMonth(), request.getDay());
-            if (!date.isAfter(LocalDate.now())) { //TODO: Check if it's last 5 minutes of day.
+            LocalDate date = request.getDate();
+            if (!date.isAfter(TimeProvider.now())) { //TODO: Check if it's last 5 minutes of day.
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This date has already passed");
             }
+            ResourcesModel resources = request.getResources();
             ScheduledRequest newRequest = new ScheduledRequest(request.getName(), request.getDescription(),
-                    request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage(),
-                    date ,request.getNetId());
+                    resources.getCpu(), resources.getGpu(), resources.getRam(),
+                    date, request.getNetId());
             scheduleService.scheduleRequest(newRequest);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

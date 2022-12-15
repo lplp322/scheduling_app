@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface RequestRepository extends JpaRepository<ScheduledRequest, Strin
     /**
      * Find requests scheduled on specific date.
      */
-    List<ScheduledRequest> findByDate(Date date);
+    List<ScheduledRequest> findByDate(LocalDate date);
 
     /**
      * Find used cpu resources on specific date.

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.common.models.request.waitinglist;
+package nl.tudelft.sem.common.models.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

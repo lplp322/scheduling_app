@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.tudelft.sem.common.RequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModel;
 
 @Entity
 @Table(name = "requests")

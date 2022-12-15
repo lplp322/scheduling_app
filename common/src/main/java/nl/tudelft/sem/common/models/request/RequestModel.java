@@ -1,4 +1,4 @@
-package nl.tudelft.sem.common.models.request.waitinglist;
+package nl.tudelft.sem.common.models.request;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -13,5 +13,6 @@ public class RequestModel {
     private String description;
     private String faculty;
     private ResourcesModel resources;
-    private LocalDate deadline;
+    private LocalDate date; //Deadline for Waiting List and planned date for Schedule.
+    private String netId;
 }

@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.schedule.domain.request;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ScheduleService {
         this.requestRepository = requestRepository;
     }
 
-    public List<ScheduledRequest> getSchedule(Date date) {
+    public List<ScheduledRequest> getSchedule(LocalDate date) {
         return requestRepository.findByDate(date);
     }
 
