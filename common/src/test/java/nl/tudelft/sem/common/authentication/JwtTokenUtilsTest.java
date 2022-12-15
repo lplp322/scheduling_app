@@ -1,12 +1,12 @@
 package nl.tudelft.sem.common.authentication;
 
 import static org.assertj.core.api.Assertions.*;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import java.util.*;
 
 class JwtTokenUtilsTest {
@@ -26,13 +26,13 @@ class JwtTokenUtilsTest {
 
     @Test
     void testCheckTokenRoles() {
-        String username = "iciobanu";
         Collection<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
         roles.add(new SimpleGrantedAuthority("admin"));
         List<String> toCheck = new ArrayList<>();
         toCheck.add("admin");
         toCheck.add("user");
         Map<String, Object> claims = new HashMap<>();
+        String username = "iciobanu";
         String token = Jwts.builder().setClaims(claims).setSubject(username)
                 .claim("roles", roles)
                 .signWith(SignatureAlgorithm.HS512, "exampleSecret").compact();
@@ -41,7 +41,6 @@ class JwtTokenUtilsTest {
 
     @Test
     void testCheckTokenRoles2() {
-        String username = "iciobanu";
         Collection<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
         roles.add(new SimpleGrantedAuthority("admin"));
         roles.add(new SimpleGrantedAuthority("user"));
@@ -49,6 +48,7 @@ class JwtTokenUtilsTest {
         List<String> toCheck = new ArrayList<>();
         toCheck.add("admin");
         Map<String, Object> claims = new HashMap<>();
+        String username = "iciobanu";
         String token = Jwts.builder().setClaims(claims).setSubject(username)
                 .claim("roles", roles)
                 .signWith(SignatureAlgorithm.HS512, "exampleSecret").compact();
