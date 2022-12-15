@@ -1,10 +1,13 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
+import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A DDD service for getting and changing the schedule.
@@ -26,7 +29,11 @@ public class ScheduleService {
         return requestRepository.findByDate(date);
     }
 
-    public void scheduleRequest(ScheduledRequest request) {
-        requestRepository.save(request);
+    public void scheduleRequest(RequestModel request) {
+        ResourcesModel resources = request.getResources();
+        ScheduledRequest newRequest = new ScheduledRequest(request.getId().get(), request.getName(),
+                request.getDescription(), resources.getCpu(), resources.getGpu(), resources.getRam(),
+                request.getDeadline(), request.getNetId());
+        requestRepository.save(newRequest);
     }
 }

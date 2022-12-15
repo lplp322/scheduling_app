@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.common.models.request.RequestModel;
@@ -28,7 +29,7 @@ public class ScheduledRequest extends HasEvents {
      */
     @Id
     @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -63,8 +64,9 @@ public class ScheduledRequest extends HasEvents {
      * @param gpuUsage The amount of GPU resources that is requested.
      * @param memoryUsage The amount of memory resources that is requested.
      */
-    public ScheduledRequest(String name, String description, int cpuUsage, int gpuUsage,
+    public ScheduledRequest(long id, String name, String description, int cpuUsage, int gpuUsage,
                             int memoryUsage, LocalDate date, String netId) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.netId = netId;
@@ -96,7 +98,7 @@ public class ScheduledRequest extends HasEvents {
     }
 
     public RequestModel convert() {
-        return new RequestModel(this.name, this.description, this.faculty,
+        return new RequestModel(Optional.of(this.id), this.name, this.description, this.faculty,
                 new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date, this.netId);
     }
 

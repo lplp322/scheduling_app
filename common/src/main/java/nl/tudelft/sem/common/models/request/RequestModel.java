@@ -1,6 +1,8 @@
 package nl.tudelft.sem.common.models.request;
 
 import java.time.LocalDate;
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestModel {
+    private Optional<Long> id; //Used to synchronise the IDs of requests across the microservices.
     private String name;
     private String description;
     private String faculty;
     private ResourcesModel resources;
-    private LocalDate date; //Deadline for Waiting List and planned date for Schedule.
+    private LocalDate deadline; //Deadline for Waiting List and planned date for Schedule.
     private String netId;
 }
