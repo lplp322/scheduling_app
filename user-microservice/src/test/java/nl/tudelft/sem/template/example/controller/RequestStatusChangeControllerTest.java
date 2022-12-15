@@ -22,11 +22,13 @@ import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RequestStatusChangeControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -99,7 +102,7 @@ public class RequestStatusChangeControllerTest {
     public void testStatusChangeException() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            ChangeRequestStatus status = new ChangeRequestStatus(1L, RequestStatus.REJECTED);
+            ChangeRequestStatus status = new ChangeRequestStatus(-1L, RequestStatus.REJECTED);
             String serialisedStatus = objectMapper.writeValueAsString(status);
             String serialisedLong = objectMapper.writeValueAsString(1L);
             mockMvc.perform(post("/request-status/change-status").contentType(MediaType.APPLICATION_JSON)
