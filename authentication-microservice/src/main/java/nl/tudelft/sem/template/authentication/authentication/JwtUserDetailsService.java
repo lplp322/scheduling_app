@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,7 +42,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         var user = optionalUser.get();
 
+        ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRoles().toString()));
+
         return new User(user.getNetId().toString(), user.getPassword().toString(),
-                new ArrayList<>()); // no authorities/roles
+                authorities); // imported role
     }
 }
