@@ -13,6 +13,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
+
     // Test coverage
     id 'jacoco'
 
@@ -24,6 +25,14 @@ plugins {
 
     // PITest
     id 'info.solidsoft.pitest' version '1.5.2'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
 }
 
 group = 'nl.tudelft.cse.sem.common'
@@ -42,6 +51,9 @@ dependencies {
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
+    testImplementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
     testImplementation('org.assertj:assertj-core:3.23.1')
