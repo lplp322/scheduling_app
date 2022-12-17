@@ -1,6 +1,8 @@
 package nl.tudelft.sem.waitinglist.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +28,8 @@ class SingleTableWaitingListTest {
         String faculty = "faculty";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        request = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 54);
+        request = new Request(name, description, faculty, resources, deadline, currentDateTime);
 
         repo.deleteAll();
     }
@@ -63,8 +65,8 @@ class SingleTableWaitingListTest {
         String faculty = "faculty2";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 14, 14);
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request2);
         repo.save(request);
         assertThat(waitingList.getAllRequests().size() == 2);
@@ -85,8 +87,8 @@ class SingleTableWaitingListTest {
         String faculty = "ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 44);
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request2);
         assertThat(waitingList.getAllRequestsByFaculty("ewi").contains(request2));
     }
@@ -98,8 +100,8 @@ class SingleTableWaitingListTest {
         String faculty = "ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 22);
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request2);
         repo.save(request);
         assertThat(waitingList.getAllRequestsByFaculty("ewi").contains(request2));
@@ -113,8 +115,8 @@ class SingleTableWaitingListTest {
         String faculty = "ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request);
         repo.save(request2);
         repo.save(request);
