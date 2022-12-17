@@ -1,24 +1,31 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
+@ActiveProfiles({"test", "mockClock"})
 class SingleTableWaitingListTest {
     @Autowired
     private RequestRepository repo;
     @Autowired
     private SingleTableWaitingList waitingList;
+    @Autowired
+    private Clock clock;
     private Request request;
 
     @BeforeEach
@@ -33,6 +40,44 @@ class SingleTableWaitingListTest {
 
         repo.deleteAll();
     }
+
+    @Test
+    void removeRequestsForNextDay() {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "faculty2";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 13, 23, 22);
+
+        // ID 1: deadline 15
+        repo.save(request);
+        Long id1 = repo.save(request).getId();
+
+        // ID 2: deadline 14
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        Long id2 = repo.save(request2).getId();
+
+        // ID 3: deadline 14
+        Request request3 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        repo.save(request3);
+        Long id3 = repo.save(request3).getId();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        // Current date: 13
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+
+        waitingList.removeRequestsForNextDay();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isFalse();
+        assertThat(repo.existsById(id3)).isFalse();
+    }
+
 
     @Test
     void addRequestWithExistingId() {

@@ -2,20 +2,22 @@ package nl.tudelft.sem.waitinglist.domain;
 
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
 public class SingleTableWaitingList implements WaitingList {
 
     private final transient RequestRepository requestRepo;
+    private final transient Clock clock;
 
     @Autowired
-    public SingleTableWaitingList(RequestRepository requestRepo) {
+    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock) {
         this.requestRepo = requestRepo;
+        this.clock = clock;
     }
 
     @Override
@@ -52,6 +54,15 @@ public class SingleTableWaitingList implements WaitingList {
     public List<Request> getAllRequestsByFaculty(String faculty) {
         List<Request> requestList = this.requestRepo.getRequestByFaculty(faculty);
         return requestList;
+    }
+
+    /**
+     * Removes pending requests that have a deadline of next day.
+     */
+    @Scheduled(cron = "0 55 23 * * ?")
+    public void removeRequestsForNextDay() {
+        LocalDate nextDay = LocalDate.ofInstant(clock.instant(), clock.getZone()).plusDays(1);
+        requestRepo.deleteByDeadline(nextDay);
     }
 
 }
