@@ -2,6 +2,7 @@ package nl.tudelft.sem.waitinglist.domain;
 
 import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.ChangeRequestStatus;
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.external.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,18 @@ public class SingleTableWaitingList implements WaitingList {
         return requestList;
     }
 
+    @Override
+    public void rejectRequest(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        if (!requestRepo.existsById(id)) {
+            throw new NoSuchElementException("A request with such id does not exist");
+        }
+
+        requestRepo.deleteById(id);
+    }
+
     /**
      * Removes pending requests that have a deadline of next day.
      */
@@ -78,5 +91,4 @@ public class SingleTableWaitingList implements WaitingList {
             userService.changeRequestStatus(new ChangeRequestStatus(request.getId(), RequestStatus.REJECTED));
         }
     }
-
 }

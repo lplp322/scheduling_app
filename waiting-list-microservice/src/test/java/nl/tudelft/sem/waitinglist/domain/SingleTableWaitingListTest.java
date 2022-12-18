@@ -180,4 +180,9 @@ class SingleTableWaitingListTest {
         assertThat(waitingList.getAllRequestsByFaculty("ewi").size() == 2);
     }
 
+    @Test
+    void requestNullId() {
+        assertThatThrownBy(() -> waitingList.rejectRequest(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

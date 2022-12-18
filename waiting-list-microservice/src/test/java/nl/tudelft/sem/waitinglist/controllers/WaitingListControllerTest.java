@@ -3,8 +3,7 @@ package nl.tudelft.sem.waitinglist.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -266,5 +265,61 @@ class WaitingListControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)))
                 .andReturn();
+    }
+
+    @Test
+    void rejectNoSuchId() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(delete("/reject-request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("2"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+
+    @Test
+    void rejectSuccessful() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request2);
+
+        mockMvc.perform(delete("/reject-request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("1"))
+                .andExpect(status().isOk());
+
+        assertThat(repo.existsById(1L)).isFalse();
+        assertThat(repo.existsById(2L)).isTrue();
     }
 }
