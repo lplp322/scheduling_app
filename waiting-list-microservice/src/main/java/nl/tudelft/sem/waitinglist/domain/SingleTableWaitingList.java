@@ -1,6 +1,9 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
+import nl.tudelft.sem.waitinglist.external.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,11 +16,20 @@ public class SingleTableWaitingList implements WaitingList {
 
     private final transient RequestRepository requestRepo;
     private final transient Clock clock;
+    private final transient UserService userService;
 
+    /**
+     * Creates a new waiting list object.
+     *
+     * @param requestRepo requests repository
+     * @param clock clock
+     * @param userService user service
+     */
     @Autowired
-    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock) {
+    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock, UserService userService) {
         this.requestRepo = requestRepo;
         this.clock = clock;
+        this.userService = userService;
     }
 
     @Override
@@ -62,7 +74,9 @@ public class SingleTableWaitingList implements WaitingList {
     @Scheduled(cron = "0 55 23 * * ?")
     public void removeRequestsForNextDay() {
         LocalDate nextDay = LocalDate.ofInstant(clock.instant(), clock.getZone()).plusDays(1);
-        requestRepo.deleteByDeadline(nextDay);
+        for (Request request : requestRepo.deleteByDeadline(nextDay)) {
+            userService.changeRequestStatus(new ChangeRequestStatus(request.getId(), RequestStatus.REJECTED));
+        }
     }
 
 }

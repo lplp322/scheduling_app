@@ -5,20 +5,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
+import nl.tudelft.sem.waitinglist.external.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
 @ActiveProfiles({"test", "mockClock"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class SingleTableWaitingListTest {
     @Autowired
     private RequestRepository repo;
@@ -26,6 +32,8 @@ class SingleTableWaitingListTest {
     private SingleTableWaitingList waitingList;
     @Autowired
     private Clock clock;
+    @MockBean
+    private UserService userService;
     private Request request;
 
     @BeforeEach
@@ -37,8 +45,6 @@ class SingleTableWaitingListTest {
         LocalDate deadline = LocalDate.of(2022, 12, 15);
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 54);
         request = new Request(name, description, faculty, resources, deadline, currentDateTime);
-
-        repo.deleteAll();
     }
 
     @Test
@@ -76,6 +82,10 @@ class SingleTableWaitingListTest {
         assertThat(repo.existsById(id1)).isTrue();
         assertThat(repo.existsById(id2)).isFalse();
         assertThat(repo.existsById(id3)).isFalse();
+
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id1, RequestStatus.REJECTED));
+        verify(userService, times(1)).changeRequestStatus(new ChangeRequestStatus(id2, RequestStatus.REJECTED));
+        verify(userService, times(1)).changeRequestStatus(new ChangeRequestStatus(id3, RequestStatus.REJECTED));
     }
 
 

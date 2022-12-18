@@ -15,7 +15,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> getRequestByFaculty(String faculty);
 
     @Transactional
-    Long deleteByDeadline(LocalDate deadline);
+    List<Request> deleteByDeadline(LocalDate deadline);
 }
 
 
