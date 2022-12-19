@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 
@@ -91,5 +92,22 @@ public class Request {
     public Request(@NonNull RequestModel requestModel, @NonNull LocalDate currentDate) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDate);
+    }
+
+    /**
+     * Sets the planned date of a request.
+     *
+     * @param plannedDate - date on which the request is planned.
+     */
+    public void setPlannedDate(LocalDate plannedDate, LocalDate currentDate) {
+        if (plannedDate.isAfter(this.deadline)) {
+            throw new IllegalArgumentException("Planned date is after deadline");
+        }
+        else if (plannedDate.isBefore(currentDate)) {
+            throw new IllegalArgumentException("Current date is after the planned date");
+        }
+        else {
+            this.plannedDate = plannedDate;
+        }
     }
 }

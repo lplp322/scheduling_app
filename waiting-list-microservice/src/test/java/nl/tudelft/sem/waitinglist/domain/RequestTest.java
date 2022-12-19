@@ -115,4 +115,28 @@ class RequestTest {
         assertThat(request.getDeadline()).isEqualTo(deadline);
         assertThat(request.getStatus()).isEqualTo(RequestStatus.PENDING);
     }
+
+    @Test
+    void setPlannedDate() {
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        LocalDate plannedDate = LocalDate.parse("2022-12-14");
+        request1.setPlannedDate(plannedDate,currentDate);
+        assertThat(request1.getPlannedDate()).isEqualTo(plannedDate);
+    }
+
+    @Test
+    void setPlannedDateAfterDeadline() {
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        LocalDate plannedDate = LocalDate.parse("2022-12-17");
+        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate,currentDate))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void setPlannedDateBeforeCurrentDate() {
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        LocalDate plannedDate = LocalDate.parse("2022-12-12");
+        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate,currentDate))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
