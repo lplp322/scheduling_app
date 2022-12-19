@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.database;
+package nl.tudelft.sem.template.example.requests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
+
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.template.example.requests.RequestService;
-import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
