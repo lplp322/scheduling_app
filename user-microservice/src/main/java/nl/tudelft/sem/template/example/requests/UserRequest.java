@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.example.requests;
 
 
-import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 
 @Entity
 public class UserRequest {
