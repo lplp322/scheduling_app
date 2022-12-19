@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestModel {
-    private Optional<Long> id; //Used to synchronise the IDs of requests across the microservices.
+public class RequestModel  {
+    private int id; //Used to synchronise the IDs of requests across the microservices.
     private String name;
     private String description;
     private String faculty;

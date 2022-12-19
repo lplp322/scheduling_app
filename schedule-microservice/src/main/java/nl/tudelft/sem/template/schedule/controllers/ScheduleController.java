@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.schedule.controllers;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModel;
-import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.GetRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
@@ -23,10 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Hello World example controller.
- * <p>
- * This controller shows how you can extract information from the JWT token.
- * </p>
+ * Controller for handling incoming requests regarding scheduling requests and retrieving them from the schedule.
  */
 @RestController
 public class ScheduleController {
@@ -35,15 +31,18 @@ public class ScheduleController {
 
     private final transient ScheduleService scheduleService;
 
+    private final transient TimeProvider timeProvider;
+
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ScheduleController(AuthManager authManager, ScheduleService scheduleService) {
+    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider) {
         this.authManager = authManager;
         this.scheduleService = scheduleService;
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -81,7 +80,7 @@ public class ScheduleController {
     public ResponseEntity scheduleRequest(@RequestBody RequestModel request) {
         try {
             LocalDate date = request.getDeadline();
-            if (!date.isAfter(TimeProvider.now())) { //TODO: Check if it's last 5 minutes of day.
+            if (!date.isAfter(LocalDate.now())) { //TODO: Check if it's last 5 minutes of day.
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This date has already passed");
             }
             scheduleService.scheduleRequest(request);

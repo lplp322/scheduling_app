@@ -5,7 +5,6 @@ import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class ScheduleService {
 
     public void scheduleRequest(RequestModel request) {
         ResourcesModel resources = request.getResources();
-        ScheduledRequest newRequest = new ScheduledRequest(request.getId().get(), request.getName(),
+        ScheduledRequest newRequest = new ScheduledRequest(request.getId(), request.getName(),
                 request.getDescription(), resources.getCpu(), resources.getGpu(), resources.getRam(),
                 request.getDeadline(), request.getNetId());
         requestRepository.save(newRequest);

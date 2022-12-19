@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.Optional;
+
 import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
@@ -18,7 +20,7 @@ class RequestTest {
     private final LocalDate currentDate = LocalDate.of(2022, 12, 14);
 
     private final ResourcesModel resourcesModel = new ResourcesModel(6, 5, 1);
-    private final RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+    private final RequestModel requestModel = new RequestModel(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
 
     @Test
     void nullName() {

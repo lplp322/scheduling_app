@@ -10,6 +10,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Optional;
+
 import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
@@ -52,7 +54,7 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModel requestModel = new RequestModel(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
 
         LocalDate currentDate = LocalDate.of(2022, 12, 10);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -93,7 +95,7 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModel requestModel = new RequestModel(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
 
         LocalDate currentDate = LocalDate.of(2022, 12, 10);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
