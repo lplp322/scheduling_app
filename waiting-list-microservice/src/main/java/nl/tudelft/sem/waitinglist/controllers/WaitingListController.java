@@ -1,7 +1,7 @@
 package nl.tudelft.sem.waitinglist.controllers;
 
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
@@ -39,8 +39,8 @@ public class WaitingListController {
     @PostMapping("/add-request")
     public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel) {
         try {
-            LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
-            Request request = new Request(requestModel, currentDate);
+            LocalDateTime currentDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
+            Request request = new Request(requestModel, currentDateTime);
             Long id = waitingList.addRequest(request);
             return ResponseEntity.ok(new AddResponseModel(id));
         } catch (Exception e) {

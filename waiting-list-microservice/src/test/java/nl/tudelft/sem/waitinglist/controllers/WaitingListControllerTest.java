@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +64,9 @@ class WaitingListControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 10);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 10, 23, 59, 59);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -87,6 +88,74 @@ class WaitingListControllerTest {
         assertThat(saved.getResources().getGpu()).isEqualTo(gpu);
         assertThat(saved.getResources().getRam()).isEqualTo(ram);
         assertThat(saved.getDeadline()).isEqualTo(deadline);
+    }
+
+    @Test
+    void addForNextDay5MinutesBefore() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 54, 59);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        MvcResult result = mockMvc.perform(post("/add-request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        AddResponseModel response = objectMapper.readValue(result.getResponse().getContentAsString(),
+                AddResponseModel.class);
+        assertThat(response.getId()).isEqualTo(1);
+
+        Request saved = repo.findById(response.getId()).orElseThrow();
+        assertThat(saved.getName()).isEqualTo(name);
+        assertThat(saved.getDescription()).isEqualTo(description);
+        assertThat(saved.getFaculty()).isEqualTo(faculty);
+        assertThat(saved.getResources().getCpu()).isEqualTo(cpu);
+        assertThat(saved.getResources().getGpu()).isEqualTo(gpu);
+        assertThat(saved.getResources().getRam()).isEqualTo(ram);
+        assertThat(saved.getDeadline()).isEqualTo(deadline);
+    }
+
+    @Test
+    void addRequestLessThan5MinutesBeforeDeadline() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 55);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        mockMvc.perform(post("/add-request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -123,15 +192,15 @@ class WaitingListControllerTest {
         String faculty = "ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 12, 12);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
         MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,12 +218,12 @@ class WaitingListControllerTest {
         String faculty = "ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 23);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDateTime);
         String name2 = "name2";
         String description2 = "description2";
         String faculty2 = "not-ewi";
-        Request request2 = new Request(name2, description2, faculty2, resources, deadline, currentDate);
+        Request request2 = new Request(name2, description2, faculty2, resources, deadline, currentDateTime);
         repo.save(request2);
         repo.save(request);
 
@@ -162,7 +231,7 @@ class WaitingListControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
 
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
         MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -180,15 +249,15 @@ class WaitingListControllerTest {
         String faculty = "not-ewi";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
-        LocalDate currentDate = LocalDate.of(2022, 12, 14);
-        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 22, 22);
+        Request request = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
         MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -209,9 +278,9 @@ class WaitingListControllerTest {
         Resources resources = new Resources(cpu, gpu, ram);
         LocalDate deadline = LocalDate.of(2022, 12, 12);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 10);
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
@@ -235,9 +304,9 @@ class WaitingListControllerTest {
         Resources resources = new Resources(cpu, gpu, ram);
         LocalDate deadline = LocalDate.of(2022, 12, 12);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 10);
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.instant()).thenReturn(currentDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
