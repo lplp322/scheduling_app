@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
 import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModel2;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class ScheduleService {
 
     public void scheduleRequest(RequestModel request) {
         ResourcesModel resources = request.getResources();
-        ScheduledRequest newRequest = new ScheduledRequest(request.getId(), request.getName(),
+        ScheduledRequest newRequest = new ScheduledRequest(request.getId().get(), request.getName(),
                 request.getDescription(), resources.getCpu(), resources.getGpu(), resources.getRam(),
                 request.getDeadline(), request.getNetId());
         requestRepository.save(newRequest);
