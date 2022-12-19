@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
-@FeignClient(name = "waitingListMicroservice", url = "http://localhost:8084") //will be not hardcoded later
+@FeignClient(name = "waitingListMicroservice", url = "${waitingList.service.url}")
 public interface WaitingListInterface {
     @PostMapping("/add-request")
     ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel);
