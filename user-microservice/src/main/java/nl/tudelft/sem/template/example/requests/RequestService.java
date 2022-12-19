@@ -44,4 +44,22 @@ public class RequestService {
     public List<UserRequest> getAllRequestsByNetId(String netId) {
         return repository.findByUser(netId);
     }
+
+    /**
+     *  Update status of the request.
+     *
+     * @param id - id of the request
+     * @param status - new status of the request
+     * @throws Exception - throws if there is no such id
+     */
+    public void updateRequestStatus(Long id, RequestStatus status) throws Exception {
+        Optional<UserRequest> optRequest = findById(id);
+        if (optRequest.isEmpty()) {
+            throw new Exception("No request with such id");
+        } else {
+            UserRequest request = optRequest.get();
+            request.setStatus(status);
+            repository.save(request);
+        }
+    }
 }

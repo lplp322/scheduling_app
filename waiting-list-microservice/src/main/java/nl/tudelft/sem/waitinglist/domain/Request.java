@@ -1,6 +1,9 @@
 package nl.tudelft.sem.waitinglist.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,7 +63,7 @@ public class Request {
      * @param deadline request deadline
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
-                   @NonNull Resources resources, LocalDate deadline, @NonNull LocalDate currentDate) {
+                   @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
 
         if (name.isBlank()) {
             throw new IllegalArgumentException("Request name cannot be blank");
@@ -71,8 +74,16 @@ public class Request {
         if (faculty.isBlank()) {
             throw new IllegalArgumentException("Request faculty cannot be blank");
         }
-        if (deadline != null && (deadline.isBefore(currentDate) || deadline.isEqual(currentDate))) {
-            throw new IllegalArgumentException("Deadline cannot be in the past");
+        if (deadline != null) {
+            LocalDate currentDate = currentDateTime.toLocalDate();
+            if (!deadline.isAfter(currentDate)) {
+                throw new IllegalArgumentException("Deadline cannot be in the past");
+            }
+            if (deadline.isEqual(currentDate.plusDays(1))
+                    && !currentDateTime.isBefore(currentDate.atTime(23, 55))) {
+                throw new IllegalArgumentException("Deadline cannot be set to next day "
+                        + "less than 5 minutes before start of day");
+            }
         }
 
         this.name = name;
@@ -88,8 +99,8 @@ public class Request {
      *
      * @param requestModel request model
      */
-    public Request(@NonNull RequestModel requestModel, @NonNull LocalDate currentDate) {
+    public Request(@NonNull RequestModel requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
-                new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDate);
+                new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
     }
 }

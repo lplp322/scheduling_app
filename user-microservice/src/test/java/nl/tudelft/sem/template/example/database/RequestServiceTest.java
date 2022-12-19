@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.example.database;
 
+import static org.assertj.core.api.ClassBasedNavigableIterableAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -58,5 +60,42 @@ public class RequestServiceTest {
         List<UserRequest> result = requestService.getAllRequestsByNetId("Ivans2");
         assertEquals(2, result.size());
         assertEquals(result.get(0).getUser(), "Ivans2");
+    }
+
+    @Test
+    @Transactional
+    public void testChangeRequestStatusException() {
+        RequestModel obj = new RequestModel();
+        obj.setName("Ivans2");
+        RequestModel obj2 = new RequestModel();
+        obj2.setName("Ivans2");
+        RequestModel obj3 = new RequestModel();
+        obj3.setName("Ivans3");
+        requestService.saveRequest(obj, 1L);
+        requestService.saveRequest(obj2, 2L);
+        requestService.saveRequest(obj3, 3L);
+        assertThrows(Exception.class, () -> {
+            requestService.updateRequestStatus(4L, RequestStatus.ACCEPTED);
+        });
+    }
+
+    @Test
+    @Transactional
+    public void testChangeRequestStatusNormal() {
+        RequestModel obj = new RequestModel();
+        obj.setName("Ivans2");
+        RequestModel obj2 = new RequestModel();
+        obj2.setName("Ivans2");
+        RequestModel obj3 = new RequestModel();
+        obj3.setName("Ivans3");
+        requestService.saveRequest(obj, 1L);
+        requestService.saveRequest(obj2, 2L);
+        requestService.saveRequest(obj3, 3L);
+        try {
+            requestService.updateRequestStatus(1L, RequestStatus.REJECTED);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+        assertEquals(RequestStatus.REJECTED, requestService.findById(1L).get().getStatus());
     }
 }

@@ -28,7 +28,7 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
             .authorizeRequests()
-            .antMatchers("/login/**", "/h2-console/**").permitAll()
+            .antMatchers("/login/**", "/h2-console/**", "/request-status/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
