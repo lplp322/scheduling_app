@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
-@FeignClient(name = "authMicroservice", url = "http://localhost:8081")
+@FeignClient(name = "authMicroservice", url = "${authentication.service.url}")
 public interface AuthenticationInterface {
     @PostMapping(value = "/register")
     ResponseEntity register(@RequestBody RegistrationRequestModel request);

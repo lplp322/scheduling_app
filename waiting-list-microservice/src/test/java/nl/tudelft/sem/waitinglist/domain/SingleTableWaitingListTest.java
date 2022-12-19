@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import nl.tudelft.sem.common.RequestStatus;
+
 import nl.tudelft.sem.common.models.ChangeRequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.external.UserService;
 import org.junit.jupiter.api.BeforeEach;
