@@ -72,8 +72,6 @@ public class RequestReceivingController {
     @PostMapping("/request")
     public ResponseEntity<String> addRequest(HttpServletRequest httpRequest) {
         RequestModelCreatorStrategy requestCreator;
-        RequestModel request;
-
         //create proper strategy
         if (httpRequest.getContentType().equals("application/json")) {
             requestCreator = new RequestModelFromJsonStrategy();
@@ -84,15 +82,10 @@ public class RequestReceivingController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
 
-        //create request with specific strategy
         try {
-            request = requestCreator.createRequestModel(httpRequest);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect request model: " + e.getMessage(), e);
-        }
-
-        //communication with waiting list
-        try {
+            //create request model from httpRequest
+            RequestModel request = requestCreator.createRequestModel(httpRequest);
+            //contact WaitingList microservice
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
                 return ResponseEntity.ok("Your request was created. Request ID: "
@@ -102,7 +95,7 @@ public class RequestReceivingController {
                 + " With body: " + waitingListResponse.getBody());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Your request was raising an exception in waiting list: " + e.getMessage(), e);
+                "Your request was raising an exception: " + e.getMessage(), e);
         }
     }
 
