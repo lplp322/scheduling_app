@@ -1,8 +1,8 @@
 package nl.tudelft.sem.waitinglist.domain;
 
-import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.ChangeRequestStatus;
 import java.util.NoSuchElementException;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.external.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
