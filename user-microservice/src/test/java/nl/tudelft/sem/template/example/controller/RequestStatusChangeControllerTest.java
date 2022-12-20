@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import nl.tudelft.sem.common.models.RequestStatus;
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -23,20 +25,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
-public class RequestReceivingControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class RequestStatusChangeControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private WaitingListInterface waitingListInterface;
 
@@ -57,7 +61,8 @@ public class RequestReceivingControllerTest {
     }
 
     @Test
-    public void testRegisterNormal() {
+    @Transactional
+    public void testStatusChange() {
         RequestModel request = new RequestModel();
         request.setName("John");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -74,25 +79,34 @@ public class RequestReceivingControllerTest {
         } catch (Exception e) {
             assertEquals(1, 0);
         }
+        try {
+            ChangeRequestStatus status = new ChangeRequestStatus(1L, RequestStatus.REJECTED);
+            String serialisedStatus = objectMapper.writeValueAsString(status);
+            String serialisedLong = objectMapper.writeValueAsString(1L);
+            mockMvc.perform(post("/request-status/change-status").contentType(MediaType.APPLICATION_JSON)
+                .content(serialisedStatus)).andExpect(status().isOk()).andExpect(content().string("Changed"));
+            MvcResult result = mockMvc.perform(get("/request-status").header("Authorization", "Bearer MockedToken")
+                .contentType(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                .content(serialisedLong)).andExpect(status().isOk()).andReturn();
+            RequestStatus res = objectMapper.readValue(result.getResponse().getContentAsString(), RequestStatus.class);
+            assertEquals(RequestStatus.REJECTED, res);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+
     }
 
     @Test
-    public void testRegisterWithException() {
-        RequestModel request = new RequestModel();
-        request.setName("John");
+    @Transactional
+    public void testStatusChangeException() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         try {
-            String serialisedRequest = objectMapper.writeValueAsString(request);
-            Exception e = new Exception("Test this");
-            when(waitingListInterface.addRequest(any()))
-                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e));
-            mockMvc
-                .perform(post("/request").header("Authorization", "Bearer MockedToken")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(serialisedRequest)).andExpect(result -> assertTrue(result.getResolvedException()
-                        instanceof ResponseStatusException));
-
+            ChangeRequestStatus status = new ChangeRequestStatus(-1L, RequestStatus.REJECTED);
+            String serialisedStatus = objectMapper.writeValueAsString(status);
+            String serialisedLong = objectMapper.writeValueAsString(1L);
+            mockMvc.perform(post("/request-status/change-status").contentType(MediaType.APPLICATION_JSON)
+                .content(serialisedStatus)).andExpect(result -> assertTrue(result.getResolvedException()
+                instanceof ResponseStatusException));
         } catch (Exception e) {
             assertEquals(1, 0);
         }

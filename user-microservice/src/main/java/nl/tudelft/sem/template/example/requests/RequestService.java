@@ -1,13 +1,11 @@
 package nl.tudelft.sem.template.example.requests;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.template.example.domain.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,5 +43,23 @@ public class RequestService {
      */
     public List<UserRequest> getAllRequestsByNetId(String netId) {
         return repository.findByUser(netId);
+    }
+
+    /**
+     *  Update status of the request.
+     *
+     * @param id - id of the request
+     * @param status - new status of the request
+     * @throws Exception - throws if there is no such id
+     */
+    public void updateRequestStatus(Long id, RequestStatus status) throws Exception {
+        Optional<UserRequest> optRequest = findById(id);
+        if (optRequest.isEmpty()) {
+            throw new Exception("No request with such id");
+        } else {
+            UserRequest request = optRequest.get();
+            request.setStatus(status);
+            repository.save(request);
+        }
     }
 }

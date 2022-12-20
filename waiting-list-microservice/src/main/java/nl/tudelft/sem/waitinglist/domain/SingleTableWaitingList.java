@@ -1,21 +1,36 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
+import java.util.NoSuchElementException;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
+import nl.tudelft.sem.waitinglist.external.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
 public class SingleTableWaitingList implements WaitingList {
 
     private final transient RequestRepository requestRepo;
+    private final transient Clock clock;
+    private final transient UserService userService;
 
+    /**
+     * Creates a new waiting list object.
+     *
+     * @param requestRepo requests repository
+     * @param clock clock
+     * @param userService user service
+     */
     @Autowired
-    public SingleTableWaitingList(RequestRepository requestRepo) {
+    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock, UserService userService) {
         this.requestRepo = requestRepo;
+        this.clock = clock;
+        this.userService = userService;
     }
 
     @Override
@@ -54,4 +69,26 @@ public class SingleTableWaitingList implements WaitingList {
         return requestList;
     }
 
+    @Override
+    public void rejectRequest(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        if (!requestRepo.existsById(id)) {
+            throw new NoSuchElementException("A request with such id does not exist");
+        }
+
+        requestRepo.deleteById(id);
+    }
+
+    /**
+     * Removes pending requests that have a deadline of next day.
+     */
+    @Scheduled(cron = "0 55 23 * * ?")
+    public void removeRequestsForNextDay() {
+        LocalDate nextDay = LocalDate.ofInstant(clock.instant(), clock.getZone()).plusDays(1);
+        for (Request request : requestRepo.deleteByDeadline(nextDay)) {
+            userService.changeRequestStatus(new ChangeRequestStatus(request.getId(), RequestStatus.REJECTED));
+        }
+    }
 }

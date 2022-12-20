@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationInterface;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationRequestModel;
 import nl.tudelft.sem.template.example.feigninterfaces.AuthenticationResponseModel;
@@ -22,7 +21,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,8 +38,7 @@ public class AuthenticationControllerTest {
     public void testRegister() {
         try {
             RegistrationRequestModel registr = new RegistrationRequestModel();
-            ResponseEntity val = new ResponseEntity<>("Here", HttpStatus.OK);
-            ;
+            ResponseEntity val = ResponseEntity.ok("Here");
             when(authenticationInterface.register(any())).thenReturn(val);
             ObjectMapper objectMapper = new ObjectMapper();
             String serialisedRegister = objectMapper.writeValueAsString(registr);
@@ -59,7 +56,6 @@ public class AuthenticationControllerTest {
             AuthenticationResponseModel response = new AuthenticationResponseModel();
             response.setToken("123");
             ResponseEntity val = new ResponseEntity<AuthenticationResponseModel>(response, HttpStatus.OK);
-            ;
             when(authenticationInterface.authenticate(any())).thenReturn(val);
             ObjectMapper objectMapper = new ObjectMapper();
             String serialisedRegister = objectMapper.writeValueAsString(request);

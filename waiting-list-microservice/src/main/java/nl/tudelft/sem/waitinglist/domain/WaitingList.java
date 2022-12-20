@@ -1,7 +1,6 @@
 package nl.tudelft.sem.waitinglist.domain;
 
-import org.springframework.data.jpa.repository.Query;
-
+import java.util.NoSuchElementException;
 import java.util.List;
 
 public interface WaitingList {
@@ -12,6 +11,7 @@ public interface WaitingList {
      * @return request id
      */
     public Long addRequest(Request request);
+
     /**
      * Gets a list of all the requests in the waiting list.
      *
@@ -29,4 +29,12 @@ public interface WaitingList {
 
     public List<Request> getAllRequestsByFaculty(String faculty);
 
+    /**
+     * Rejects a request.
+     *
+     * @param id request id
+     * @throws IllegalArgumentException in case id is null
+     * @throws NoSuchElementException in case a request with such id is not in the waiting list
+     */
+    public void rejectRequest(Long id);
 }
