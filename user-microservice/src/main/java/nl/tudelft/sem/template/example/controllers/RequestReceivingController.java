@@ -84,7 +84,7 @@ public class RequestReceivingController {
 
         try {
             //create request model from httpRequest
-            RequestModel request = requestCreator.createRequestModel(httpRequest); //NOPMD
+            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest); //NOPMD
             if (authManager == null || !authManager.getNetId().equals(request.getName())
                     || authManager.getRoles().stream().noneMatch(a ->
                     a.getAuthority().contains("employee_" + request.getFaculty()))) {
