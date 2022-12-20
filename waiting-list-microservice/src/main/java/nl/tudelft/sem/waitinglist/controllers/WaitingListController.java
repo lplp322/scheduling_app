@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.waitinglist.domain.Request;
@@ -21,9 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-
-
 
 @RestController
 public class WaitingListController {
