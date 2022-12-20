@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.database;
 
-import static org.assertj.core.api.ClassBasedNavigableIterableAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.common.RequestStatus;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ public class RequestServiceTest {
     @Transactional
     public void testSaveRequest() {
         // Create an object to save to the database
-        RequestModel obj = new RequestModel();
+        RequestModelWaitingList obj = new RequestModelWaitingList();
         obj.setName("Ivans");
         obj.setFaculty("CSE");
         obj.setDescription("Here");
@@ -48,11 +47,11 @@ public class RequestServiceTest {
     @Test
     @Transactional
     public void testGetAllRequestsByNetId() {
-        RequestModel obj = new RequestModel();
+        RequestModelWaitingList obj = new RequestModelWaitingList();
         obj.setName("Ivans2");
-        RequestModel obj2 = new RequestModel();
+        RequestModelWaitingList obj2 = new RequestModelWaitingList();
         obj2.setName("Ivans2");
-        RequestModel obj3 = new RequestModel();
+        RequestModelWaitingList obj3 = new RequestModelWaitingList();
         obj3.setName("Ivans3");
         requestService.saveRequest(obj, 1L);
         requestService.saveRequest(obj2, 2L);
@@ -65,11 +64,11 @@ public class RequestServiceTest {
     @Test
     @Transactional
     public void testChangeRequestStatusException() {
-        RequestModel obj = new RequestModel();
+        RequestModelWaitingList obj = new RequestModelWaitingList();
         obj.setName("Ivans2");
-        RequestModel obj2 = new RequestModel();
+        RequestModelWaitingList obj2 = new RequestModelWaitingList();
         obj2.setName("Ivans2");
-        RequestModel obj3 = new RequestModel();
+        RequestModelWaitingList obj3 = new RequestModelWaitingList();
         obj3.setName("Ivans3");
         requestService.saveRequest(obj, 1L);
         requestService.saveRequest(obj2, 2L);
@@ -82,11 +81,11 @@ public class RequestServiceTest {
     @Test
     @Transactional
     public void testChangeRequestStatusNormal() {
-        RequestModel obj = new RequestModel();
+        RequestModelWaitingList obj = new RequestModelWaitingList();
         obj.setName("Ivans2");
-        RequestModel obj2 = new RequestModel();
+        RequestModelWaitingList obj2 = new RequestModelWaitingList();
         obj2.setName("Ivans2");
-        RequestModel obj3 = new RequestModel();
+        RequestModelWaitingList obj3 = new RequestModelWaitingList();
         obj3.setName("Ivans3");
         requestService.saveRequest(obj, 1L);
         requestService.saveRequest(obj2, 2L);

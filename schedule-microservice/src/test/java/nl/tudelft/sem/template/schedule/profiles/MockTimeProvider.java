@@ -1,4 +1,4 @@
-package nl.tudelft.sem.common.profiles;
+package nl.tudelft.sem.template.schedule.profiles;
 
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import org.mockito.Mockito;

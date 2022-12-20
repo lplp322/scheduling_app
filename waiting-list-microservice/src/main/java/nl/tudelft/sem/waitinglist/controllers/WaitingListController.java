@@ -4,8 +4,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class WaitingListController {
      * @return request id
      */
     @PostMapping("/add-request")
-    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel) {
+    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel) {
         try {
             LocalDateTime currentDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
             Request request = new Request(requestModel, currentDateTime);

@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.controllers;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.common.RequestStatus;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
@@ -66,7 +66,7 @@ public class RequestReceivingController {
      * @return response to user
      */
     @PostMapping("/request")
-    public ResponseEntity<String> addRequest(@RequestBody RequestModel request) {
+    public ResponseEntity<String> addRequest(@RequestBody RequestModelWaitingList request) {
         try {
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {

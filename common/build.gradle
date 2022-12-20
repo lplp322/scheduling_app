@@ -26,6 +26,13 @@ plugins {
 
     // PITest
     id 'info.solidsoft.pitest' version '1.5.2'
+
+    // A Java Library
+    id 'java-library'
+    // which produces test fixtures
+    id 'java-test-fixtures'
+    // and is published
+    id 'maven-publish'
 }
 
 bootJar {
@@ -60,9 +67,24 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
     testImplementation('org.junit.jupiter:junit-jupiter:5.8.2')
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.12.4'
     testImplementation('org.assertj:assertj-core:3.23.1')
+
+    testFixturesImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    testImplementation 'junit:junit:4.13'
+
+    // API dependencies are visible to consumers when building
+    testFixturesApi 'org.apache.commons:commons-lang3:3.9'
+
+    // Implementation dependencies are not leaked to consumers when building
+    testFixturesImplementation 'org.apache.commons:commons-text:1.6'
 }
 
 test {

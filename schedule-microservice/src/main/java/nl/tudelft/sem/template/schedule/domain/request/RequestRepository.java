@@ -13,10 +13,6 @@ import java.util.List;
  */
 @Repository
 public interface RequestRepository extends JpaRepository<ScheduledRequest, String> {
-    /**
-     * Find requests by NetID of user.
-     */
-    List<ScheduledRequest> findByNetId(String netId);
 
     /**
      * Find requests scheduled on specific date.

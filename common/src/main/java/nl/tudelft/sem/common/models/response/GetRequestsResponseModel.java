@@ -3,7 +3,8 @@ package nl.tudelft.sem.common.models.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelSchedule;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,5 +19,5 @@ import java.util.Optional;
 @NoArgsConstructor
 public class GetRequestsResponseModel {
     private Optional<LocalDate> date; //Can be used to indicate when the deadline or planned date of the requests is.
-    private List<RequestModel> requests;
+    private List<RequestModelSchedule> requests;
 }

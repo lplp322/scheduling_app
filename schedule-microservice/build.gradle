@@ -39,6 +39,10 @@ repositories {
 dependencies {
 
 	implementation project(":common")
+	implementation(project(":common"))
+
+	testImplementation 'junit:junit:4.13'
+	testImplementation(testFixtures(project(":common")))
 
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'

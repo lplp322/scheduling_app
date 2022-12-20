@@ -1,13 +1,12 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelSchedule;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.HasEvents;
 
@@ -52,24 +51,24 @@ public class ScheduledRequest extends HasEvents {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "net_id", nullable = false)
-    private String netId;
-
     /**
      * Create new scheduled request.
      *
-     * @param netId The NetId of the user that made the request.
-     * @param date The date the request is scheduled on.
-     * @param cpuUsage The amount of CPU resources that is requested.
-     * @param gpuUsage The amount of GPU resources that is requested.
-     * @param memoryUsage The amount of memory resources that is requested.
+     * @param id ID of request that is the same at every microservice.
+     * @param name Name of the request.
+     * @param description Description of the request.
+     * @param faculty Faculty where the request is from.
+     * @param cpuUsage Requested CPU resources.
+     * @param gpuUsage Requested GPU resources.
+     * @param memoryUsage Requested memory resources.
+     * @param date Planned date of the request.
      */
-    public ScheduledRequest(long id, String name, String description, int cpuUsage, int gpuUsage,
-                            int memoryUsage, LocalDate date, String netId) {
+    public ScheduledRequest(long id, String name, String description, String faculty, int cpuUsage, int gpuUsage,
+                            int memoryUsage, LocalDate date) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.netId = netId;
+        this.faculty = faculty;
         this.date = date;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
@@ -93,13 +92,9 @@ public class ScheduledRequest extends HasEvents {
         return date;
     }
 
-    public String getNetId() {
-        return netId;
-    }
-
-    public RequestModel convert() {
-        return new RequestModel(Optional.of(this.id), this.name, this.description, this.faculty,
-                new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date, this.netId);
+    public RequestModelSchedule convert() {
+        return new RequestModelSchedule(this.id, this.name, this.description, this.faculty,
+                new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date);
     }
 
     /**

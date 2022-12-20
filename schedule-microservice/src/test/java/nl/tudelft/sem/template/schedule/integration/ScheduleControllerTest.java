@@ -1,19 +1,17 @@
-package nl.tudelft.sem.template.schedule.controllers;
+package nl.tudelft.sem.template.schedule.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -30,10 +27,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({"test", "mockTime"})
+@ActiveProfiles({"test", "mockTime", "mockScheduleService"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@AutoConfigureMockMvc
 public class ScheduleControllerTest {
 
     @Autowired
@@ -43,13 +40,7 @@ public class ScheduleControllerTest {
     private TimeProvider mockTime;
 
     @Autowired
-    private ScheduleService scheduleService;
-
-    /*@BeforeEach
-    private void setUp() {
-        mockTime = Mockito.mock(TimeProvider.class);
-        scheduleService = Mockito.mock(ScheduleService.class);
-    }*/
+    private ScheduleService mockScheduleService;
 
     @Test
     void scheduleRequestSuccessfully() throws Exception {
@@ -64,21 +55,21 @@ public class ScheduleControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDate currentDate = LocalDate.of(2022, 12, 19);
+        System.out.println(mockTime.toString());
         when(mockTime.now()).thenReturn(currentDate);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
-        MvcResult result = mockMvc.perform(post("/schedule")
+        mockMvc.perform(post("/schedule")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
                         .andExpect(status().isOk())
                         .andReturn();
 
-        assertThat(result.getResponse().getStatus()).isEqualTo(status().isOk());
-
-        Mockito.verify(scheduleService).scheduleRequest(requestModel);
+        Mockito.verify(mockScheduleService).scheduleRequest(requestModel);
     }
 }

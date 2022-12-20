@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.schedule.controllers;
 
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.response.GetRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
@@ -55,12 +55,18 @@ public class ScheduleController {
         return ResponseEntity.ok("Hello " + authManager.getNetId());
     }
 
+    /**
+     * Endpoint to retrieve the schedule of a specific date.
+     *
+     * @param request The date from which the requests should be retrieved.
+     * @return The schedule from the specific date.
+     */
     @GetMapping("/schedule")
     public ResponseEntity<GetRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
         //Todo: check date and test
         try {
             List<ScheduledRequest> requests = scheduleService.getSchedule(request.getDate());
-            List<RequestModel> requestModels = new ArrayList<>();
+            List<RequestModelSchedule> requestModels = new ArrayList<>();
             for (ScheduledRequest scheduledRequest : requests) {
                 requestModels.add(scheduledRequest.convert());
             }
@@ -77,10 +83,10 @@ public class ScheduleController {
      * @return An ok response entity if the request is scheduled, otherwise an exception.
      */
     @PostMapping("/schedule")
-    public ResponseEntity scheduleRequest(@RequestBody RequestModel request) {
+    public ResponseEntity scheduleRequest(@RequestBody RequestModelSchedule request) {
         try {
-            LocalDate date = request.getDeadline();
-            if (!date.isAfter(LocalDate.now())) { //TODO: Check if it's last 5 minutes of day.
+            LocalDate date = request.getPlannedDate();
+            if (!date.isAfter(timeProvider.now())) { //TODO: Check if it's last 5 minutes of day.
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This date has already passed");
             }
             scheduleService.scheduleRequest(request);

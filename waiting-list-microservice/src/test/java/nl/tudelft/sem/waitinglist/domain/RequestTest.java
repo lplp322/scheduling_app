@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import nl.tudelft.sem.common.RequestStatus;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class RequestTest {
     private final LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 24);
 
     private final ResourcesModel resourcesModel = new ResourcesModel(6, 5, 1);
-    private final RequestModel requestModel = new RequestModel(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
+    private final RequestModelWaitingList requestModel = new RequestModelWaitingList(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
 
     @Test
     void nullName() {

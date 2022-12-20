@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestModel2 {
+public class RequestModelSchedule {
     private long id; //Used to synchronise the IDs of requests across the microservices.
     private String name;
     private String description;
     private String faculty;
     private ResourcesModel resources;
-    private LocalDate deadline; //Deadline for Waiting List and planned date for Schedule.
-    private String netId;
+    private LocalDate plannedDate;
 }
