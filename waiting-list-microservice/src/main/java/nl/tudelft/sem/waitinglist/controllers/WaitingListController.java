@@ -58,7 +58,7 @@ public class WaitingListController {
      * Gets a list of all the requests of a faculty.
      *
      * @param faculty - String - faculty for which the request is.
-     * @return List of Requests - list of all the pending requests for the faculty
+     * @return String - list of all the pending requests for the faculty mapped to JSON format.
      */
     @GetMapping("/get-requests-by-faculty")
     public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
