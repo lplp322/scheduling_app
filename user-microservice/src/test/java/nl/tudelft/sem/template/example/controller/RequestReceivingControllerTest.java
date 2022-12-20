@@ -21,6 +21,7 @@ import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,9 +29,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,15 +58,20 @@ public class RequestReceivingControllerTest {
      */
     @BeforeEach
     public void configure() {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getNetId()).thenReturn("John");
+        Collection<SimpleGrantedAuthority> roleList = new ArrayList<>();
+        roleList.add(new SimpleGrantedAuthority("employee_EEMCS"));
+        roleList.add(new SimpleGrantedAuthority("admin_EEMCS"));
+        Mockito.doReturn(roleList).when(mockAuthenticationManager).getRoles();
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("John");
     }
 
     @Test
     public void testRegisterNormal() {
         RequestModelWaitingList request = new RequestModelWaitingList();
         request.setName("John");
+        request.setFaculty("EEMCS");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {

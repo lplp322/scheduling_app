@@ -4,13 +4,16 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
+
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
+import nl.tudelft.sem.waitinglist.authentication.AuthManager;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.jaas.AuthorityGranter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +26,18 @@ import org.springframework.web.server.ResponseStatusException;
 public class WaitingListController {
     private final transient WaitingList waitingList;
     private final transient Clock clock;
+    private final transient AuthManager authManager;
 
+    /**
+     * WaitingListController constructor, this should never be called manually, spring should handle this instead.
+     *
+     * @param authManager AuthManager instance for this controller
+     * @param waitingList WaitingList instance for this controller
+     * @param clock Clock instance for this controller
+     */
     @Autowired
-    public WaitingListController(WaitingList waitingList, Clock clock) {
+    public WaitingListController(AuthManager authManager, WaitingList waitingList, Clock clock) {
+        this.authManager = authManager;
         this.waitingList = waitingList;
         this.clock = clock;
     }
@@ -39,11 +51,16 @@ public class WaitingListController {
     @PostMapping("/add-request")
     public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel) {
         try {
+            if (authManager == null || !authManager.getNetId().equals(requestModel.getName()) || authManager.getRoles()
+                    .stream().noneMatch(a -> a.getAuthority().contains("employee_" + requestModel.getFaculty()))) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+            }
             LocalDateTime currentDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
             Request request = new Request(requestModel, currentDateTime);
             Long id = waitingList.addRequest(request);
             return ResponseEntity.ok(new AddResponseModel(id));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
@@ -56,6 +73,10 @@ public class WaitingListController {
      */
     @GetMapping("/get-requests-by-faculty")
     public ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty) {
+        if (authManager == null || authManager.getRoles().stream()
+            .noneMatch(a -> a.getAuthority().contains("admin_" + faculty))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
         return ResponseEntity.ok(waitingList.getAllRequestsByFaculty(faculty));
     }
 
@@ -67,6 +88,11 @@ public class WaitingListController {
      */
     @DeleteMapping("/reject-request")
     public ResponseEntity<String> rejectRequest(@RequestBody Long id) {
+        Request request = waitingList.getRequestById(id); //NOPMD
+        if (request != null && (authManager == null || authManager.getRoles().stream()
+                .noneMatch(a -> a.getAuthority().contains("admin_" + request.getFaculty())))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
         try {
             waitingList.rejectRequest(id);
         } catch (IllegalArgumentException | NoSuchElementException e) {
