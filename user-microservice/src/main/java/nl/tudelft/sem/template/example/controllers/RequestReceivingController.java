@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import javax.servlet.http.HttpServletRequest;

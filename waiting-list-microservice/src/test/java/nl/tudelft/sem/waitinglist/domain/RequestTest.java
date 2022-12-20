@@ -6,7 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import nl.tudelft.sem.common.RequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.junit.jupiter.api.Test;
