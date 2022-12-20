@@ -134,7 +134,7 @@ class SingleTableWaitingListTest {
     @Test
     void getAllRequestsByFacultyEmpty() {
         repo.save(request);
-        assertThat(waitingList.getAllRequestsByFaculty("ewi").isEmpty()).isTrue();
+        assertThat(waitingList.getAllRequestsByFaculty("ewi")).isEmpty();
     }
 
     @Test
