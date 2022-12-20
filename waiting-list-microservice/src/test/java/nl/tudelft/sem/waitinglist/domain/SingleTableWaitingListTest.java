@@ -162,7 +162,7 @@ class SingleTableWaitingListTest {
         repo.save(request2);
         repo.save(request);
         assertThat(waitingList.getAllRequestsByFaculty("ewi").get(0).getId()).isEqualTo(request2.getId());
-        assertThat(waitingList.getAllRequestsByFaculty("ewi").size() == 1).isTrue();
+        assertThat(waitingList.getAllRequestsByFaculty("ewi")).hasSize(1);
     }
 
     @Test
