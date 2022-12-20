@@ -60,14 +60,13 @@ public class WaitingListController {
     public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
         ObjectMapper mapper = new ObjectMapper();
         List<Request> requestListByFaculty = waitingList.getAllRequestsByFaculty(faculty);
-        String json = "";
         try {
-            json = mapper.writeValueAsString(requestListByFaculty);
+            String json = mapper.writeValueAsString(requestListByFaculty);
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return ResponseEntity.ok(json);
+        return ResponseEntity.ok().build();
     }
 
     /**
