@@ -57,13 +57,13 @@ public class RequestReceivingStrategyTest {
      */
     @BeforeEach
     public void configure() {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getNetId()).thenReturn("ivank");
         Collection<SimpleGrantedAuthority> roleList = new ArrayList<>();
         roleList.add(new SimpleGrantedAuthority("employee_CSE"));
         roleList.add(new SimpleGrantedAuthority("admin_CSE"));
         Mockito.doReturn(roleList).when(mockAuthenticationManager).getRoles();
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ivank");
     }
 
     @Captor

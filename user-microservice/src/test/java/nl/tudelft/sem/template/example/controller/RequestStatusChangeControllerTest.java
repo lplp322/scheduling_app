@@ -79,6 +79,7 @@ public class RequestStatusChangeControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         try {
             String serialisedRequest = objectMapper.writeValueAsString(request);
+            System.out.println(serialisedRequest);
             when(waitingListInterface.addRequest(any())).thenReturn(ResponseEntity.ok(new AddResponseModel(1L)));
             mockMvc
                 .perform(post("/request").header("Authorization", "Bearer MockedToken")
