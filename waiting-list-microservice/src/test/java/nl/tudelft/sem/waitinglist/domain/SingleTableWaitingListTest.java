@@ -126,7 +126,7 @@ class SingleTableWaitingListTest {
         Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
         repo.save(request2);
         repo.save(request);
-        assertThat(waitingList.getAllRequests().size() == 2).isTrue();
+        assertThat(waitingList.getAllRequests()).hasSize(2);
         assertThat(waitingList.getAllRequests().get(0).getId()).isEqualTo(request2.getId());
         assertThat(waitingList.getAllRequests().get(1).getId()).isEqualTo(request.getId());
     }
