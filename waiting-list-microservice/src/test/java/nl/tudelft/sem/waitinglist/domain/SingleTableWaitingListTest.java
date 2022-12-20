@@ -111,7 +111,7 @@ class SingleTableWaitingListTest {
     @Test
     void getAllRequestsSingle() {
         repo.save(request);
-        assertThat(waitingList.getAllRequests().size() == 1).isTrue();
+        assertThat(waitingList.getAllRequests()).hasSize(1);
         assertThat(waitingList.getAllRequests().get(0).getId()).isEqualTo(request.getId());
     }
 
