@@ -38,8 +38,7 @@ public class AuthenticationControllerTest {
     public void testRegister() {
         try {
             RegistrationRequestModel registr = new RegistrationRequestModel();
-            ResponseEntity val = new ResponseEntity<>("Here", HttpStatus.OK);
-            ;
+            ResponseEntity val = ResponseEntity.ok("Here");
             when(authenticationInterface.register(any())).thenReturn(val);
             ObjectMapper objectMapper = new ObjectMapper();
             String serialisedRegister = objectMapper.writeValueAsString(registr);
@@ -57,7 +56,6 @@ public class AuthenticationControllerTest {
             AuthenticationResponseModel response = new AuthenticationResponseModel();
             response.setToken("123");
             ResponseEntity val = new ResponseEntity<AuthenticationResponseModel>(response, HttpStatus.OK);
-            ;
             when(authenticationInterface.authenticate(any())).thenReturn(val);
             ObjectMapper objectMapper = new ObjectMapper();
             String serialisedRegister = objectMapper.writeValueAsString(request);

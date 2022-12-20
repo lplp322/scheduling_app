@@ -5,8 +5,12 @@ import java.util.Optional;
 import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
+import javax.servlet.http.HttpServletRequest;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
+import nl.tudelft.sem.template.example.requestmodelget.RequestModelCreatorStrategy;
+import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromJsonStrategy;
+import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromPlainTextStrategy;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +66,26 @@ public class RequestReceivingController {
     /**
      * Register new request from user.
      *
-     * @param request - new RequestData object
+     * @param httpRequest - new RequestData object
      * @return response to user
      */
     @PostMapping("/request")
-    public ResponseEntity<String> addRequest(@RequestBody RequestModelWaitingList request) {
+    public ResponseEntity<String> addRequest(HttpServletRequest httpRequest) {
+        RequestModelCreatorStrategy requestCreator;
+        //create proper strategy
+        if (httpRequest.getContentType().equals("application/json")) {
+            requestCreator = new RequestModelFromJsonStrategy();
+        } else if (httpRequest.getContentType().equals("text/plain")) {
+            requestCreator = new RequestModelFromPlainTextStrategy();
+        } else {
+            Exception e = new Exception("Unsupported type of body for this request");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+
         try {
+            //create request model from httpRequest
+            RequestModel request = requestCreator.createRequestModel(httpRequest);
+            //contact WaitingList microservice
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
                 return ResponseEntity.ok("Your request was created. Request ID: "
@@ -77,7 +95,7 @@ public class RequestReceivingController {
                 + " With body: " + waitingListResponse.getBody());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Your request was raising an exception in waiting list: " + e.getMessage(), e);
+                "Your request was raising an exception: " + e.getMessage(), e);
         }
     }
 
@@ -97,6 +115,11 @@ public class RequestReceivingController {
         }
     }
 
+    /**
+     * Get user requests and their status.
+     *
+     * @return List of requests from User microservice database
+     */
     @GetMapping("/get-my-requests")
     public ResponseEntity<List<UserRequest>> getMyRequests() {
         String netId = authManager.getNetId();
