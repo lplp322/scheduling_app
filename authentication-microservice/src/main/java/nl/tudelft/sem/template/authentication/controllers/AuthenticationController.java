@@ -92,7 +92,7 @@ public class AuthenticationController {
         try {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
-            Roles roles = new Roles(request.getRole());
+            Roles roles = new Roles(request.getRoles());
             registrationService.registerUser(netId, password, roles);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
