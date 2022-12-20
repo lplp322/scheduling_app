@@ -20,7 +20,8 @@ class RequestTest {
     private final LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 24);
 
     private final ResourcesModel resourcesModel = new ResourcesModel(6, 5, 1);
-    private final RequestModelWaitingList requestModel = new RequestModelWaitingList(Optional.empty(), name, description, faculty, resourcesModel, deadline, null);
+    private final RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description,
+            faculty, resourcesModel, deadline);
 
     @Test
     void nullName() {

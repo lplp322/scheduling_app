@@ -76,6 +76,22 @@ public class ScheduledRequest extends HasEvents {
         this.recordThat(new RequestWasScheduledEvent(this));
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getFaculty() {
+        return faculty;
+    }
+
     public int getCpuUsage() {
         return cpuUsage;
     }

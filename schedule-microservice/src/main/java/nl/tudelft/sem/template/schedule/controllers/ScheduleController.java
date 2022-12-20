@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.schedule.controllers;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
-import nl.tudelft.sem.common.models.response.GetRequestsResponseModel;
+import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
@@ -62,7 +62,7 @@ public class ScheduleController {
      * @return The schedule from the specific date.
      */
     @GetMapping("/schedule")
-    public ResponseEntity<GetRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
+    public ResponseEntity<GetScheduledRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
         //Todo: check date and test
         try {
             List<ScheduledRequest> requests = scheduleService.getSchedule(request.getDate());
@@ -70,7 +70,7 @@ public class ScheduleController {
             for (ScheduledRequest scheduledRequest : requests) {
                 requestModels.add(scheduledRequest.convert());
             }
-            return ResponseEntity.ok(new GetRequestsResponseModel(Optional.of(request.getDate()), requestModels));
+            return ResponseEntity.ok(new GetScheduledRequestsResponseModel(request.getDate(), requestModels));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

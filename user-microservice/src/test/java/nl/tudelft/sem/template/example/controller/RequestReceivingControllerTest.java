@@ -14,8 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import nl.tudelft.sem.common.RequestStatus;
 import nl.tudelft.sem.common.models.ChangeRequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
@@ -61,7 +61,7 @@ public class RequestReceivingControllerTest {
 
     @Test
     public void testRegisterNormal() {
-        RequestModel request = new RequestModel();
+        RequestModelWaitingList request = new RequestModelWaitingList();
         request.setName("John");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -81,7 +81,7 @@ public class RequestReceivingControllerTest {
 
     @Test
     public void testRegisterWithException() {
-        RequestModel request = new RequestModel();
+        RequestModelWaitingList request = new RequestModelWaitingList();
         request.setName("John");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

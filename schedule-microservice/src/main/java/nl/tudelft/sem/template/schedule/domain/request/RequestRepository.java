@@ -18,22 +18,4 @@ public interface RequestRepository extends JpaRepository<ScheduledRequest, Strin
      * Find requests scheduled on specific date.
      */
     List<ScheduledRequest> findByDate(LocalDate date);
-
-    /**
-     * Find used cpu resources on specific date.
-     */
-    @Query(value = "SELECT SUM(s.cpu_usage) FROM ScheduledRequest s", nativeQuery = true)
-    int findCpuUsageByDate(Date date);
-
-    /**
-     * Find used gpu resources on specific date.
-     */
-    @Query(value = "SELECT SUM(s.gpu_usage) FROM ScheduledRequest s", nativeQuery = true)
-    int findGpuUsageByDate(Date date);
-
-    /**
-     * Find used memory resources on specific date.
-     */
-    @Query(value = "SELECT SUM(s.memory_usage) FROM ScheduledRequest s", nativeQuery = true)
-    int findMemoryUsageByDate(Date date);
 }

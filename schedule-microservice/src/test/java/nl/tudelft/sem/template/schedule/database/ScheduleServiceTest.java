@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
@@ -61,5 +62,18 @@ public class ScheduleServiceTest {
 
         verify(mockRepo).save(captor.capture());
         assertThat(captor.getValue()).isEqualTo(expected);
+    }
+
+    @Test
+    public void testGetSchedule() {
+        LocalDate date = LocalDate.of(2023, 02, 04);
+        scheduleService.getSchedule(date);
+        verify(mockRepo).findByDate(date);
+    }
+
+    @Test
+    public void testConstructor() {
+        ScheduleService scheduleService = new ScheduleService(mockRepo);
+        assertThat(mockRepo).isEqualTo(scheduleService.getRequestRepository());
     }
 }

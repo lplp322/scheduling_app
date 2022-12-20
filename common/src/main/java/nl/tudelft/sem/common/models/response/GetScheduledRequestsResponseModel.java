@@ -17,7 +17,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetRequestsResponseModel {
-    private Optional<LocalDate> date; //Can be used to indicate when the deadline or planned date of the requests is.
+public class GetScheduledRequestsResponseModel {
+    private LocalDate date; //Can be used to indicate when the deadline or planned date of the requests is.
     private List<RequestModelSchedule> requests;
 }

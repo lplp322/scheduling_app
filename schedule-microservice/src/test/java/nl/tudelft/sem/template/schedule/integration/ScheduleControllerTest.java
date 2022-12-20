@@ -1,11 +1,19 @@
 package nl.tudelft.sem.template.schedule.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
+import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
+import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.cert.ocsp.Req;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -20,10 +28,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -58,8 +74,7 @@ public class ScheduleControllerTest {
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
                 resourcesModel, deadline);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 19);
-        System.out.println(mockTime.toString());
+        LocalDate currentDate = LocalDate.of(2022, 12, 24);
         when(mockTime.now()).thenReturn(currentDate);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
@@ -71,5 +86,150 @@ public class ScheduleControllerTest {
                         .andReturn();
 
         Mockito.verify(mockScheduleService).scheduleRequest(requestModel);
+    }
+
+    @Test
+    void scheduleRequestWrongDate() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDate currentDate = LocalDate.of(2022, 12, 25);
+        when(mockTime.now()).thenReturn(currentDate);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        String error = mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                        .andExpect(status().isBadRequest())
+                        .andReturn().getResolvedException().getMessage();
+
+        assertTrue(StringUtils.contains(error, "This date has already passed"));
+    }
+
+    @Test
+    void scheduleRequestNoDate() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = null;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDate currentDate = LocalDate.of(2022, 12, 25);
+        when(mockTime.now()).thenReturn(currentDate);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    void getScheduledRequestsEmpty() throws Exception {
+        LocalDate date = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        DateModel requestModel = new DateModel(date);
+
+        when(mockScheduleService.getSchedule(date)).thenReturn(new ArrayList<>());
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        MvcResult result = mockMvc.perform(get("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String dateString = JsonPath.read(result.getResponse().getContentAsString(), "$.date");
+        LocalDate returnedDate = LocalDate.parse(dateString);
+        JSONArray returnedRequests = JsonPath.read(result.getResponse().getContentAsString(),
+                "$.requests");
+
+        assertThat(returnedDate).isEqualTo(date);
+        assertThat(returnedRequests.size()).isEqualTo(0);
+    }
+
+    @Test
+    void getScheduledRequests() throws Exception {
+        List<ScheduledRequest> scheduledRequests = new ArrayList<>();
+        Set<RequestModelSchedule> requestModels = new HashSet<>();
+        long id1 = 0;
+        String name1 = "Research project";
+        String description1 = "Needs a lot of resources";
+        String faculty1 = "TN";
+        int cpuUsage1 = 6;
+        int gpuUsage1 = 2;
+        int memoryUsage1 = 3;
+        LocalDate deadline1 = LocalDate.of(2022, 12, 19);
+        requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1,
+                new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1), deadline1));
+        scheduledRequests.add(new ScheduledRequest(id1, name1, description1, faculty1,
+                cpuUsage1, gpuUsage1, memoryUsage1, deadline1));
+
+        long id2 = 1;
+        String name2 = "Small calculations";
+        String description2 = "Only needs CPU resources";
+        String faculty2 = "TW";
+        int cpuUsage2 = 3;
+        int gpuUsage2 = 0;
+        int memoryUsage2 = 0;
+        LocalDate deadline2 = LocalDate.of(2022, 12, 19);
+        requestModels.add(new RequestModelSchedule(id2, name2, description2, faculty2,
+                new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2), deadline2));
+        scheduledRequests.add(new ScheduledRequest(id2, name2, description2, faculty2,
+                cpuUsage2, gpuUsage2, memoryUsage2, deadline2));
+
+        LocalDate date = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        DateModel requestModel = new DateModel(date);
+
+        when(mockScheduleService.getSchedule(date)).thenReturn(scheduledRequests);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        MvcResult result = mockMvc.perform(get("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String dateString = JsonPath.read(result.getResponse().getContentAsString(), "$.date");
+        LocalDate returnedDate = LocalDate.parse(dateString);
+        String requestsString = JsonPath.read(result.getResponse().getContentAsString(),
+                "$.requests").toString();
+        List<RequestModelSchedule> returnedRequests = objectMapper.readValue(requestsString,
+                new TypeReference<List<RequestModelSchedule>>() {});
+
+        assertThat(returnedDate).isEqualTo(date);
+        for (RequestModelSchedule request : returnedRequests) {
+            System.out.println(request);
+            assertThat(requestModels).contains(request);
+        }
     }
 }

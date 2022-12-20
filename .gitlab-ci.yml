@@ -4,3 +4,4 @@ include:
   # - example-microservice/.gitlab-ci.yml
   - common/.gitlab-ci.yml
   - waiting-list-microservice/.gitlab-ci.yml
+  - schedule-microservice/.gitlab-ci.yml

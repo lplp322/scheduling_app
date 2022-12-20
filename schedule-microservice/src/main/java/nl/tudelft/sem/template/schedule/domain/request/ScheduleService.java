@@ -35,11 +35,14 @@ public class ScheduleService {
      * @param request The request that should be saved.
      */
     public void scheduleRequest(RequestModelSchedule request) {
-        System.out.println("Not a mock!");
         ResourcesModel resources = request.getResources();
         ScheduledRequest newRequest = new ScheduledRequest(request.getId(), request.getName(),
                 request.getDescription(), request.getFaculty(), resources.getCpu(), resources.getGpu(),
                 resources.getRam(), request.getPlannedDate());
         requestRepository.save(newRequest);
+    }
+
+    public RequestRepository getRequestRepository() {
+        return requestRepository;
     }
 }

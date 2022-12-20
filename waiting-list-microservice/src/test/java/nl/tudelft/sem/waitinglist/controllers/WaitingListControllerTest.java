@@ -62,7 +62,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 10, 23, 59, 59);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -103,7 +104,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 54, 59);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -144,7 +146,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 55);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -171,7 +174,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDate currentDate = LocalDate.of(2022, 12, 10);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
