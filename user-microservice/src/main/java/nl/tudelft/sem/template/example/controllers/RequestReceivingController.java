@@ -84,7 +84,7 @@ public class RequestReceivingController {
 
         try {
             //create request model from httpRequest
-            RequestModel request = requestCreator.createRequestModel(httpRequest);
+            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest);
             //contact WaitingList microservice
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {

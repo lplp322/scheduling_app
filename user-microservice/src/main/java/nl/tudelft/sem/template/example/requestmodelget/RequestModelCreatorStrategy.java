@@ -1,8 +1,9 @@
 package nl.tudelft.sem.template.example.requestmodelget;
 
 import javax.servlet.http.HttpServletRequest;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
 public interface RequestModelCreatorStrategy {
-    RequestModel createRequestModel(HttpServletRequest httpRequest) throws Exception;
+    RequestModelWaitingList createRequestModel(HttpServletRequest httpRequest) throws Exception;
 }

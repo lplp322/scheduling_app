@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "waitingListMicroservice", url = "${waitingList.service.url}")
 public interface WaitingListInterface {
     @PostMapping("/add-request")
-    ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel);
+    ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel);
 
     //@GetMapping("/get-requests-by-faculty")
     //ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty);
