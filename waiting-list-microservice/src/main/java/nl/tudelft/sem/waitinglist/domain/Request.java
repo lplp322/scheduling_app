@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import lombok.Setter;
 
 @Entity
 @Table(name = "requests")
@@ -100,5 +101,22 @@ public class Request {
     public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+    }
+
+    /**
+     * Sets the planned date of a request.
+     *
+     * @param plannedDate - date on which the request is planned.
+     */
+    public void setPlannedDate(LocalDate plannedDate, LocalDate currentDate) {
+        if (plannedDate.isAfter(this.deadline)) {
+            throw new IllegalArgumentException("Planned date is after deadline");
+        }
+        else if (plannedDate.isBefore(currentDate)) {
+            throw new IllegalArgumentException("Current date is after the planned date");
+        }
+        else {
+            this.plannedDate = plannedDate;
+        }
     }
 }

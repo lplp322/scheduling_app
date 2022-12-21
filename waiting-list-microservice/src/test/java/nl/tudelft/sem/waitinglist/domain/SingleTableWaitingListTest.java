@@ -183,7 +183,26 @@ class SingleTableWaitingListTest {
 
     @Test
     void requestNullId() {
-        assertThatThrownBy(() -> waitingList.rejectRequest(null))
+        assertThatThrownBy(() -> waitingList.removeRequest(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void getRequestById() {
+        repo.save(request);
+        assertThat(waitingList.getRequestById(request.getId())).isEqualTo(request);
+    }
+
+    @Test
+    void getRequestByIdIsNull() {
+        assertThatThrownBy(() -> waitingList.getRequestById(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRequestByIdNotFound() {
+        assertThatThrownBy(() -> waitingList.getRequestById(request.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 }

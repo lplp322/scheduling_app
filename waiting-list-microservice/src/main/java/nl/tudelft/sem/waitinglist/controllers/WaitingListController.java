@@ -2,12 +2,15 @@ package nl.tudelft.sem.waitinglist.controllers;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.List;
 
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,10 +97,35 @@ public class WaitingListController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
         }
         try {
-            waitingList.rejectRequest(id);
+            waitingList.removeRequest(id);
         } catch (IllegalArgumentException | NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Accepts a request.
+     *
+     * @param objectNode - ObjectNode containing the id and the planned-date of the accepted request.
+     * @return response
+     */
+    @PostMapping("/accept-request")
+    public ResponseEntity<Request> acceptRequest(@RequestBody ObjectNode objectNode) {
+        try {
+            Long id = objectNode.get("id").asLong();
+            LocalDate plannedDate = LocalDate.parse(objectNode.get ("localDate").asText());
+            Request acceptedRequest = waitingList.getRequestById(id);
+            LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
+            acceptedRequest.setPlannedDate(plannedDate, currentDate);
+            //forward to scheduler
+            //if scheduler approves:
+            waitingList.removeRequest(id);
+
+            return ResponseEntity.ok(acceptedRequest);
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+//        return ResponseEntity.ok().build();
     }
 }
