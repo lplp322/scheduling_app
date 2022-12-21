@@ -2,8 +2,6 @@ package nl.tudelft.sem.waitinglist.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.tudelft.sem.common.models.RequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
 @Entity
 @Table(name = "requests")
@@ -99,7 +97,7 @@ public class Request {
      *
      * @param requestModel request model
      */
-    public Request(@NonNull RequestModel requestModel, @NonNull LocalDateTime currentDateTime) {
+    public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
     }

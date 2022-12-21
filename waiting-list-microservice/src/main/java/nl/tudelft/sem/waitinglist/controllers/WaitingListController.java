@@ -7,9 +7,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,7 @@ public class WaitingListController {
      * @return request id
      */
     @PostMapping("/add-request")
-    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel) {
+    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel) {
         try {
             if (authManager == null || !authManager.getNetId().equals(requestModel.getName()) || authManager.getRoles()
                     .stream().noneMatch(a -> a.getAuthority().contains("employee_" + requestModel.getFaculty()))) {

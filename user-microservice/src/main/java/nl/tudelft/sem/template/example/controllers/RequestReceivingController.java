@@ -5,9 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import nl.tudelft.sem.common.models.RequestStatus;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
+import javax.servlet.http.HttpServletRequest;
 import nl.tudelft.sem.common.authentication.JwtTokenUtils;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelCreatorStrategy;
@@ -83,7 +84,7 @@ public class RequestReceivingController {
 
         try {
             //create request model from httpRequest
-            RequestModel request = requestCreator.createRequestModel(httpRequest); //NOPMD
+            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest); //NOPMD
             if (authManager == null || !authManager.getNetId().equals(request.getName())
                     || authManager.getRoles().stream().noneMatch(a ->
                     a.getAuthority().contains("employee_" + request.getFaculty()))) {

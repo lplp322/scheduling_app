@@ -1,8 +1,7 @@
 package nl.tudelft.sem.template.example.feigninterfaces;
 
-import java.util.List;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "waitingListMicroservice", url = "${waitingList.service.url}")
 public interface WaitingListInterface {
     @PostMapping("/add-request")
-    ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel);
+    ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel);
 
     //@GetMapping("/get-requests-by-faculty")
     //ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty);

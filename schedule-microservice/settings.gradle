@@ -1,0 +1,3 @@
+rootProject.name = 'schedule-microservice'
+include ':common'
+project(':common').projectDir = new File('../common')

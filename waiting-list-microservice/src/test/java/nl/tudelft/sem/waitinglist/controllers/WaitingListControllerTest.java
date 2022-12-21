@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
 import nl.tudelft.sem.waitinglist.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
@@ -89,7 +89,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 10, 23, 59, 59);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -130,7 +131,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 54, 59);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -171,7 +173,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 11, 23, 55);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -198,7 +201,8 @@ class WaitingListControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        RequestModel requestModel = new RequestModel(name, description, faculty, resourcesModel, deadline);
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
 
         LocalDate currentDate = LocalDate.of(2022, 12, 10);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);

@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
+
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 
 /**
  * Creating RequestModel from just PlainText body of the request.
@@ -17,7 +18,7 @@ public class RequestModelFromPlainTextStrategy implements RequestModelCreatorStr
     private static final int arrayLength = 7;
 
     @Override
-    public RequestModel createRequestModel(HttpServletRequest httpRequest) throws Exception {
+    public RequestModelWaitingList createRequestModel(HttpServletRequest httpRequest) throws Exception {
         BufferedReader reader = httpRequest.getReader();
         try {
             String requestLine = reader.lines().collect(Collectors.joining());
@@ -26,7 +27,7 @@ public class RequestModelFromPlainTextStrategy implements RequestModelCreatorStr
             if (parameterArray.length != arrayLength) {
                 throw new Exception("Not correct PlainText model, check RequestModelFromPlainText class comments");
             }
-            return new RequestModel(parameterArray[0], parameterArray[1], parameterArray[2],
+            return new RequestModelWaitingList(parameterArray[0], parameterArray[1], parameterArray[2],
                 new ResourcesModel(Integer.parseInt(parameterArray[3]),
                     Integer.parseInt(parameterArray[4]), Integer.parseInt(parameterArray[5])),
                 LocalDate.parse(parameterArray[6]));
