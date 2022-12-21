@@ -2,6 +2,7 @@ package nl.tudelft.sem.waitinglist.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,20 +16,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.waitinglist.authentication.AuthManager;
+import nl.tudelft.sem.waitinglist.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.Resources;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.JsonPath;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,7 +44,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles({"test", "mockClock"})
+@ActiveProfiles({"test", "mockClock", "mockTokenVerifier", "mockAuthenticationManager"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class WaitingListControllerTest {
     @Autowired
@@ -49,11 +56,31 @@ class WaitingListControllerTest {
     @Autowired
     private Clock clock;
 
+    @Autowired
+    private transient JwtTokenVerifier mockJwtTokenVerifier;
+
+    @Autowired
+    private transient AuthManager mockAuthenticationManager;
+
+    /**
+     * Configuration before tests.
+     */
+    @BeforeEach
+    public void configure() {
+        when(mockAuthenticationManager.getNetId()).thenReturn("John");
+        Collection<SimpleGrantedAuthority> roleList = new ArrayList<>();
+        roleList.add(new SimpleGrantedAuthority("employee_EEMCS"));
+        roleList.add(new SimpleGrantedAuthority("admin_EEMCS"));
+        Mockito.doReturn(roleList).when(mockAuthenticationManager).getRoles();
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("John");
+    }
+
     @Test
     void addRequestSuccessfully() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
@@ -70,7 +97,7 @@ class WaitingListControllerTest {
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
-        MvcResult result = mockMvc.perform(post("/add-request")
+        MvcResult result = mockMvc.perform(post("/add-request").header("Authorization", "Bearer MockedToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialised))
                 .andExpect(status().isOk())
@@ -92,9 +119,9 @@ class WaitingListControllerTest {
 
     @Test
     void addForNextDay5MinutesBefore() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
@@ -111,7 +138,7 @@ class WaitingListControllerTest {
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
-        MvcResult result = mockMvc.perform(post("/add-request")
+        MvcResult result = mockMvc.perform(post("/add-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
                 .andExpect(status().isOk())
@@ -133,9 +160,9 @@ class WaitingListControllerTest {
 
     @Test
     void addRequestLessThan5MinutesBeforeDeadline() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
@@ -152,7 +179,7 @@ class WaitingListControllerTest {
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
-        mockMvc.perform(post("/add-request")
+        mockMvc.perform(post("/add-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
                 .andExpect(status().isBadRequest());
@@ -160,9 +187,9 @@ class WaitingListControllerTest {
 
     @Test
     void addInvalidRequest() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 4;
         int gpu = 5;
         int ram = 5;
@@ -179,7 +206,7 @@ class WaitingListControllerTest {
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
-        mockMvc.perform(post("/add-request")
+        mockMvc.perform(post("/add-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
                 .andExpect(status().isBadRequest());
@@ -187,9 +214,9 @@ class WaitingListControllerTest {
 
     @Test
     void getRequestListSuccessfully() throws Exception {
-        String name = "name2";
+        String name = "John";
         String description = "description2";
-        String faculty = "ewi";
+        String faculty = "EEMCS";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 12, 12);
@@ -202,27 +229,27 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("ewi"))
+                        .content("EEMCS"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$", hasSize(1)))
-                        .andExpect(jsonPath("$[0].name").value("name2"))
+                        .andExpect(jsonPath("$[0].name").value("John"))
                         .andReturn();
     }
 
     @Test
     void getRequestListTwoDifferentFaculty() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "ewi";
+        String faculty = "EEMCS";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 23);
         Request request = new Request(name, description, faculty, resources, deadline, currentDateTime);
-        String name2 = "name2";
+        String name2 = "Alice";
         String description2 = "description2";
-        String faculty2 = "not-ewi";
+        String faculty2 = "IO";
         Request request2 = new Request(name2, description2, faculty2, resources, deadline, currentDateTime);
         repo.save(request2);
         repo.save(request);
@@ -233,20 +260,20 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("ewi"))
+                        .content("EEMCS"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].name").value(name))
                 .andReturn();
     }
 
     @Test
     void getRequestListEmptyList() throws Exception {
-        String name = "name2";
+        String name = "Alice";
         String description = "description2";
-        String faculty = "not-ewi";
+        String faculty = "IO";
         Resources resources = new Resources(6, 5, 1);
         LocalDate deadline = LocalDate.of(2022, 12, 15);
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 22, 22);
@@ -259,9 +286,9 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty")
+        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("ewi"))
+                        .content("EEMCS"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)))
                 .andReturn();
@@ -269,9 +296,9 @@ class WaitingListControllerTest {
 
     @Test
     void rejectNoSuchId() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
@@ -285,7 +312,7 @@ class WaitingListControllerTest {
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
 
-        mockMvc.perform(delete("/reject-request")
+        mockMvc.perform(delete("/reject-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("2"))
                 .andExpect(status().isBadRequest());
@@ -295,9 +322,9 @@ class WaitingListControllerTest {
 
     @Test
     void rejectSuccessful() throws Exception {
-        String name = "name";
+        String name = "John";
         String description = "description";
-        String faculty = "faculty";
+        String faculty = "EEMCS";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
@@ -314,7 +341,7 @@ class WaitingListControllerTest {
         Request request2 = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request2);
 
-        mockMvc.perform(delete("/reject-request")
+        mockMvc.perform(delete("/reject-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("1"))
                 .andExpect(status().isOk());

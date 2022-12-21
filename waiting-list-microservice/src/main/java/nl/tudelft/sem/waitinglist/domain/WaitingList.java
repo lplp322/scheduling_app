@@ -37,4 +37,12 @@ public interface WaitingList {
      * @throws NoSuchElementException in case a request with such id is not in the waiting list
      */
     public void rejectRequest(Long id);
+
+    /**
+     *  Finds a request by its ID.
+     *
+     * @param id id number
+     * @return request associated with the given id number
+     */
+    public Request getRequestById(Long id);
 }

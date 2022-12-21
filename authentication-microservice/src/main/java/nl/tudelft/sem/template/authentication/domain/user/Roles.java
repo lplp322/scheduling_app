@@ -5,28 +5,28 @@ import java.util.Collection;
 import lombok.EqualsAndHashCode;
 
 /**
- * A DDD value object representing a role in our domain.
+ * A DDD value object representing a list of roles in our domain.
  */
 @EqualsAndHashCode
 public class Roles {
-    private final transient Collection<String> role;
+    private final transient Collection<String> roleList;
 
-    public Roles(Collection<String> role) {
+    public Roles(Collection<String> roleList) {
         // Validate input
-        this.role = role;
+        this.roleList = roleList;
     }
 
     public Roles(String role) {
-        this.role = new ArrayList<String>();
-        this.role.add(role);
+        this.roleList = new ArrayList<String>();
+        this.roleList.add(role);
     }
 
     @Override
     public String toString() {
-        return role.toString();
+        return roleList.toString();
     }
 
     public Collection<String> getList() {
-        return role;
+        return roleList;
     }
 }

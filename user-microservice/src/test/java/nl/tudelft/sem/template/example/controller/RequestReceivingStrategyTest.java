@@ -12,6 +12,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
@@ -22,12 +25,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,9 +57,13 @@ public class RequestReceivingStrategyTest {
      */
     @BeforeEach
     public void configure() {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getNetId()).thenReturn("ivank");
+        Collection<SimpleGrantedAuthority> roleList = new ArrayList<>();
+        roleList.add(new SimpleGrantedAuthority("employee_CSE"));
+        roleList.add(new SimpleGrantedAuthority("admin_CSE"));
+        Mockito.doReturn(roleList).when(mockAuthenticationManager).getRoles();
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ivank");
     }
 
     @Captor

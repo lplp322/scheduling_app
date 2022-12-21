@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.waitinglist.authentication;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -72,11 +72,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         Collection<? extends GrantedAuthority> authorities
                                 = jwtTokenVerifier.getClaims(token) == null ? new ArrayList<>() :
                                 Arrays.asList(jwtTokenVerifier.getClaims(token)
-                                        .get("roles").toString().split(",")).stream()
-                                .map(authority ->
-                                new SimpleGrantedAuthority(authority.replace("authority=", "")
-                                .replaceAll("[\\[{}\\]\\s]", "")))
-                                .collect(Collectors.toList());
+                                                .get("roles").toString().split(",")).stream()
+                                        .map(authority ->
+                                                new SimpleGrantedAuthority(authority.replace("authority=", "")
+                                                        .replaceAll("[\\[{}\\]\\s]", "")))
+                                        .collect(Collectors.toList());
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,

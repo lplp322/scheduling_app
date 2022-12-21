@@ -2,8 +2,10 @@ package nl.tudelft.sem.template.example.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import nl.tudelft.sem.common.models.RequestStatus;
+import nl.tudelft.sem.common.authentication.JwtTokenUtils;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -16,10 +18,7 @@ import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -84,7 +83,12 @@ public class RequestReceivingController {
 
         try {
             //create request model from httpRequest
-            RequestModel request = requestCreator.createRequestModel(httpRequest);
+            RequestModel request = requestCreator.createRequestModel(httpRequest); //NOPMD
+            if (authManager == null || !authManager.getNetId().equals(request.getName())
+                    || authManager.getRoles().stream().noneMatch(a ->
+                    a.getAuthority().contains("employee_" + request.getFaculty()))) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to submit this request.");
+            }
             //contact WaitingList microservice
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
@@ -93,6 +97,8 @@ public class RequestReceivingController {
             }
             return ResponseEntity.ok("Your request returned: " + waitingListResponse.getStatusCode()
                 + " With body: " + waitingListResponse.getBody());
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Your request was raising an exception: " + e.getMessage(), e);
@@ -109,6 +115,9 @@ public class RequestReceivingController {
     public ResponseEntity<RequestStatus> getRequest(@RequestBody Long id) {
         Optional<UserRequest> request = requestService.findById(id);
         if (request.isPresent()) {
+            if (authManager == null || !authManager.getNetId().equals(request.get().getUser())) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized request access.");
+            }
             return ResponseEntity.ok(request.get().getStatus());
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provide correct Id");

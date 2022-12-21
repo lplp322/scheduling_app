@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.authentication.models;
 
 import lombok.Data;
 
+import java.util.Collection;
+
 /**
  * Model representing a registration request.
  */
@@ -9,5 +11,5 @@ import lombok.Data;
 public class RegistrationRequestModel {
     private String netId;
     private String password;
-    private String role;
+    private Collection<String> roles;
 }

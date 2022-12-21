@@ -65,7 +65,7 @@ public class UsersTests {
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
-        model.setRole(roles.toString());
+        model.setRoles(roles.getList());
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)

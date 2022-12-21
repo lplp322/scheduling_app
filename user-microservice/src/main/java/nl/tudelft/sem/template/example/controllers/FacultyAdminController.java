@@ -32,6 +32,8 @@ public class FacultyAdminController {
     ResponseEntity<String> rejectRequest(@RequestBody Long id) {
         try {
             return waitingListInterface.rejectRequest(id);
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
