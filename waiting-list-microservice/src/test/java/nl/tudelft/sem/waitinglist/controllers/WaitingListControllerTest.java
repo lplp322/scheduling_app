@@ -353,4 +353,116 @@ class WaitingListControllerTest {
         assertThat(repo.existsById(1L)).isFalse();
         assertThat(repo.existsById(2L)).isTrue();
     }
+    @Test
+    void acceptRequestNoSuchId() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"id\": 2, " +
+                                "\"plannedDate\": \"2023-12-10\" " +
+                                "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+
+    @Test
+    void acceptRequestAccepted() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+        assertThat(repo.existsById(1L)).isTrue();
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"id\": 1, " +
+                                "\"plannedDate\": \"2023-12-10\" " +
+                                "}"))
+                .andExpect(status().isOk());
+        assertThat(repo.existsById(1L)).isFalse();
+    }
+    @Test
+    void acceptRequestDatePassedDeadline() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"id\": 2, " +
+                                "\"plannedDate\": \"2023-12-10\" " +
+                                "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+    @Test
+    void acceptRequestDateBeforeCurrentDate() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"id\": 2, " +
+                                "\"plannedDate\": \"2022-12-09\" " +
+                                "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
 }

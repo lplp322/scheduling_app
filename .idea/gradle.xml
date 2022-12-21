@@ -13,6 +13,9 @@
             <option value="$PROJECT_DIR$/authentication-microservice" />
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/example-microservice" />
+            <option value="$PROJECT_DIR$/schedule-microservice" />
+            <option value="$PROJECT_DIR$/testFixtures" />
+            <option value="$PROJECT_DIR$/user-microservice" />
             <option value="$PROJECT_DIR$/waiting-list-microservice" />
           </set>
         </option>
