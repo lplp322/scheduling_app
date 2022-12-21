@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0faa3695-4cbb-462b-a674-8d9104ca20cd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/external/SchedulerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/checkstyle/checkstyle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/spotbugs/excludeFilter.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/controllers/WaitingListController.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/controllers/WaitingListController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/domain/SingleTableWaitingList.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/domain/SingleTableWaitingList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/domain/WaitingList.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/domain/WaitingList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/test/java/nl/tudelft/sem/waitinglist/domain/RequestTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/test/java/nl/tudelft/sem/waitinglist/domain/RequestTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,17 +34,7 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="template" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="template" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -65,7 +61,7 @@
       <map>
         <entry key="com.haulmont.jpb.jpaInspector" value="true" />
         <entry key="com.haulmont.jpb.jpaPalette" value="true" />
-        <entry key="com.haulmont.jpb.jpaStructure" value="true" />
+        <entry key="com.haulmont.jpb.jpaStructure" value="false" />
       </map>
     </option>
   </component>
@@ -78,8 +74,10 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RequestMappingsPanelOrder0" value="0" />
     <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelOrder2" value="2" />
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RequestMappingsPanelWidth2" value="75" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -87,6 +85,11 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="nl.tudelft.sem.waitinglist.feigninterfaces" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -96,6 +99,27 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.Application">
+    <configuration name="RequestTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;nl.tudelft.sem.waitinglist.domain.RequestTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":waiting-list-microservice:test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="SEM13a [bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -151,6 +175,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Application (4)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="template.schedule-microservice.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="nl.tudelft.sem.template.schedule.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.schedule.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="template.authentication-microservice.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.authentication.Application" />
@@ -160,6 +197,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Spring Boot.Application (4)" />
+        <item itemvalue="Gradle.RequestTest" />
         <item itemvalue="Gradle.SEM13a [bootRun]" />
         <item itemvalue="Gradle.SEM13a [bootRun]" />
       </list>
@@ -193,5 +232,11 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/template$SingleTableWaitingListTest_getRequestByIdNotFound.ic" NAME="SingleTableWaitingListTest.getRequestByIdNotFound Coverage Results" MODIFIED="1671473575792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/template$RequestTest_setPlannedDateBeforeCurrentDate.ic" NAME="RequestTest.setPlannedDateBeforeCurrentDate Coverage Results" MODIFIED="1671472606473" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/template$RequestTest_setPlannedDate.ic" NAME="RequestTest.setPlannedDate Coverage Results" MODIFIED="1671472937252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/template$Application.ic" NAME="Application Coverage Results" MODIFIED="1671473870953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

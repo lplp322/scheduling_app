@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
+import nl.tudelft.sem.waitinglist.external.SchedulerService;
 import nl.tudelft.sem.waitinglist.external.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -22,13 +22,13 @@ public class SingleTableWaitingList implements WaitingList {
 
     /**
      * Creates a new waiting list object.
-     *
-     * @param requestRepo requests repository
+     *  @param requestRepo requests repository
      * @param clock clock
      * @param userService user service
+     * @param schedulerService
      */
     @Autowired
-    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock, UserService userService) {
+    public SingleTableWaitingList(RequestRepository requestRepo, Clock clock, UserService userService, SchedulerService schedulerService) {
         this.requestRepo = requestRepo;
         this.clock = clock;
         this.userService = userService;

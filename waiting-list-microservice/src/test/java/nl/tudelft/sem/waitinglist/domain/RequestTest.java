@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.Test;
 
 class RequestTest {
@@ -18,7 +19,7 @@ class RequestTest {
     private final Resources resources = new Resources(6, 5, 1);
     private final LocalDate deadline = LocalDate.of(2022, 12, 15);
     private final LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 24);
-
+    private final LocalDate currentDate = LocalDate.of(2022,12,14);
     private final ResourcesModel resourcesModel = new ResourcesModel(6, 5, 1);
     private final RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description,
             faculty, resourcesModel, deadline);
@@ -122,7 +123,7 @@ class RequestTest {
 
     @Test
     void setPlannedDate() {
-        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDateTime);
         LocalDate plannedDate = LocalDate.parse("2022-12-14");
         request1.setPlannedDate(plannedDate,currentDate);
         assertThat(request1.getPlannedDate()).isEqualTo(plannedDate);
@@ -130,7 +131,7 @@ class RequestTest {
 
     @Test
     void setPlannedDateAfterDeadline() {
-        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDateTime);
         LocalDate plannedDate = LocalDate.parse("2022-12-17");
         assertThatThrownBy(() -> request1.setPlannedDate(plannedDate,currentDate))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -138,7 +139,7 @@ class RequestTest {
 
     @Test
     void setPlannedDateBeforeCurrentDate() {
-        Request request1 = new Request(name,description,faculty,resources,deadline,currentDate);
+        Request request1 = new Request(name,description,faculty,resources,deadline,currentDateTime);
         LocalDate plannedDate = LocalDate.parse("2022-12-12");
         assertThatThrownBy(() -> request1.setPlannedDate(plannedDate,currentDate))
                 .isInstanceOf(IllegalArgumentException.class);
