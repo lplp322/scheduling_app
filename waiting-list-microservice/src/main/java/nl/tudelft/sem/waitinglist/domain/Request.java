@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingListId;
 
 @Entity
 @Table(name = "requests")
@@ -102,5 +103,17 @@ public class Request {
     public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+    }
+
+    /**
+     * Creates a new request from a request model.
+     *
+     * @param requestModel request model
+     */
+    public Request(@NonNull RequestModelWaitingListId requestModel,
+                   @NonNull LocalDateTime currentDateTime) {
+        this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
+                new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+        this.id = requestModel.getId();
     }
 }

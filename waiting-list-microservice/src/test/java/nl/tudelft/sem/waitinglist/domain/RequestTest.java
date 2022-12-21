@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingListId;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import org.junit.jupiter.api.Test;
 
@@ -102,7 +103,13 @@ class RequestTest {
 
     @Test
     void nullRequestModel() {
-        assertThatThrownBy(() -> new Request(null, currentDateTime))
+        assertThatThrownBy(() -> new Request((RequestModelWaitingList) null, currentDateTime))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void nullRequestModelWithId() {
+        assertThatThrownBy(() -> new Request((RequestModelWaitingListId) null, currentDateTime))
                 .isInstanceOf(NullPointerException.class);
     }
 

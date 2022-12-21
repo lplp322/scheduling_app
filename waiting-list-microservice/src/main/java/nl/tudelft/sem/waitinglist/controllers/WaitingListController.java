@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.List;
 
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingListId;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
 import nl.tudelft.sem.waitinglist.domain.Request;
@@ -59,6 +60,25 @@ public class WaitingListController {
             Request request = new Request(requestModel, currentDateTime);
             Long id = waitingList.addRequest(request);
             return ResponseEntity.ok(new AddResponseModel(id));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Adds a request to waiting list.
+     *
+     * @param requestModel request model
+     * @return request id
+     */
+    @PostMapping("/re-add-request")
+    public ResponseEntity reAddRequest(@RequestBody RequestModelWaitingListId requestModel) {
+        try {
+            LocalDateTime currentDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
+            Request request = new Request(requestModel, currentDateTime);
+            waitingList.reAddRequest(request);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

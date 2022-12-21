@@ -13,6 +13,14 @@ public interface WaitingList {
     public Long addRequest(Request request);
 
     /**
+     * Adds a request to the waiting list.
+     *
+     * @param request request to add
+     * @return request id
+     */
+    public void reAddRequest(Request request);
+
+    /**
      * Gets a list of all the requests in the waiting list.
      *
      * @return List of Request - list with all pending requests.

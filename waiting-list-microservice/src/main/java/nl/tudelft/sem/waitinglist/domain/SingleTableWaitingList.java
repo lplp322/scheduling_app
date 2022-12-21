@@ -49,6 +49,17 @@ public class SingleTableWaitingList implements WaitingList {
         return savedRequest.getId();
     }
 
+    @Override
+    public void reAddRequest(Request request) {
+        // Request that is re-added should have an ID.
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("To be re-added request should have an ID");
+        }
+
+        Request savedRequest = requestRepo.save(request);
+        savedRequest.getId();
+    }
+
     /**
      * Gets a list of all the requests in the waiting list.
      *
