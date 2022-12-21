@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
@@ -74,6 +76,10 @@ public class WaitingListController {
      */
     @GetMapping("/get-requests-by-faculty")
     public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
+        if (authManager == null || authManager.getRoles().stream()
+            .noneMatch(a -> a.getAuthority().contains("admin_" + faculty))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
         ObjectMapper mapper = new ObjectMapper();
         List<Request> requestListByFaculty = waitingList.getAllRequestsByFaculty(faculty);
         try {
