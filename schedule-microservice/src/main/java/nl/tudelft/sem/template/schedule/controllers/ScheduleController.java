@@ -89,8 +89,8 @@ public class ScheduleController {
             LocalDate plannedDate = request.getPlannedDate();
             LocalDate currDate = timeProvider.now().toLocalDate();
             LocalTime currTime = timeProvider.now().toLocalTime();
-            if (!plannedDate.isAfter(currDate) || (plannedDate.minusDays(1).isEqual(currDate) &&
-                    currTime.isAfter(LocalTime.of(23, 55)))) {
+            if (!plannedDate.isAfter(currDate) || (plannedDate.minusDays(1).isEqual(currDate)
+                    && currTime.isAfter(LocalTime.of(23, 55)))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule any requests for this date anymore.");
             }
