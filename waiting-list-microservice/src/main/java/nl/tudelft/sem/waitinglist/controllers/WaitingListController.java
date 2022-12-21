@@ -1,16 +1,22 @@
 package nl.tudelft.sem.waitinglist.controllers;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
+
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.waitinglist.domain.Request;
+import nl.tudelft.sem.waitinglist.domain.Resources;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,4 +80,29 @@ public class WaitingListController {
         }
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * In the last 6 hours of each day tries to schedule the pending requests with deadline tomorrow.
+     * It will try the request with the lowest id first.
+     * If a request can't be scheduled, only smaller requests are tried to schedule.
+     */
+    @Scheduled(cron = "0 */5 18-23 * * *")
+    public void tryToScheduleInLastSixHours() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        List<Request> requestsForTomorrow = waitingList.getRequestWithDeadlineOnDate(tomorrow);
+        Resources resourcesThatAreTooBig = null;
+        for (int i = 0; i < requestsForTomorrow.size(); i++) {
+            Request request = requestsForTomorrow.get(i);
+            if (resourcesThatAreTooBig == null || request.getResources().isResourceSmaller(resourcesThatAreTooBig)) {
+                request.setPlannedDate(tomorrow);
+                //try to schedule in scheduler
+                //if scheduled:
+                waitingList.rejectRequest(request.getId()); //rejectRequest = removeRequest in other branch.
+                //else:
+                resourcesThatAreTooBig = request.getResources();
+            }
+        }
+    }
+
+
 }

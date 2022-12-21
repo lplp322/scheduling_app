@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 
@@ -47,6 +48,7 @@ public class Request {
 
     @Column(name = "planned_date")
     @Getter
+    @Setter
     private LocalDate plannedDate;
 
     @Column(name = "status")

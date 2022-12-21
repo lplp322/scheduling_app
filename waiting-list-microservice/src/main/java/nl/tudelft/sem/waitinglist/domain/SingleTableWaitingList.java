@@ -82,6 +82,19 @@ public class SingleTableWaitingList implements WaitingList {
     }
 
     /**
+     * Gets a list of all the pending requests with as deadline this specific date.
+     * Ordered by id.
+     *
+     * @param deadline - LocalDate of the date
+     * @return list of requests with deadline tomorrow.
+     */
+    @Override
+    public List<Request> getRequestWithDeadlineOnDate(LocalDate deadline) {
+        List<Request> requestList = this.requestRepo.getAllRequestsWithThisDeadline(deadline);
+        return requestList;
+    }
+
+    /**
      * Removes pending requests that have a deadline of next day.
      */
     @Scheduled(cron = "0 55 23 * * ?")
@@ -91,4 +104,5 @@ public class SingleTableWaitingList implements WaitingList {
             userService.changeRequestStatus(new ChangeRequestStatus(request.getId(), RequestStatus.REJECTED));
         }
     }
+
 }

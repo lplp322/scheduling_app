@@ -18,8 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -185,5 +184,43 @@ class SingleTableWaitingListTest {
     void requestNullId() {
         assertThatThrownBy(() -> waitingList.rejectRequest(null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getAllRequestsWithDeadlineSingle() {
+        String name2 = "name2";
+        String description2 = "description2";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 15);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
+        Request request2 = new Request(name2, description2, faculty, resources, deadline, currentDateTime);
+        repo.save(request2);
+        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 15)).get(0).getId())
+                .isEqualTo(request2.getId());
+    }
+
+    @Test
+    void getAllRequestsWithDeadlineMultiple() {
+        String name2 = "name2";
+        String description2 = "description2";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 17);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
+        Request request2 = new Request(name2, description2, faculty, resources, deadline, currentDateTime);
+        String name3 = "name3";
+        String description3 = "description3";
+        Resources resources3 = new Resources(6, 5, 1);
+        LocalDate deadline3 = LocalDate.of(2022, 12, 17);
+        Request request3 = new Request(name3, description3, faculty, resources3, deadline3, currentDateTime);
+        repo.save(request);
+        repo.save(request2);
+        repo.save(request3);
+        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 17)).get(0).getId())
+                .isEqualTo(request2.getId());
+        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 17)).get(1).getId())
+                .isEqualTo(request3.getId());
+
     }
 }

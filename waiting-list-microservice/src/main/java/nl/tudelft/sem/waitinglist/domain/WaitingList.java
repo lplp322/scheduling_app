@@ -1,5 +1,6 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.List;
 
@@ -37,4 +38,13 @@ public interface WaitingList {
      * @throws NoSuchElementException in case a request with such id is not in the waiting list
      */
     public void rejectRequest(Long id);
+
+    /**
+     * Gets a list of all the pending requests with as deadline this specific date.
+     * Ordered by id.
+     *
+     * @param deadline - LocalDate of the date
+     * @return list of requests with deadline tomorrow.
+     */
+    public List<Request> getRequestWithDeadlineOnDate(LocalDate deadline);
 }
