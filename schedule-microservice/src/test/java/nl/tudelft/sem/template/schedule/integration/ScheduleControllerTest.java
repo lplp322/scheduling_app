@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,8 +75,8 @@ public class ScheduleControllerTest {
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
                 resourcesModel, deadline);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 24);
-        when(mockTime.now()).thenReturn(currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
+        when(mockTime.now()).thenReturn(currentDateTime);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -104,8 +105,8 @@ public class ScheduleControllerTest {
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
                 resourcesModel, deadline);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 25);
-        when(mockTime.now()).thenReturn(currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 25, 0, 0);
+        when(mockTime.now()).thenReturn(currentDateTime);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -115,7 +116,37 @@ public class ScheduleControllerTest {
                         .andExpect(status().isBadRequest())
                         .andReturn().getResolvedException().getMessage();
 
-        assertTrue(StringUtils.contains(error, "This date has already passed"));
+        assertTrue(StringUtils.contains(error, "You cannot schedule any requests for this date anymore."));
+    }
+
+    @Test
+    void scheduleRequestJustTooLate() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 56);
+        when(mockTime.now()).thenReturn(currentDateTime);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        String error = mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException().getMessage();
+
+        assertTrue(StringUtils.contains(error, "You cannot schedule any requests for this date anymore."));
     }
 
     @Test
@@ -134,8 +165,8 @@ public class ScheduleControllerTest {
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
                 resourcesModel, deadline);
 
-        LocalDate currentDate = LocalDate.of(2022, 12, 25);
-        when(mockTime.now()).thenReturn(currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 25, 0, 0);
+        when(mockTime.now()).thenReturn(currentDateTime);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 

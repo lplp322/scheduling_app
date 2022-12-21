@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +65,6 @@ public class ScheduleController {
      */
     @GetMapping("/schedule")
     public ResponseEntity<GetScheduledRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
-        //Todo: check date and test
         try {
             List<ScheduledRequest> requests = scheduleService.getSchedule(request.getDate());
             List<RequestModelSchedule> requestModels = new ArrayList<>();
@@ -85,9 +86,13 @@ public class ScheduleController {
     @PostMapping("/schedule")
     public ResponseEntity scheduleRequest(@RequestBody RequestModelSchedule request) {
         try {
-            LocalDate date = request.getPlannedDate();
-            if (!date.isAfter(timeProvider.now())) { //TODO: Check if it's last 5 minutes of day.
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This date has already passed");
+            LocalDate plannedDate = request.getPlannedDate();
+            LocalDate currDate = timeProvider.now().toLocalDate();
+            LocalTime currTime = timeProvider.now().toLocalTime();
+            if (!plannedDate.isAfter(currDate) || (plannedDate.minusDays(1).isEqual(currDate) &&
+                    currTime.isAfter(LocalTime.of(23, 55)))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "You cannot schedule any requests for this date anymore.");
             }
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
