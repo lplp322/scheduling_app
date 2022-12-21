@@ -32,21 +32,19 @@ public class WaitingListController {
     private final transient WaitingList waitingList;
     private final transient Clock clock;
     private final transient AuthManager authManager;
-    private final transient SchedulerService schedulerService;
 
     /**
      * WaitingListController constructor, this should never be called manually, spring should handle this instead.
-     *  @param authManager AuthManager instance for this controller
+     *
+     * @param authManager AuthManager instance for this controller
      * @param waitingList WaitingList instance for this controller
      * @param clock Clock instance for this controller
-     * @param schedulerService SchedulerService instance of this controller
      */
     @Autowired
-    public WaitingListController(AuthManager authManager, WaitingList waitingList, Clock clock, SchedulerService schedulerService) {
+    public WaitingListController(AuthManager authManager, WaitingList waitingList, Clock clock) {
         this.authManager = authManager;
         this.waitingList = waitingList;
         this.clock = clock;
-        this.schedulerService = schedulerService;
     }
 
     /**
@@ -56,7 +54,7 @@ public class WaitingListController {
      * @return request id
      */
     @PostMapping("/add-request")
-    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel) {
+    public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModel requestModel) {
         try {
             if (authManager == null || !authManager.getNetId().equals(requestModel.getName()) || authManager.getRoles()
                     .stream().noneMatch(a -> a.getAuthority().contains("employee_" + requestModel.getFaculty()))) {
@@ -101,39 +99,10 @@ public class WaitingListController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
         }
         try {
-            waitingList.removeRequest(id);
+            waitingList.rejectRequest(id);
         } catch (IllegalArgumentException | NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Accepts a request.
-     *
-     * @param objectNode - ObjectNode containing the id and the planned-date of the accepted request.
-     * @return response
-     */
-    @PostMapping("/accept-request")
-    public ResponseEntity<Request> acceptRequest(@RequestBody ObjectNode objectNode) {
-        try {
-            Long id = objectNode.get("id").asLong();
-            LocalDate plannedDate = LocalDate.parse(objectNode.get ("localDate").asText());
-            Request acceptedRequest = waitingList.getRequestById(id);
-            LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
-            acceptedRequest.setPlannedDate(plannedDate, currentDate);
-            ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),acceptedRequest.getResources().getGpu()
-                    ,acceptedRequest.getResources().getRam());
-            RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),acceptedRequest.getName()
-                    ,acceptedRequest.getDescription(),acceptedRequest.getFaculty(),resourcesModel,acceptedRequest.getPlannedDate());
-            ResponseEntity responseEntity = schedulerService.scheduleRequest(requestModelSchedule);
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                waitingList.removeRequest(id);
-            }
-            return ResponseEntity.ok(acceptedRequest);
-        } catch (IllegalArgumentException | NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-//        return ResponseEntity.ok().build();
     }
 }
