@@ -4,6 +4,9 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
 import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
 import nl.tudelft.sem.waitinglist.domain.Request;
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 
 @RestController
 public class WaitingListController {
@@ -52,11 +54,19 @@ public class WaitingListController {
      * Gets a list of all the requests of a faculty.
      *
      * @param faculty - String - faculty for which the request is.
-     * @return List of Requests - list of all the pending requests for the faculty
+     * @return String - list of all the pending requests for the faculty mapped to JSON format.
      */
     @GetMapping("/get-requests-by-faculty")
-    public ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty) {
-        return ResponseEntity.ok(waitingList.getAllRequestsByFaculty(faculty));
+    public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Request> requestListByFaculty = waitingList.getAllRequestsByFaculty(faculty);
+        try {
+            String json = mapper.writeValueAsString(requestListByFaculty);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().build();
     }
 
     /**
