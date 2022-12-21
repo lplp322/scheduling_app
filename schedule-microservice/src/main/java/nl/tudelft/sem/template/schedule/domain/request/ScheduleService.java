@@ -8,6 +8,9 @@ import org.h2.mvstore.tx.TransactionStore;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -40,13 +43,33 @@ public class ScheduleService {
         ResourcesModel resources = request.getResources();
         ScheduledRequest newRequest = new ScheduledRequest(request.getId(), request.getName(),
                 request.getDescription(), request.getFaculty(), resources.getCpu(), resources.getGpu(),
-                resources.getRam(), request.getPlannedDate());
+                resources.getRam(), request.getPlannedDate(), request.getCreationDate());
         requestRepository.save(newRequest);
     }
 
-    public void dropOrRescheduleResources(ChangeInResourcesModel changeInResources) {
+    public ResourcesModel dropRequests(ChangeInResourcesModel changeInResources) {
         List<ScheduledRequest> scheduledRequests =  requestRepository.findByDate(changeInResources.getDate());
+        scheduledRequests.sort(Comparator.comparing(ScheduledRequest::getCreationDate));
+        int missingCpu = changeInResources.getChangedResources().getCpu();
+        int missingGpu = changeInResources.getChangedResources().getGpu();
+        int missingMemory = changeInResources.getChangedResources().getRam();
 
+        List<ScheduledRequest> droppedRequests = new ArrayList<>();
+        for (ScheduledRequest request : scheduledRequests) {
+            if (missingCpu >= 0 && missingGpu >= 0 && missingMemory >= 0) {
+                break;
+            }
+            if (missingCpu < 0 || missingGpu < 0 && request.getGpuUsage() > 0
+                    || missingMemory < 0 && request.getMemoryUsage() > 0) {
+                droppedRequests.add(request);
+                missingCpu += request.getCpuUsage();
+                missingGpu += request.getGpuUsage();
+                missingMemory += request.getMemoryUsage();
+            }
+        }
+
+        ResourcesModel availableResources = new ResourcesModel(missingCpu, missingGpu, missingMemory);
+        return availableResources;
     }
 
     public RequestRepository getRequestRepository() {

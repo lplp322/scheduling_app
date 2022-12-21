@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -51,8 +52,8 @@ public class ScheduledRequest extends HasEvents {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "dropped", nullable = false)
-    private boolean dropped;
+    @Column(name = "creationDate", nullable = false)
+    private LocalDateTime creationDate;
 
     /**
      * Create new scheduled request.
@@ -67,7 +68,7 @@ public class ScheduledRequest extends HasEvents {
      * @param date Planned date of the request.
      */
     public ScheduledRequest(long id, String name, String description, String faculty, int cpuUsage, int gpuUsage,
-                            int memoryUsage, LocalDate date) {
+                            int memoryUsage, LocalDate date, LocalDateTime creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -76,7 +77,7 @@ public class ScheduledRequest extends HasEvents {
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
-        this.dropped = false;
+        this.creationDate = creationDate;
         this.recordThat(new RequestWasScheduledEvent(this));
     }
 
@@ -112,17 +113,13 @@ public class ScheduledRequest extends HasEvents {
         return date;
     }
 
-    public boolean isDropped() {
-        return dropped;
-    }
-
-    public void setDropped(boolean dropped) {
-        this.dropped = dropped;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
     public RequestModelSchedule convert() {
         return new RequestModelSchedule(this.id, this.name, this.description, this.faculty,
-                new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date);
+                new ResourcesModel(this.cpuUsage, this.gpuUsage, this.memoryUsage), this.date, this.creationDate);
     }
 
     /**

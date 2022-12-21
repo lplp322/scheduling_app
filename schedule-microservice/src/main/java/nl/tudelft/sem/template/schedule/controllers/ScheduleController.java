@@ -98,10 +98,10 @@ public class ScheduleController {
             }
             //TODO: Check for enough resources and if approved, subtract used resources from resources.
             scheduleService.scheduleRequest(request);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -112,7 +112,7 @@ public class ScheduleController {
      * @return An ok response entity if the requests are correctly dropped or rescheduled, otherwise an exception.
      */
     @PostMapping("/resources-change")
-    public ResponseEntity handleChangeInResources(@RequestBody ChangeInResourcesModel request) {
+    public ResponseEntity<ResourcesModel> handleChangeInResources(@RequestBody ChangeInResourcesModel request) {
         try {
             LocalDate changeDate = request.getDate();
             LocalDate currDate = timeProvider.now().toLocalDate();
@@ -120,10 +120,10 @@ public class ScheduleController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot change the resources for a previous date.");
             }
-            scheduleService.dropOrRescheduleResources(request);
+            ResourcesModel availableResources = scheduleService.dropRequests(request);
+            return ResponseEntity.ok(availableResources);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 }

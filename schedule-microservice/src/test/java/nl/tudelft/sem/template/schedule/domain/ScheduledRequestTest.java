@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -26,6 +26,7 @@ public class ScheduledRequestTest {
     int gpuUsage;
     int memoryUsage;
     LocalDate date;
+    LocalDateTime creationDate;
 
     @BeforeEach
     void setup() {
@@ -37,8 +38,9 @@ public class ScheduledRequestTest {
         gpuUsage = 5;
         memoryUsage = 0;
         date = LocalDate.of(2022, 12, 19);
+        creationDate = LocalDateTime.of(2022, 10, 21, 10, 13);
         request = new ScheduledRequest(id, name, description, faculty, cpuUsage,
-                gpuUsage, memoryUsage, date);
+                gpuUsage, memoryUsage, date, creationDate);
     }
 
     @Test
@@ -82,20 +84,14 @@ public class ScheduledRequestTest {
     }
 
     @Test
-    void testConstructorDropped() {
-        assertFalse(request.isDropped());
-    }
-
-    @Test
-    void testSetDropped() {
-        request.setDropped(true);
-        assertTrue(request.isDropped());
+    void testConstructorCreationDate() {
+        assertThat(request.getCreationDate()).isEqualTo(creationDate);
     }
 
     @Test
     void testConvert() {
         RequestModelSchedule requestModel = new RequestModelSchedule(id, name, description, faculty,
-                new ResourcesModel(cpuUsage, gpuUsage, memoryUsage), date);
+                new ResourcesModel(cpuUsage, gpuUsage, memoryUsage), date, creationDate);
         assertThat(request.convert()).isEqualTo(requestModel);
     }
 

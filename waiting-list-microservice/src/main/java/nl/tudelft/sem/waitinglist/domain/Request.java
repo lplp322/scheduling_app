@@ -43,9 +43,9 @@ public class Request {
     @Getter
     private LocalDate deadline;
 
-    @Column(name = "planned_date")
+    @Column(name = "creation_date")
     @Getter
-    private LocalDate plannedDate;
+    private LocalDateTime creationDate;
 
     @Column(name = "status")
     @Getter
@@ -59,6 +59,7 @@ public class Request {
      * @param faculty request faculty
      * @param resources requested resources
      * @param deadline request deadline
+     * @param currentDateTime date at which request was created
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
                    @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
@@ -89,6 +90,7 @@ public class Request {
         this.faculty = faculty;
         this.resources = resources;
         this.deadline = deadline;
+        this.creationDate = currentDateTime;
         this.status = RequestStatus.PENDING;
     }
 

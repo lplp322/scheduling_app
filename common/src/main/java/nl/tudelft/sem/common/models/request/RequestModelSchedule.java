@@ -1,6 +1,7 @@
 package nl.tudelft.sem.common.models.request;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class RequestModelSchedule {
     private String faculty;
     private ResourcesModel resources;
     private LocalDate plannedDate;
+    private LocalDateTime creationDate;
 }

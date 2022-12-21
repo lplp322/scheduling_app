@@ -69,11 +69,12 @@ public class ScheduleControllerTest {
         int ram = 3;
         ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
         LocalDate deadline = LocalDate.of(2022, 12, 25);
+        LocalDateTime creationDate = LocalDateTime.of(2022, 11, 29, 9, 9);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
-                resourcesModel, deadline);
+                resourcesModel, deadline, creationDate);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
         when(mockTime.now()).thenReturn(currentDateTime);
@@ -99,11 +100,12 @@ public class ScheduleControllerTest {
         int ram = 3;
         ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
         LocalDate deadline = LocalDate.of(2022, 12, 25);
+        LocalDateTime creationDate = LocalDateTime.of(2022, 11, 29, 9, 9);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
-                resourcesModel, deadline);
+                resourcesModel, deadline, creationDate);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 25, 0, 0);
         when(mockTime.now()).thenReturn(currentDateTime);
@@ -129,11 +131,12 @@ public class ScheduleControllerTest {
         int ram = 3;
         ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
         LocalDate deadline = LocalDate.of(2022, 12, 25);
+        LocalDateTime creationDate = LocalDateTime.of(2022, 11, 29, 9, 9);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
-                resourcesModel, deadline);
+                resourcesModel, deadline, creationDate);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 56);
         when(mockTime.now()).thenReturn(currentDateTime);
@@ -159,11 +162,12 @@ public class ScheduleControllerTest {
         int ram = 3;
         ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
         LocalDate deadline = null;
+        LocalDateTime creationDate = LocalDateTime.of(2022, 11, 29, 9, 9);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
-                resourcesModel, deadline);
+                resourcesModel, deadline, creationDate);
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 25, 0, 0);
         when(mockTime.now()).thenReturn(currentDateTime);
@@ -216,10 +220,11 @@ public class ScheduleControllerTest {
         int gpuUsage1 = 2;
         int memoryUsage1 = 3;
         LocalDate deadline1 = LocalDate.of(2022, 12, 19);
+        LocalDateTime creationDate1 = LocalDateTime.of(2022, 11, 29, 9, 9);
         requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1,
-                new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1), deadline1));
+                new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1), deadline1, creationDate1));
         scheduledRequests.add(new ScheduledRequest(id1, name1, description1, faculty1,
-                cpuUsage1, gpuUsage1, memoryUsage1, deadline1));
+                cpuUsage1, gpuUsage1, memoryUsage1, deadline1, creationDate1));
 
         long id2 = 1;
         String name2 = "Small calculations";
@@ -229,10 +234,11 @@ public class ScheduleControllerTest {
         int gpuUsage2 = 0;
         int memoryUsage2 = 0;
         LocalDate deadline2 = LocalDate.of(2022, 12, 19);
+        LocalDateTime creationDate2 = LocalDateTime.of(2022, 11, 29, 9, 9);
         requestModels.add(new RequestModelSchedule(id2, name2, description2, faculty2,
-                new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2), deadline2));
+                new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2), deadline2, creationDate2));
         scheduledRequests.add(new ScheduledRequest(id2, name2, description2, faculty2,
-                cpuUsage2, gpuUsage2, memoryUsage2, deadline2));
+                cpuUsage2, gpuUsage2, memoryUsage2, deadline2, creationDate2));
 
         LocalDate date = LocalDate.of(2022, 12, 25);
 

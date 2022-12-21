@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,10 +49,12 @@ public class ScheduleServiceTest {
         request.setDescription("Test");
         request.setResources(resources);
         request.setPlannedDate(LocalDate.of(2022, 12, 25));
+        request.setCreationDate(LocalDateTime.of(2022, 11, 29, 9, 9));
 
         // Create the request that should have been scheduled
         ScheduledRequest expected = new ScheduledRequest(1, "Bink", "Test", "CSE",
-                5, 3, 2, LocalDate.of(2022, 12, 25));
+                5, 3, 2, LocalDate.of(2022, 12, 25),
+                LocalDateTime.of(2022, 11, 29, 9, 9));
 
         //Capture request that should be saved
         ArgumentCaptor<ScheduledRequest> captor =
