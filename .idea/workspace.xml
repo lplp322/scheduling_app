@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0faa3695-4cbb-462b-a674-8d9104ca20cd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="0faa3695-4cbb-462b-a674-8d9104ca20cd" name="Changes" comment="added the connection to the scheduler and tested the method in the WaitingListController">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_13_12_2022,_13_51_[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/controllers/WaitingListController.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/main/java/nl/tudelft/sem/waitinglist/controllers/WaitingListController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/waiting-list-microservice/src/test/java/nl/tudelft/sem/waitinglist/controllers/WaitingListControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/waiting-list-microservice/src/test/java/nl/tudelft/sem/waitinglist/controllers/WaitingListControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -263,6 +260,14 @@
       <workItem from="1670854823726" duration="892000" />
       <workItem from="1670878424381" duration="7311000" />
     </task>
+    <task id="LOCAL-00001" summary="added the connection to the scheduler and tested the method in the WaitingListController">
+      <created>1671642375030</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1671642375030</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -279,6 +284,10 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added the connection to the scheduler and tested the method in the WaitingListController" />
+    <option name="LAST_COMMIT_MESSAGE" value="added the connection to the scheduler and tested the method in the WaitingListController" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/template$SingleTableWaitingListTest_getRequestByIdNotFound.ic" NAME="SingleTableWaitingListTest.getRequestByIdNotFound Coverage Results" MODIFIED="1671473575792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

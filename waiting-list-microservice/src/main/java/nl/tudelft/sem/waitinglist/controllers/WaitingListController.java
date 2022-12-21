@@ -119,7 +119,7 @@ public class WaitingListController {
      * if scheduled the request is removed from the waiting-list
      *
      * @param objectNode - ObjectNode containing the id and the planned-date of the accepted request.
-     * @return response - ok() when
+     * @return response - ok() when accepted and scheduled
      */
     @PostMapping("/accept-request")
     public ResponseEntity acceptRequest(@RequestBody ObjectNode objectNode) {
