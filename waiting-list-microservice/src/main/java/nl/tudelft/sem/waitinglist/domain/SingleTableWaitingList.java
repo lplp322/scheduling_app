@@ -34,6 +34,11 @@ public class SingleTableWaitingList implements WaitingList {
     }
 
     @Override
+    public Request getRequestById(Long id) {
+        return requestRepo.getRequestById(id);
+    }
+
+    @Override
     public Long addRequest(Request request) {
         // Check that request does not have ID yet
         if (request.getId() != null) {

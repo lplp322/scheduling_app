@@ -31,7 +31,7 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "roles", nullable = false)
     @Convert(converter = RolesAttributeConverter.class)
     private Roles roles;
 

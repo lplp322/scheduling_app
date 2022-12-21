@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
@@ -19,10 +20,7 @@ public class RolesAttributeConverter implements AttributeConverter<Roles, String
     @Override
     public Roles convertToEntityAttribute(String dbData) {
         String[] roleArray = dbData.split(SPLIT_CHAR);
-        ArrayList<String> roleList = new ArrayList<>();
-        for (String i : roleArray) {
-            roleList.add(i);
-        }
+        ArrayList<String> roleList = new ArrayList<>(Arrays.asList(roleArray));
         return new Roles(roleList);
     }
 
