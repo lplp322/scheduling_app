@@ -8,6 +8,8 @@ import java.util.List;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 
 @RestController
 public class WaitingListController {
@@ -69,15 +70,19 @@ public class WaitingListController {
      * Gets a list of all the requests of a faculty.
      *
      * @param faculty - String - faculty for which the request is.
-     * @return List of Requests - list of all the pending requests for the faculty
+     * @return String - list of all the pending requests for the faculty mapped to JSON format.
      */
     @GetMapping("/get-requests-by-faculty")
-    public ResponseEntity<List<Request>> getRequestsByFaculty(@RequestBody String faculty) {
-        if (authManager == null || authManager.getRoles().stream()
-            .noneMatch(a -> a.getAuthority().contains("admin_" + faculty))) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+    public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Request> requestListByFaculty = waitingList.getAllRequestsByFaculty(faculty);
+        try {
+            String json = mapper.writeValueAsString(requestListByFaculty);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
-        return ResponseEntity.ok(waitingList.getAllRequestsByFaculty(faculty));
+        return ResponseEntity.ok().build();
     }
 
     /**
