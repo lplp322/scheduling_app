@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.schedule.controllers;
 
 import nl.tudelft.sem.common.models.providers.TimeProvider;
+import nl.tudelft.sem.common.models.request.ChangeInResourcesModel;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
@@ -94,6 +96,7 @@ public class ScheduleController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule any requests for this date anymore.");
             }
+            //TODO: Check for enough resources and if approved, subtract used resources from resources.
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -101,5 +104,26 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
-    //TODO: Check for enough resources and if approved, subtract used resources from resources.
+    /**
+     * Post mapping to notify the schedule microservice of a change of available resources.
+     *
+     * @param request Contains the date on which the available resources changed and
+     *                the new amount of available resources.
+     * @return An ok response entity if the requests are correctly dropped or rescheduled, otherwise an exception.
+     */
+    @PostMapping("/resources-change")
+    public ResponseEntity handleChangeInResources(@RequestBody ChangeInResourcesModel request) {
+        try {
+            LocalDate changeDate = request.getDate();
+            LocalDate currDate = timeProvider.now().toLocalDate();
+            if (changeDate.isBefore(currDate)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "You cannot change the resources for a previous date.");
+            }
+            scheduleService.dropOrRescheduleResources(request);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
 }

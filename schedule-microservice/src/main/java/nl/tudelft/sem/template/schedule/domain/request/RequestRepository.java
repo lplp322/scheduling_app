@@ -15,7 +15,19 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<ScheduledRequest, String> {
 
     /**
-     * Find requests scheduled on specific date.
+     * Find requests scheduled or dropped on specific date.
      */
     List<ScheduledRequest> findByDate(LocalDate date);
+
+    /**
+     * Find requests scheduled on specific date.
+     */
+    @Query("SELECT s FROM ScheduledRequest s WHERE s.date = ?1 AND s.dropped = false")
+    List<ScheduledRequest> findScheduledByDate(LocalDate date);
+
+    /**
+     * Find requests dropped on specific date.
+     */
+    @Query("SELECT s FROM ScheduledRequest s WHERE s.date = ?1 AND s.dropped = true")
+    List<ScheduledRequest> findDroppedByDate(LocalDate date);
 }

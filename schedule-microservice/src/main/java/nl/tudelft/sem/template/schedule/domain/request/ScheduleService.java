@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.schedule.domain.request;
 
+import nl.tudelft.sem.common.models.request.ChangeInResourcesModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import org.h2.mvstore.tx.TransactionStore;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,6 +42,11 @@ public class ScheduleService {
                 request.getDescription(), request.getFaculty(), resources.getCpu(), resources.getGpu(),
                 resources.getRam(), request.getPlannedDate());
         requestRepository.save(newRequest);
+    }
+
+    public void dropOrRescheduleResources(ChangeInResourcesModel changeInResources) {
+        List<ScheduledRequest> scheduledRequests =  requestRepository.findByDate(changeInResources.getDate());
+
     }
 
     public RequestRepository getRequestRepository() {

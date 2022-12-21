@@ -115,4 +115,58 @@ public class RequestRepositoryTest {
         List<ScheduledRequest> requestList = repo.findByDate(LocalDate.of(2022, 12, 20));
         assertThat(requestList).isEmpty();
     }
+
+    @Test
+    @Transactional
+    void testFindScheduledByDate() {
+        request2.setDropped(true);
+        repo.save(request1);
+        repo.save(request2);
+        repo.save(request3);
+        repo.save(request5);
+        repo.save(request4);
+        List<ScheduledRequest> requestList = repo.findScheduledByDate(LocalDate.of(2022, 12, 19));
+        assertThat(requestList).containsExactlyInAnyOrder(request1, request3);
+    }
+
+    @Test
+    @Transactional
+    void testFindDroppedByDate() {
+        request5.setDropped(true);
+        repo.save(request1);
+        repo.save(request2);
+        repo.save(request3);
+        repo.save(request5);
+        repo.save(request4);
+        List<ScheduledRequest> requestList = repo.findDroppedByDate(LocalDate.of(2022, 12, 20));
+        assertThat(requestList).containsExactlyInAnyOrder(request5);
+    }
+
+    @Test
+    @Transactional
+    void testFindScheduledByDateEmpty() {
+        request4.setDropped(true);
+        request5.setDropped(true);
+        repo.save(request1);
+        repo.save(request2);
+        repo.save(request3);
+        repo.save(request5);
+        repo.save(request4);
+        List<ScheduledRequest> requestList = repo.findScheduledByDate(LocalDate.of(2022, 12, 20));
+        assertThat(requestList).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void testFindDroppedByDateEmpty() {
+        request5.setDropped(true);
+        request4.setDropped(true);
+        repo.save(request1);
+        repo.save(request2);
+        repo.save(request3);
+        repo.save(request5);
+        repo.save(request4);
+        List<ScheduledRequest> requestList = repo.findDroppedByDate(LocalDate.of(2022, 12, 19));
+        assertThat(requestList).isEmpty();
+    }
 }

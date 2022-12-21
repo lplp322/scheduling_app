@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -78,6 +79,17 @@ public class ScheduledRequestTest {
     @Test
     void testConstructorDate() {
         assertThat(request.getDate()).isEqualTo(date);
+    }
+
+    @Test
+    void testConstructorDropped() {
+        assertFalse(request.isDropped());
+    }
+
+    @Test
+    void testSetDropped() {
+        request.setDropped(true);
+        assertTrue(request.isDropped());
     }
 
     @Test
