@@ -30,7 +30,7 @@ public class AuthenticationController {
         try {
             return authMicroservice.register(request);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());
         }
     }
 
@@ -45,7 +45,7 @@ public class AuthenticationController {
         try {
             return authMicroservice.authenticate(request);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e.getCause());
         }
     }
 }
