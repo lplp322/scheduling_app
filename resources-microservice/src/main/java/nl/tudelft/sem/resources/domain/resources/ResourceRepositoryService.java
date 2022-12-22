@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Service
 public class ResourceRepositoryService {
@@ -35,6 +37,83 @@ public class ResourceRepositoryService {
         allocatedResources.getResources().setGpu(allocatedResources.getResources().getGpu() + node.getResources().getGpu());
         allocatedResources.getResources().setRam(allocatedResources.getResources().getRam() + node.getResources().getRam());
         resourceAllocationRepository.save(allocatedResources);
+    }
+
+    /** Releases all remaining resources for a specific day, to be used when 6 hours are left until the next day.
+     *
+     * @param day the day on which to release all remaining resources.
+     */
+    public void releaseAll(LocalDate day) {
+        UsedResourcesModel releasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, day))
+                .orElse(new UsedResourcesModel(RELEASED, day, 0, 0, 0));
+        Collection<ResourceAllocationModel> allocatedResources = resourceAllocationRepository.findAll();
+        for (ResourceAllocationModel i : allocatedResources) {
+            UsedResourcesModel usedResources = usedResourceRepository.findById(new ResourceId(i.getFaculty(), day))
+                    .orElse(new UsedResourcesModel(i.getFaculty(), day, 0, 0, 0));
+            releasedResources.getResources().setCpu(releasedResources.getResources().getCpu()
+                    + i.getResources().getCpu() - usedResources.getResources().getCpu());
+            releasedResources.getResources().setGpu(releasedResources.getResources().getGpu()
+                    + i.getResources().getGpu() - usedResources.getResources().getGpu());
+            releasedResources.getResources().setRam(releasedResources.getResources().getRam()
+                    + i.getResources().getRam() - usedResources.getResources().getRam());
+
+            usedResources.getResources().setCpu(i.getResources().getCpu());
+            usedResources.getResources().setGpu(i.getResources().getGpu());
+            usedResources.getResources().setRam(i.getResources().getRam());
+
+            usedResourceRepository.save(usedResources);
+        }
+        usedResourceRepository.save(releasedResources);
+    }
+
+    /** Method for releasing resources.
+     *
+     * @param releasedResources Resources to release.
+     * @param faculty Faculty from which to release resources.
+     * @param from Date from which those resources are released.
+     * @param until Date until which those resources are released.
+     * @return true if resources could be released on every day, false otherwise
+     */
+    public boolean releaseResources(ResourcesModel releasedResources, String faculty, LocalDate from, LocalDate until) {
+        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty)
+                .orElseThrow().getResources();
+
+        if (facultyAllocatedResources.getRam() < releasedResources.getRam()
+            || facultyAllocatedResources.getGpu() < releasedResources.getGpu()
+            || facultyAllocatedResources.getCpu() < releasedResources.getCpu()) {
+            return false;
+        }
+
+        ArrayList<UsedResourcesModel> res = new ArrayList<>(); //NOPMD
+        for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
+            UsedResourcesModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, from))
+                    .orElse(new UsedResourcesModel(faculty, from, 0, 0, 0));
+            if (facultyUsedResources.getResources().getRam() < releasedResources.getRam()
+                    || facultyUsedResources.getResources().getGpu() < releasedResources.getGpu()
+                    || facultyUsedResources.getResources().getCpu() < releasedResources.getCpu()) {
+                return false;
+            }
+            facultyUsedResources.getResources().setCpu(
+                    facultyUsedResources.getResources().getCpu() - releasedResources.getCpu());
+            facultyUsedResources.getResources().setGpu(
+                    facultyUsedResources.getResources().getGpu() - releasedResources.getGpu());
+            facultyUsedResources.getResources().setRam(
+                    facultyUsedResources.getResources().getRam() - releasedResources.getRam());
+
+            UsedResourcesModel oldReleasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, from))
+                    .orElse(new UsedResourcesModel(RELEASED, from, 0, 0, 0));
+            oldReleasedResources.getResources().setCpu(
+                oldReleasedResources.getResources().getCpu() + releasedResources.getCpu());
+            oldReleasedResources.getResources().setGpu(
+                oldReleasedResources.getResources().getGpu() + releasedResources.getGpu());
+            oldReleasedResources.getResources().setRam(
+                oldReleasedResources.getResources().getRam() + releasedResources.getRam());
+
+            res.add(oldReleasedResources);
+        }
+
+        usedResourceRepository.saveAll(res);
+        return true;
     }
 
     private boolean updateCpu(ResourcesModel usedResources, ResourcesDatabaseModel facultyUsedResources,

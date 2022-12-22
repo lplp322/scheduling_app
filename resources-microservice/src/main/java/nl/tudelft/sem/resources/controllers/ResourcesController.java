@@ -1,8 +1,6 @@
 package nl.tudelft.sem.resources.controllers;
 
-import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
-import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
-import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.*;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.common.models.response.resources.NodesResponseModel;
@@ -102,5 +100,31 @@ public class ResourcesController {
     @GetMapping("/nodes")
     public ResponseEntity<NodesResponseModel> getNodes() {
         return ResponseEntity.ok(new NodesResponseModel(nodeRepositoryService.getAllNodes()));
+    }
+
+    /** Endpoint for releasing resources from a faculty in a given time interval.
+     *
+     * @param request release request object.
+     * @return 200 OK if resources could be released 400 BAD REQUEST otherwise.
+     */
+    @PostMapping("/release")
+    public ResponseEntity releaseResources(@RequestBody ReleaseRequestModel request) {
+        if (resourceRepositoryService.releaseResources(request.getReleasedResources(), request.getFaculty(),
+                request.getFrom(), request.getUntil())) {
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** Endpoint for releasing every resource on a given day. Implementation is hacky, unsafe and can be improved.
+     *
+     * @param request release all request object.
+     * @return 200 OK if all resources could be released.
+     */
+    @PostMapping("/release-all")
+    public ResponseEntity releaseAllResources(@RequestBody ReleaseAllRequestModel request) {
+        resourceRepositoryService.releaseAll(request.getDay());
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

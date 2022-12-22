@@ -86,6 +86,15 @@ class ResourceRepositoryServiceTest {
     //ResourcesModel usedResources, ResourcesDatabaseModel facultyUsedResources,
     //                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel releasedResources
 
+
+    @Test
+    void releaseAll() {
+    }
+
+    @Test
+    void releaseResources() {
+    }
+
     @Test
     void updateUsedResourcesEnoughFacultyResources() {
 
@@ -119,4 +128,5 @@ class ResourceRepositoryServiceTest {
         resourceAllocationRepository.deleteAll();
         resourceAllocationRepository.flush();
     }
+
 }
