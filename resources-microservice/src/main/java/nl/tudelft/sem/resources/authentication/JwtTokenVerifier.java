@@ -40,7 +40,7 @@ public class JwtTokenVerifier {
         return claimsResolver.apply(claims);
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
 }

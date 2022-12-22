@@ -3,13 +3,19 @@ package nl.tudelft.sem.resources.authentication;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -63,10 +69,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
+                        Collection<? extends GrantedAuthority> authorities
+                                = jwtTokenVerifier.getClaims(token) == null ? new ArrayList<>() :
+                                Arrays.asList(jwtTokenVerifier.getClaims(token)
+                                                .get("roles").toString().split(",")).stream()
+                                        .map(authority ->
+                                                new SimpleGrantedAuthority(authority.replace("authority=", "")
+                                                        .replaceAll("[\\[{}\\]\\s]", "")))
+                                        .collect(Collectors.toList());
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                null, List.of() // no credentials and no authorities
+                                null, authorities // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));
@@ -82,8 +96,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 } catch (IllegalArgumentException | JwtException e) {
                     System.err.println("Unable to parse JWT token");
                 }
+            } else {
+                System.err.println("Invalid authorization header");
             }
-            System.err.println("Invalid authorization header");
         }
 
         filterChain.doFilter(request, response);
