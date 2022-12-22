@@ -1,7 +1,6 @@
 package nl.tudelft.sem.resources.controllers;
 
 import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
-import nl.tudelft.sem.common.models.request.resources.GetNodesRequestModel;
 import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
 import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
@@ -41,10 +40,16 @@ public class ResourcesController {
         this.resourceRepositoryService = resourceRepositoryService;
     }
 
-    //TODO: implement
     @PostMapping("/nodes")
-    public ResponseEntity addNode(@RequestBody PostNodeRequestModel node){
-        return null;
+    public ResponseEntity addNode(@RequestBody PostNodeRequestModel request){
+
+        try {
+            nodeRepositoryService.addNode(new Node(request.getName(), request.getUrl(), request.getToken(),
+                    request.getResources(), request.getFaculty()), authManager.getNetId());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null, e);
+        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/available-resources")
@@ -70,7 +75,7 @@ public class ResourcesController {
 
     //TODO: implement
     @GetMapping("/nodes")
-    public ResponseEntity<NodesResponseModel> getNodes(@RequestBody GetNodesRequestModel request) {
-        return null;
+    public ResponseEntity<NodesResponseModel> getNodes() {
+        return ResponseEntity.ok(new NodesResponseModel(nodeRepositoryService.getAllNodes()));
     }
 }

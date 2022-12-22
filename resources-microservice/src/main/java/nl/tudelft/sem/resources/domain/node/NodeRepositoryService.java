@@ -6,8 +6,10 @@ import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class NodeRepositoryService {
@@ -23,13 +25,14 @@ public class NodeRepositoryService {
             throw new NameAlreadyInUseException(node.getName());
         }
         ResourceNode resourceNode = new ResourceNode(node.getToken(), node.getName(),
-                new ResourcesDatabaseModel(node.getResources()), node.getUrl().toString(), netId);
+                new ResourcesDatabaseModel(node.getResources()), node.getUrl(), netId, node.getFaculty());
         nodeRepository.save(resourceNode);
         return resourceNode;
     }
 
-    public Collection<ResourceNode> getAllNodes() {
-        return nodeRepository.findAll();
+    public Collection<Node> getAllNodes() {
+        return nodeRepository.findAll().stream().map(a -> new Node(a.getName(), a.getURL(), a.getToken(),
+                a.getResources(), a.getFaculty())).collect(Collectors.toList());
     }
 
     public void takeDownNodeOn(String name, LocalDate date){
