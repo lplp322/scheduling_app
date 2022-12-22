@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
-import nl.tudelft.sem.common.models.response.waitinglist.AddResponseModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
@@ -67,21 +67,23 @@ public class RequestReceivingStrategyTest {
     }
 
     @Captor
-    ArgumentCaptor<RequestModel> requestCaptor;
+    ArgumentCaptor<RequestModelWaitingList> requestCaptor;
 
     @Test
-    public void testRequestFromText() {
-        String text = "ivank,testThis,CSE,3,2,1,2023-10-12";
+    public void testRequestFromXml() {
         try {
+            String serialisedRequest = " <RequestModelWaitingList><name>ivank</name><description>testThis</description>"
+                + "<faculty>CSE</faculty><resources><cpu>3</cpu><gpu>2</gpu><ram>1</ram></resources>"
+                + "<deadline>2023-10-12</deadline></RequestModelWaitingList>";
             when(waitingListInterface.addRequest(any())).thenReturn(ResponseEntity.ok(new AddResponseModel(1L)));
             mockMvc
                 .perform(post("/request").header("Authorization", "Bearer MockedToken")
-                    .contentType(MediaType.TEXT_PLAIN_VALUE)
-                    .content(text))
+                    .contentType(MediaType.APPLICATION_XML)
+                    .content(serialisedRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Your request was created. Request ID: 1"));
             verify(waitingListInterface).addRequest(requestCaptor.capture());
-            RequestModel model = requestCaptor.getValue();
+            RequestModelWaitingList model = requestCaptor.getValue();
             assertEquals(model.getName(), "ivank");
             assertEquals(model.getDescription(), "testThis");
             assertEquals(model.getFaculty(), "CSE");
@@ -96,7 +98,7 @@ public class RequestReceivingStrategyTest {
 
     @Test
     public void testRegisterNormal() {
-        RequestModel request = new RequestModel("ivank", "testThis", "CSE",
+        RequestModelWaitingList request = new RequestModelWaitingList("ivank", "testThis", "CSE",
             new ResourcesModel(3, 2, 1), LocalDate.parse("2023-10-12"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -110,7 +112,7 @@ public class RequestReceivingStrategyTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Your request was created. Request ID: 1"));
             verify(waitingListInterface).addRequest(requestCaptor.capture());
-            RequestModel model = requestCaptor.getValue();
+            RequestModelWaitingList model = requestCaptor.getValue();
             assertEquals(model.getName(), "ivank");
             assertEquals(model.getDescription(), "testThis");
             assertEquals(model.getFaculty(), "CSE");
