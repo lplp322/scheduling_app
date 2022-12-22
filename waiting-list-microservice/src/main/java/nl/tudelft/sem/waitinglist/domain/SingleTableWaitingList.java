@@ -34,6 +34,18 @@ public class SingleTableWaitingList implements WaitingList {
     }
 
     @Override
+    public Request getRequestById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        if (!requestRepo.existsById(id)) {
+            throw new NoSuchElementException("A request with such id does not exist");
+        }
+        return requestRepo.getRequestById(id);
+
+    }
+
+    @Override
     public Long addRequest(Request request) {
         // Check that request does not have ID yet
         if (request.getId() != null) {
@@ -70,7 +82,7 @@ public class SingleTableWaitingList implements WaitingList {
     }
 
     @Override
-    public void rejectRequest(Long id) {
+    public void removeRequest(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }

@@ -43,8 +43,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         var user = optionalUser.get();
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRoles().toString()));
-
+        for (String i : user.getRoles().getList()) {
+            authorities.add(new SimpleGrantedAuthority(i));
+        }
         return new User(user.getNetId().toString(), user.getPassword().toString(),
                 authorities); // imported role
     }

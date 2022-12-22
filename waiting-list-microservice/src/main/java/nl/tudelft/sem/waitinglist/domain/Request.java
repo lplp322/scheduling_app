@@ -2,8 +2,6 @@ package nl.tudelft.sem.waitinglist.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import nl.tudelft.sem.common.models.RequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
 @Entity
 @Table(name = "requests")
@@ -58,11 +56,11 @@ public class Request {
     /**
      * Creates a new request object.
      *
-     * @param name request name
+     * @param name        request name
      * @param description request description
-     * @param faculty request faculty
-     * @param resources requested resources
-     * @param deadline request deadline
+     * @param faculty     request faculty
+     * @param resources   requested resources
+     * @param deadline    request deadline
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
                    @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
@@ -101,8 +99,24 @@ public class Request {
      *
      * @param requestModel request model
      */
-    public Request(@NonNull RequestModel requestModel, @NonNull LocalDateTime currentDateTime) {
+    public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+    }
+
+    /**
+     * Sets the planned date of a request.
+     *
+     * @param plannedDate - date on which the request is planned.
+     */
+    public void setPlannedDate(LocalDate plannedDate, LocalDate currentDate) {
+        if (plannedDate.isAfter(this.deadline)) {
+            throw new IllegalArgumentException("Planned date is after deadline");
+        } else if (plannedDate.isBefore(currentDate)) {
+            throw new IllegalArgumentException("Current date is after the planned date");
+        } else {
+            this.plannedDate = plannedDate;
+        }
+
     }
 }

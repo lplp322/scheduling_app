@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.requests;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.common.models.RequestStatus;
-import nl.tudelft.sem.common.models.request.waitinglist.RequestModel;
+import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.template.example.domain.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class RequestService {
      * @param data - RequestData received from user
      * @return id of this request
      */
-    public Long saveRequest(RequestModel data, Long id) {
+    public Long saveRequest(RequestModelWaitingList data, Long id) {
         UserRequest newRequest = new UserRequest(id, data.getName(), data.getDescription(),
             data.getFaculty(), RequestStatus.PENDING);
         repository.save(newRequest);

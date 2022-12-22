@@ -4,5 +4,7 @@ include 'authentication-microservice'
 include 'example-microservice'
 include 'waiting-list-microservice'
 include 'user-microservice'
+include 'schedule-microservice'
 include 'common'
+include 'testFixtures'
 
