@@ -136,7 +136,6 @@ public class SingleTableWaitingList implements WaitingList {
     public void tryToScheduleInLastSixHours() {
         LocalDate tomorrow = LocalDate.ofInstant(clock.instant(), clock.getZone()).plusDays(1);
         List<Request> requestsForTomorrow = getRequestWithDeadlineOnDate(tomorrow);
-        System.out.println(tomorrow);
         Resources resourcesThatAreTooBig = null; //NOPMD
         for (int i = 0; i < requestsForTomorrow.size(); i++) {
             Request request = requestsForTomorrow.get(i);

@@ -15,16 +15,12 @@ import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
 
-import nl.tudelft.sem.common.models.ChangeRequestStatus;
-import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.domain.Request;
-import nl.tudelft.sem.waitinglist.domain.Resources;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import nl.tudelft.sem.waitinglist.external.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
