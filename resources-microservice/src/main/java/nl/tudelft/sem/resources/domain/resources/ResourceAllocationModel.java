@@ -1,12 +1,14 @@
 package nl.tudelft.sem.resources.domain.resources;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class ResourceAllocationModel {
 
     @Column(name = "faculty", nullable = false)
@@ -17,7 +19,7 @@ public class ResourceAllocationModel {
     @Column(name = "resources", nullable = false)
     private ResourcesDatabaseModel resources;
 
-    public ResourceAllocationModel(String faculty, int cpu, int gpu, int ram){
+    public ResourceAllocationModel(String faculty, int cpu, int gpu, int ram) {
         this.faculty = faculty;
         this.resources = new ResourcesDatabaseModel(cpu, gpu, ram);
     }

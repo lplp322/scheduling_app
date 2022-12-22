@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface NodeRepository extends JpaRepository<ResourceNode, String> {
 
-    boolean existsByName(String Name);
+    boolean existsByName(String name);
 
     List<ResourceNode> findAllByTakeOfflineOnIsLessThanEqual(LocalDate date);
 }

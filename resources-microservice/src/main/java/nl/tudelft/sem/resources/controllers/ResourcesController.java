@@ -22,58 +22,83 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Clock;
 
 /**
- * Main controller for the Resources microservice
+ * Main controller for the Resources microservice.
  */
 @RestController
 public class ResourcesController {
     private final transient AuthManager authManager;
-    private final transient Clock clock;
     private final transient NodeRepositoryService nodeRepositoryService;
     private final transient ResourceRepositoryService resourceRepositoryService;
 
+    /** Constructor.
+     *
+     * @param authManager Auth manager
+     * @param nodeRepositoryService Node repository service
+     * @param resourceRepositoryService Resource repository service
+     */
     @Autowired
-    public ResourcesController(AuthManager authManager, Clock clock, NodeRepositoryService nodeRepositoryService,
-                               ResourceRepositoryService resourceRepositoryService){
+    public ResourcesController(AuthManager authManager, NodeRepositoryService nodeRepositoryService,
+                               ResourceRepositoryService resourceRepositoryService) {
         this.authManager = authManager;
-        this.clock = clock;
         this.nodeRepositoryService = nodeRepositoryService;
         this.resourceRepositoryService = resourceRepositoryService;
     }
 
+    /** Endpoint for adding a node to the cluster.
+     *
+     * @param request post request.
+     * @return 200 OK if node could be added, 400 BAD REQUEST otherwise
+     */
     @PostMapping("/nodes")
-    public ResponseEntity addNode(@RequestBody PostNodeRequestModel request){
-
+    public ResponseEntity addNode(@RequestBody PostNodeRequestModel request) {
+        Node node = new Node(request.getName(), request.getUrl(), request.getToken(),
+                request.getResources(), request.getFaculty());
         try {
-            nodeRepositoryService.addNode(new Node(request.getName(), request.getUrl(), request.getToken(),
-                    request.getResources(), request.getFaculty()), authManager.getNetId());
+            nodeRepositoryService.addNode(node, authManager.getNetId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null, e);
         }
+        resourceRepositoryService.updateResourceAllocation(node);
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    /** Endpoint for retrieving available resources from the microservice.
+     *
+     * @param request the get request as described in the model class, it contains a faculty and a date for which
+     *                to get available resources.
+     * @return the available resources of the given faculty on the given date.
+     */
     @GetMapping("/available-resources")
-    public ResponseEntity<AvailableResourcesResponseModel> getAvailableResources(@RequestBody AvailableResourcesRequestModel request) {
+    public ResponseEntity<AvailableResourcesResponseModel> getAvailableResources(
+            @RequestBody AvailableResourcesRequestModel request) {
         ResourcesModel resources;
         try {
-            resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate());
-        } catch(Exception e){
+            resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Faculty does not exist", e);
         }
         return ResponseEntity.ok(new AvailableResourcesResponseModel(resources));
     }
 
+    /** Endpoint for updating available resources of a faculty on a date.
+     *
+     * @param request update request as described in the model class
+     * @return 200 ok if resources could be updated, 422 unprocessable_entity if requested resources are not available
+     */
     @PostMapping("/available-resources")
     public ResponseEntity updateAvailableResources(@RequestBody UpdateAvailableResourcesRequestModel request) {
-        if(resourceRepositoryService.updateUsedResources(request.getDate(), request.getFaculty(),
-                new ResourcesModel(request.getCpu(), request.getGpu(), request.getRam()))){
+        if (resourceRepositoryService.updateUsedResources(request.getDate(), request.getFaculty(),
+                new ResourcesModel(request.getCpu(), request.getGpu(), request.getRam()))) {
             return new ResponseEntity(HttpStatus.OK);
-        }
-        else
+        } else {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Requested resources cannot be subtracted!");
+        }
     }
 
-    //TODO: implement
+    /** Sysadmin endpoint for retrieving every node in the cluster.
+     *
+     * @return list of nodes in the cluster
+     */
     @GetMapping("/nodes")
     public ResponseEntity<NodesResponseModel> getNodes() {
         return ResponseEntity.ok(new NodesResponseModel(nodeRepositoryService.getAllNodes()));

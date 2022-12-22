@@ -30,7 +30,7 @@ public class ResourceNode {
 
     @Column(name = "URL", nullable = false)
     @Getter
-    private java.net.URL URL;
+    private java.net.URL url;
 
     @Column(name = "takeOfflineOn", nullable = true)
     @Setter
@@ -45,13 +45,21 @@ public class ResourceNode {
     @Getter
     private String faculty;
 
-    public ResourceNode(String token, String name, ResourcesDatabaseModel resources, URL URL, String netId, String faculty) {
+    /** Constructor.
+     *
+     * @param token access token
+     * @param name node name
+     * @param resources node resources
+     * @param url node url
+     * @param netId owner netId
+     * @param faculty node faculty
+     */
+    public ResourceNode(String token, String name, ResourcesDatabaseModel resources, URL url, String netId, String faculty) {
         this.token = token;
         this.name = name;
         this.resources = resources;
-        this.URL = URL;
+        this.url = url;
         this.netId = netId;
         this.faculty = faculty;
-        this.takeOfflineOn = null;
     }
 }

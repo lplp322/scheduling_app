@@ -128,5 +128,7 @@ dependencyManagement {
 	}
 }
 dependencies {
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }

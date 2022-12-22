@@ -11,6 +11,10 @@ public class AvailableResourcesResponseModel {
     int gpu;
     int ram;
 
+    /** Constructor for an available resources response model from a resources model.
+     *
+     * @param resourcesModel resources model to convert to response model
+     */
     public AvailableResourcesResponseModel(ResourcesModel resourcesModel) {
         this.cpu = resourcesModel.getCpu();
         this.gpu = resourcesModel.getGpu();
