@@ -192,7 +192,7 @@ class SingleTableWaitingListTest {
 
     @Test
     void requestNullId() {
-        assertThatThrownBy(() -> waitingList.rejectRequest(null))
+        assertThatThrownBy(() -> waitingList.removeRequest(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

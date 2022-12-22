@@ -18,6 +18,7 @@ class RequestTest {
     private final Resources resources = new Resources(6, 5, 1);
     private final LocalDate deadline = LocalDate.of(2022, 12, 15);
     private final LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 15, 24);
+    private final LocalDate currentDate = LocalDate.of(2022, 12, 14);
 
     private final ResourcesModel resourcesModel = new ResourcesModel(6, 5, 1);
     private final RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description,
@@ -119,4 +120,30 @@ class RequestTest {
         assertThat(request.getDeadline()).isEqualTo(deadline);
         assertThat(request.getStatus()).isEqualTo(RequestStatus.PENDING);
     }
+
+
+    @Test
+    void setPlannedDate() {
+        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        LocalDate plannedDate = LocalDate.parse("2022-12-14");
+        request1.setPlannedDate(plannedDate, currentDate);
+        assertThat(request1.getPlannedDate()).isEqualTo(plannedDate);
+    }
+
+    @Test
+    void setPlannedDateAfterDeadline() {
+        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        LocalDate plannedDate = LocalDate.parse("2022-12-17");
+        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate, currentDate))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void setPlannedDateBeforeCurrentDate() {
+        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        LocalDate plannedDate = LocalDate.parse("2022-12-12");
+        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate, currentDate))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 }
