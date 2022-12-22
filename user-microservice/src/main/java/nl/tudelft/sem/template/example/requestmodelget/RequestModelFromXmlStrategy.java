@@ -8,9 +8,8 @@ import javax.xml.bind.JAXBContext;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
 /**
- * Creating RequestModel from just PlainText body of the request.
- * Request pattern should be:
- * "${name},${description},${faculty},${resources.cpu},${resources.gpu},${resources.mem},${deadline}".
+ * Strategy to create objects from JSON string.
+ * To deserialize objects ObjectMapper is used
  */
 public class RequestModelFromXmlStrategy implements RequestModelCreatorStrategy {
 
