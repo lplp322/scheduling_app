@@ -242,7 +242,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                         .andExpect(status().isOk())
@@ -273,7 +273,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                 .andExpect(status().isOk())
@@ -299,7 +299,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                 .andExpect(status().isOk())

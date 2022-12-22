@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/faculty-admin/")
+@RequestMapping("/faculty-admin")
 public class FacultyAdminController {
 
     private transient WaitingListInterface waitingListInterface;

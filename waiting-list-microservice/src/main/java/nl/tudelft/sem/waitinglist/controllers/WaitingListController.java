@@ -80,7 +80,7 @@ public class WaitingListController {
      * @param faculty - String - faculty for which the request is.
      * @return String - list of all the pending requests for the faculty mapped to JSON format.
      */
-    @GetMapping("/get-requests-by-faculty")
+    @PostMapping("/get-requests-by-faculty")
     public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
         if (authManager == null || authManager.getRoles().stream()
             .noneMatch(a -> a.getAuthority().contains("admin_" + faculty))) {

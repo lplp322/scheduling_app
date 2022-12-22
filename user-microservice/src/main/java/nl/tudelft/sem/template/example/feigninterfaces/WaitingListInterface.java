@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Service
 @FeignClient(name = "waitingListMicroservice", url = "${waitingList.service.url}")
@@ -21,7 +23,7 @@ public interface WaitingListInterface {
     @DeleteMapping("/reject-request")
     ResponseEntity<String> rejectRequest(@RequestBody Long id);
 
-    @GetMapping("/get-requests-by-faculty")
+    @PostMapping("/get-requests-by-faculty")
     ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty);
 
     @PostMapping("/accept-request")
