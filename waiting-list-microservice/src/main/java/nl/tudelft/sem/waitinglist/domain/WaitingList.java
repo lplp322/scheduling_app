@@ -46,7 +46,6 @@ public interface WaitingList {
      * @return request associated with the given id number
      */
     public Request getRequestById(Long id);
-    public void rejectRequest(Long id);
 
     /**
      * Gets a list of all the pending requests with as deadline this specific date.

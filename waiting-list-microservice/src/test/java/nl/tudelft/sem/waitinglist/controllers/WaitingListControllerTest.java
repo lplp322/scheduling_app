@@ -28,6 +28,7 @@ import nl.tudelft.sem.waitinglist.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.Resources;
+import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import nl.tudelft.sem.waitinglist.external.SchedulerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
