@@ -54,11 +54,11 @@ public class Request {
     /**
      * Creates a new request object.
      *
-     * @param name request name
+     * @param name        request name
      * @param description request description
-     * @param faculty request faculty
-     * @param resources requested resources
-     * @param deadline request deadline
+     * @param faculty     request faculty
+     * @param resources   requested resources
+     * @param deadline    request deadline
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
                    @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
@@ -100,5 +100,21 @@ public class Request {
     public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+    }
+
+    /**
+     * Sets the planned date of a request.
+     *
+     * @param plannedDate - date on which the request is planned.
+     */
+    public void setPlannedDate(LocalDate plannedDate, LocalDate currentDate) {
+        if (plannedDate.isAfter(this.deadline)) {
+            throw new IllegalArgumentException("Planned date is after deadline");
+        } else if (plannedDate.isBefore(currentDate)) {
+            throw new IllegalArgumentException("Current date is after the planned date");
+        } else {
+            this.plannedDate = plannedDate;
+        }
+
     }
 }

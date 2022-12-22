@@ -30,13 +30,13 @@ public interface WaitingList {
     public List<Request> getAllRequestsByFaculty(String faculty);
 
     /**
-     * Rejects a request.
+     * Removes a request.
      *
      * @param id request id
      * @throws IllegalArgumentException in case id is null
      * @throws NoSuchElementException in case a request with such id is not in the waiting list
      */
-    public void rejectRequest(Long id);
+    public void removeRequest(Long id);
 
     /**
      *  Finds a request by its ID.
