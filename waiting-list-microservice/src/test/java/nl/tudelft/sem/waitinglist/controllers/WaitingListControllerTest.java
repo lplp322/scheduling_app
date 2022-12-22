@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import nl.tudelft.sem.common.models.request.ApproveRequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
@@ -382,12 +383,15 @@ class WaitingListControllerTest {
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
 
+        ApproveRequestModelWaitingList approveRequestModelWaitingList =
+                new ApproveRequestModelWaitingList(2L, LocalDate.of(2023, 12, 10));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String serialised = mapper.writeValueAsString(approveRequestModelWaitingList);
+
         mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\": 2, "
-                                + "\"plannedDate\": \"2023-12-10\" "
-                                + "}"))
+                        .content(serialised))
                 .andExpect(status().isBadRequest());
 
         assertThat(repo.existsById(1L)).isTrue();
@@ -411,13 +415,16 @@ class WaitingListControllerTest {
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
+        ApproveRequestModelWaitingList approveRequestModelWaitingList =
+                new ApproveRequestModelWaitingList(1L, LocalDate.of(2023, 12, 10));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String serialised = mapper.writeValueAsString(approveRequestModelWaitingList);
+
         assertThat(repo.existsById(1L)).isTrue();
         mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\": 1, "
-                                + "\"plannedDate\": \"2023-12-10\" "
-                                + "}"))
+                        .content(serialised))
                 .andExpect(status().isOk());
         assertThat(repo.existsById(1L)).isFalse();
     }
@@ -440,13 +447,15 @@ class WaitingListControllerTest {
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
+        ApproveRequestModelWaitingList approveRequestModelWaitingList =
+                new ApproveRequestModelWaitingList(1L, LocalDate.of(2023, 12, 10));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String serialised = mapper.writeValueAsString(approveRequestModelWaitingList);
 
         mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\": 1, "
-                                + "\"plannedDate\": \"2023-12-10\" "
-                                + "}"))
+                        .content(serialised))
                 .andExpect(status().isBadRequest());
 
         assertThat(repo.existsById(1L)).isTrue();
@@ -470,13 +479,15 @@ class WaitingListControllerTest {
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
+        ApproveRequestModelWaitingList approveRequestModelWaitingList =
+                new ApproveRequestModelWaitingList(1L, LocalDate.of(2022, 12, 9));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String serialised = mapper.writeValueAsString(approveRequestModelWaitingList);
 
         mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\": 1, "
-                                + "\"plannedDate\": \"2022-12-09\" "
-                                + "}"))
+                        .content(serialised))
                 .andExpect(status().isBadRequest());
 
         assertThat(repo.existsById(1L)).isTrue();
@@ -500,13 +511,16 @@ class WaitingListControllerTest {
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
         repo.save(request);
+        ApproveRequestModelWaitingList approveRequestModelWaitingList =
+                new ApproveRequestModelWaitingList(1L, LocalDate.of(2022, 12, 23));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String serialised = mapper.writeValueAsString(approveRequestModelWaitingList);
+
 
         mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"
-                                + "\"id\": 1, "
-                                + "\"plannedDate\": \"2022-12-23\" "
-                                + "}"))
+                        .content(serialised))
                 .andExpect(status().isBadRequest());
 
         assertThat(repo.existsById(1L)).isTrue();

@@ -9,6 +9,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import nl.tudelft.sem.common.models.request.ApproveRequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
@@ -122,21 +123,21 @@ public class WaitingListController {
      * Accepts a request: sends request to the scheduler.
      * if scheduled the request is removed from the waiting-list
      *
-     * @param objectNode - ObjectNode containing the id and the planned-date of the accepted request.
+     * @param approveRequestModelWaitingList - ApproveRequestModelWaitingList containing the id
+     *                                       and the planned-date of the accepted request.
      * @return response - ok() when accepted and scheduled
      */
     @PostMapping("/accept-request")
-    public ResponseEntity acceptRequest(@RequestBody ObjectNode objectNode) {
+    public ResponseEntity acceptRequest(@RequestBody ApproveRequestModelWaitingList approveRequestModelWaitingList) {
         try {
-            Long id = objectNode.get("id").asLong();
+            Long id = approveRequestModelWaitingList.getId();
             Request acceptedRequest = waitingList.getRequestById(id);
             if (acceptedRequest != null && (authManager == null || authManager.getRoles().stream()
                     .noneMatch(a -> a.getAuthority().contains("admin_" + acceptedRequest.getFaculty())))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");
             }
             LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
-            acceptedRequest.setPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
-                    .asText()), currentDate);
+            acceptedRequest.setPlannedDate(approveRequestModelWaitingList.getPlannedDate(), currentDate);
             ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),
                     acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam());
             RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),
