@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -71,13 +72,15 @@ public class RequestReceivingStrategyTest {
 
     @Test
     public void testRequestFromText() {
-        String text = "ivank,testThis,CSE,3,2,1,2023-10-12";
         try {
+            String serialisedRequest = " <RequestModelWaitingList><name>ivank</name><description>testThis</description>"
+                + "<faculty>CSE</faculty><resources><cpu>3</cpu><gpu>2</gpu><ram>1</ram></resources>"
+                + "<deadline>2023-10-12</deadline></RequestModelWaitingList>";
             when(waitingListInterface.addRequest(any())).thenReturn(ResponseEntity.ok(new AddResponseModel(1L)));
             mockMvc
                 .perform(post("/request").header("Authorization", "Bearer MockedToken")
-                    .contentType(MediaType.TEXT_PLAIN_VALUE)
-                    .content(text))
+                    .contentType(MediaType.APPLICATION_XML)
+                    .content(serialisedRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Your request was created. Request ID: 1"));
             verify(waitingListInterface).addRequest(requestCaptor.capture());

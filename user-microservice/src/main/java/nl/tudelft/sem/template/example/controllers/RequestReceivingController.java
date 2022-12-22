@@ -10,11 +10,12 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelCreatorStrategy;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromJsonStrategy;
-import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromXMLStrategy;
+import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromXmlStrategy;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,10 +71,10 @@ public class RequestReceivingController {
     public ResponseEntity<String> addRequest(HttpServletRequest httpRequest) {
         RequestModelCreatorStrategy requestCreator;
         //create proper strategy
-        if (httpRequest.getContentType().equals("application/json")) {
+        if (httpRequest.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
             requestCreator = new RequestModelFromJsonStrategy();
-        } else if (httpRequest.getContentType().equals("application/xml")) {
-            requestCreator = new RequestModelFromXMLStrategy();
+        } else if (httpRequest.getContentType().equals(MediaType.APPLICATION_XML_VALUE)) {
+            requestCreator = new RequestModelFromXmlStrategy();
         } else {
             Exception e = new Exception("Unsupported type of body for this request");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
