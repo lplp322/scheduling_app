@@ -23,7 +23,7 @@ public class AuthenticationController {
     private transient AuthenticationInterface authMicroservice;
 
     /**
-     * Instantiates a new controller.
+     * API to contact authentication and register user.
      */
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) {
@@ -34,6 +34,12 @@ public class AuthenticationController {
         }
     }
 
+    /**
+     * API to authenticate user.
+     *
+     * @param request - authentication request
+     * @return token if OK or exception if something wrong
+     */
     @PostMapping("/authenticate")
     public ResponseEntity authenticate(@RequestBody AuthenticationRequestModel request) {
         try {
