@@ -5,6 +5,9 @@ import feign.FeignException;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
+import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequest;
+import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequestAdapter;
+import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequestDataModel;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,11 +66,12 @@ public class FacultyAdminController {
     }
 
     @PostMapping("/accept-request")
-    ResponseEntity acceptRequest(@RequestBody ObjectNode objectNode) {
+    ResponseEntity acceptRequest(@RequestBody AcceptRequestDataModel data) {
         try {
-            ResponseEntity waitingListResponse =  waitingListInterface.acceptRequest(objectNode);
+            AcceptRequest acceptRequest = new AcceptRequestAdapter(waitingListInterface);
+            ResponseEntity waitingListResponse =  acceptRequest.acceptRequest(data);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
-                requestService.updateRequestStatus(objectNode.get("id").asLong(), RequestStatus.ACCEPTED);
+                requestService.updateRequestStatus(data.getId(), RequestStatus.ACCEPTED);
             }
             return waitingListResponse;
         } catch (ResponseStatusException e) {
