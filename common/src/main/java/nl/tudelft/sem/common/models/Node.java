@@ -17,4 +17,5 @@ public class Node {
     private URL url;
     private String token;
     private ResourcesModel resources;
+    private String faculty;
 }

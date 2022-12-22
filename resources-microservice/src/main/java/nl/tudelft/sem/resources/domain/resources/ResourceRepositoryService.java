@@ -1,6 +1,6 @@
 package nl.tudelft.sem.resources.domain.resources;
 
-import nl.tudelft.sem.common.models.Faculty;
+import nl.tudelft.sem.common.models.Node;
 import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
 import nl.tudelft.sem.resources.database.ResourceAllocationRepository;
 import nl.tudelft.sem.resources.database.UsedResourceRepository;
@@ -23,28 +23,16 @@ public class ResourceRepositoryService {
         this.usedResourceRepository = usedResourceRepository;
     }
 
-    public void updateResourceAllocation(ResourcesModel newTotal) {
-        int nrOfFaculties = Faculty.values().length;
-        int cpu = newTotal.getCpu() / nrOfFaculties;
-        int remainingCpu = newTotal.getCpu() % nrOfFaculties;
-        int gpu = newTotal.getGpu() / nrOfFaculties;
-        int remainingGpu = newTotal.getGpu() % nrOfFaculties;
-        int ram = newTotal.getRam() / nrOfFaculties;
-        int remainingRam = newTotal.getRam() % nrOfFaculties;
+    public void updateResourceAllocation(Node node) {
 
-        for(Faculty i : Faculty.values()) {
-            resourceAllocationRepository.save(new ResourceAllocationModel(i.name(), cpu, gpu, ram));
-        }
-        resourceAllocationRepository.save(new ResourceAllocationModel("unallocated", remainingCpu, remainingGpu, remainingRam));
     }
 
     public boolean updateCpu(ResourcesModel usedResources, ResourcesDatabaseModel facultyUsedResources,
-                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel unallocatedResources,
-                             ResourcesDatabaseModel releasedResources){
+                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel releasedResources){
         if (usedResources.getCpu() + facultyUsedResources.getCpu() <= facultyAllocatedResources.getCpu()) {
             facultyUsedResources.setCpu(usedResources.getCpu() + facultyUsedResources.getCpu());
         } else if (usedResources.getCpu() + facultyUsedResources.getCpu() - facultyAllocatedResources.getCpu()
-                <= releasedResources.getCpu() + unallocatedResources.getCpu()) {
+                <= releasedResources.getCpu()) {
             releasedResources.setCpu(releasedResources.getCpu() - usedResources.getCpu() - facultyUsedResources.getCpu()
                     + facultyAllocatedResources.getCpu());
             facultyUsedResources.setCpu(facultyAllocatedResources.getCpu());
@@ -55,12 +43,11 @@ public class ResourceRepositoryService {
     }
 
     public boolean updateGpu(ResourcesModel usedResources, ResourcesDatabaseModel facultyUsedResources,
-                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel unallocatedResources,
-                             ResourcesDatabaseModel releasedResources){
+                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel releasedResources){
         if (usedResources.getGpu() + facultyUsedResources.getGpu() <= facultyAllocatedResources.getGpu()) {
             facultyUsedResources.setGpu(usedResources.getGpu() + facultyUsedResources.getGpu());
         } else if (usedResources.getGpu() + facultyUsedResources.getGpu() - facultyAllocatedResources.getGpu()
-                <= releasedResources.getGpu() + unallocatedResources.getGpu()) {
+                <= releasedResources.getGpu()) {
             releasedResources.setRam(releasedResources.getGpu() - usedResources.getGpu() - facultyUsedResources.getGpu()
                     + facultyAllocatedResources.getGpu());
             facultyUsedResources.setGpu(facultyAllocatedResources.getGpu());
@@ -71,12 +58,11 @@ public class ResourceRepositoryService {
     }
 
     public boolean updateRam(ResourcesModel usedResources, ResourcesDatabaseModel facultyUsedResources,
-                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel unallocatedResources,
-                             ResourcesDatabaseModel releasedResources){
+                             ResourcesDatabaseModel facultyAllocatedResources, ResourcesDatabaseModel releasedResources){
         if (usedResources.getRam() + facultyUsedResources.getRam() <= facultyAllocatedResources.getRam()) {
             facultyUsedResources.setRam(usedResources.getRam() + facultyUsedResources.getRam());
         } else if (usedResources.getRam() + facultyUsedResources.getRam() - facultyAllocatedResources.getRam()
-                <= releasedResources.getRam() + unallocatedResources.getRam()) {
+                <= releasedResources.getRam()) {
             releasedResources.setRam(releasedResources.getRam() - usedResources.getRam() - facultyUsedResources.getRam()
             + facultyAllocatedResources.getRam());
             facultyUsedResources.setRam(facultyAllocatedResources.getRam());
@@ -86,26 +72,42 @@ public class ResourceRepositoryService {
         return true;
     }
 
-    public boolean updateUsedResources(LocalDate date, Faculty faculty, ResourcesModel usedResources) {
-        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty.name())
-                .orElse(new ResourceAllocationModel(faculty.name(), 0, 0, 0)).getResources();
-        ResourcesDatabaseModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty.name(), date))
-                .orElse(new UsedResourcesModel(faculty.name(), date, 0, 0, 0)).getResources();
-        ResourcesDatabaseModel unallocatedResources = resourceAllocationRepository.findById("unallocated")
-                .orElse(new ResourceAllocationModel("unallocated", 0, 0, 0)).getResources();
+    public boolean updateUsedResources(LocalDate date, String faculty, ResourcesModel usedResources) {
+        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty)
+                .orElse(new ResourceAllocationModel(faculty, 0, 0, 0)).getResources();
+        ResourcesDatabaseModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, date))
+                .orElse(new UsedResourcesModel(faculty, date, 0, 0, 0)).getResources();
         ResourcesDatabaseModel releasedResources = usedResourceRepository.findById(new ResourceId("released", date))
                 .orElse(new UsedResourcesModel("released", date, 0, 0, 0)).getResources();
 
-        boolean res = updateCpu(usedResources, facultyUsedResources, facultyAllocatedResources, unallocatedResources, releasedResources)
-                && updateGpu(usedResources, facultyUsedResources, facultyAllocatedResources, unallocatedResources, releasedResources)
-                && updateRam(usedResources, facultyUsedResources, facultyAllocatedResources, unallocatedResources, releasedResources);
+        boolean res = updateCpu(usedResources, facultyUsedResources, facultyAllocatedResources, releasedResources)
+                && updateGpu(usedResources, facultyUsedResources, facultyAllocatedResources, releasedResources)
+                && updateRam(usedResources, facultyUsedResources, facultyAllocatedResources, releasedResources);
 
         if(!res)
             return false;
 
-        usedResourceRepository.save(new UsedResourcesModel(faculty.name(), date, facultyUsedResources));
+        usedResourceRepository.save(new UsedResourcesModel(faculty, date, facultyUsedResources));
         usedResourceRepository.save(new UsedResourcesModel("released", date, releasedResources));
         return true;
     }
 
+    public ResourcesModel getAvailableResources(String faculty, LocalDate date) {
+        int cpu;
+        int gpu;
+        int ram;
+
+        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty)
+                .orElseThrow().getResources();
+        ResourcesDatabaseModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, date))
+                .orElse(new UsedResourcesModel(faculty, date, 0, 0, 0)).getResources();
+        ResourcesDatabaseModel releasedResources = usedResourceRepository.findById(new ResourceId("released", date))
+                .orElse(new UsedResourcesModel("released", date, 0, 0, 0)).getResources();
+
+        cpu = facultyAllocatedResources.getCpu() - facultyUsedResources.getCpu() + releasedResources.getCpu();
+        gpu = facultyAllocatedResources.getGpu() - facultyUsedResources.getGpu() + releasedResources.getGpu();
+        ram = facultyAllocatedResources.getRam() - facultyUsedResources.getRam() + releasedResources.getRam();
+
+        return new ResourcesModel(cpu, gpu, ram);
+    }
 }
