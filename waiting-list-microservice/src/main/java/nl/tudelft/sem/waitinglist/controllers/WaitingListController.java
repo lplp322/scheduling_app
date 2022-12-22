@@ -135,14 +135,14 @@ public class WaitingListController {
                     .noneMatch(a -> a.getAuthority().contains("admin_" + acceptedRequest.getFaculty())))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");
             }
-            LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
-            acceptedRequest.setPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
-                    .asText()), currentDate);
             ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),
                     acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam());
             RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),
                     acceptedRequest.getName(), acceptedRequest.getDescription(),
-                    acceptedRequest.getFaculty(), resourcesModel, acceptedRequest.getPlannedDate());
+                    acceptedRequest.getFaculty(), resourcesModel,
+                    Request.checkPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
+                    .asText()), LocalDate.ofInstant(clock.instant(),
+                    clock.getZone()), acceptedRequest.getDeadline()));
             if (schedulerService.scheduleRequest(requestModelSchedule).getStatusCode() == HttpStatus.OK) {
                 waitingList.removeRequest(id);
                 return ResponseEntity.ok().build();

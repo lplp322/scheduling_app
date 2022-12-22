@@ -103,18 +103,6 @@ public class SingleTableWaitingList implements WaitingList {
         requestRepo.deleteById(id);
     }
 
-    /**
-     * Gets a list of all the pending requests with as deadline this specific date.
-     * Ordered by id.
-     *
-     * @param deadline - LocalDate of the date
-     * @return list of requests with deadline tomorrow.
-     */
-    @Override
-    public List<Request> getRequestWithDeadlineOnDate(LocalDate deadline) {
-        List<Request> requestList = this.requestRepo.getAllRequestsWithThisDeadline(deadline);
-        return requestList;
-    }
 
     /**
      * Removes pending requests that have a deadline of next day.
@@ -135,19 +123,20 @@ public class SingleTableWaitingList implements WaitingList {
     @Scheduled(cron = "0 */5 18-23 * * *")
     public void tryToScheduleInLastSixHours() {
         LocalDate tomorrow = LocalDate.ofInstant(clock.instant(), clock.getZone()).plusDays(1);
-        List<Request> requestsForTomorrow = getRequestWithDeadlineOnDate(tomorrow);
+        List<Request> requestsForTomorrow = requestRepo.getAllRequestsByDeadline(tomorrow);
         Resources resourcesThatAreTooBig = null; //NOPMD
         for (int i = 0; i < requestsForTomorrow.size(); i++) {
             Request request = requestsForTomorrow.get(i);
             LocalDateTime localDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
             if ((localDateTime.toLocalTime().isBefore(LocalTime.of(23, 55, 0))) && (resourcesThatAreTooBig == null
                     || request.getResources().isResourceSmaller(resourcesThatAreTooBig))) {
-                request.setPlannedDate(tomorrow, LocalDate.ofInstant(clock.instant(), clock.getZone()));
                 ResourcesModel resourcesModel = new ResourcesModel(request.getResources().getCpu(),
                         request.getResources().getGpu(), request.getResources().getRam());
                 RequestModelSchedule requestModelSchedule = new RequestModelSchedule(request.getId(),
                         request.getName(), request.getDescription(),
-                        request.getFaculty(), resourcesModel, request.getPlannedDate());
+                        request.getFaculty(), resourcesModel,
+                        Request.checkPlannedDate(tomorrow, LocalDate.ofInstant(clock.instant(),
+                        clock.getZone()), request.getDeadline()));
                 if (schedulerService.scheduleRequest(requestModelSchedule).getStatusCode() == HttpStatus.OK) {
                     removeRequest(request.getId());
                     userService.changeRequestStatus(new ChangeRequestStatus(request.getId(), RequestStatus.ACCEPTED));
@@ -157,5 +146,4 @@ public class SingleTableWaitingList implements WaitingList {
             }
         }
     }
-
 }

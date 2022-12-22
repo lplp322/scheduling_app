@@ -121,28 +121,29 @@ class RequestTest {
         assertThat(request.getStatus()).isEqualTo(RequestStatus.PENDING);
     }
 
-
     @Test
-    void setPlannedDate() {
-        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
-        LocalDate plannedDate = LocalDate.parse("2022-12-14");
-        request1.setPlannedDate(plannedDate, currentDate);
-        assertThat(request1.getPlannedDate()).isEqualTo(plannedDate);
+    void checkPlannedDate() {
+        LocalDate plannedDate = LocalDate.of(2022, 12, 11);
+        LocalDate currentDate = LocalDate.of(2022, 12, 10);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        assertThat(Request.checkPlannedDate(plannedDate, currentDate, deadline)).isEqualTo(plannedDate);
     }
 
     @Test
     void setPlannedDateAfterDeadline() {
-        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
-        LocalDate plannedDate = LocalDate.parse("2022-12-17");
-        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate, currentDate))
+        LocalDate plannedDate = LocalDate.of(2022, 12, 11);
+        LocalDate currentDate = LocalDate.of(2022, 12, 9);
+        LocalDate deadline = LocalDate.of(2022, 12, 10);
+        assertThatThrownBy(() -> Request.checkPlannedDate(plannedDate, currentDate, deadline))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void setPlannedDateBeforeCurrentDate() {
-        Request request1 = new Request(name, description, faculty, resources, deadline, currentDateTime);
-        LocalDate plannedDate = LocalDate.parse("2022-12-12");
-        assertThatThrownBy(() -> request1.setPlannedDate(plannedDate, currentDate))
+        LocalDate plannedDate = LocalDate.of(2022, 12, 8);
+        LocalDate currentDate = LocalDate.of(2022, 12, 9);
+        LocalDate deadline = LocalDate.of(2022, 12, 10);
+        assertThatThrownBy(() -> Request.checkPlannedDate(plannedDate, currentDate, deadline))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

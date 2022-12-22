@@ -47,12 +47,4 @@ public interface WaitingList {
      */
     public Request getRequestById(Long id);
 
-    /**
-     * Gets a list of all the pending requests with as deadline this specific date.
-     * Ordered by id.
-     *
-     * @param deadline - LocalDate of the date
-     * @return list of requests with deadline tomorrow.
-     */
-    public List<Request> getRequestWithDeadlineOnDate(LocalDate deadline);
 }

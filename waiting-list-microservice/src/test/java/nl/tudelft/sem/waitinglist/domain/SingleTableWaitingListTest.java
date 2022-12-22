@@ -21,6 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -209,7 +210,7 @@ class SingleTableWaitingListTest {
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
         Request request2 = new Request(name2, description2, faculty, resources, deadline, currentDateTime);
         repo.save(request2);
-        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 15)).get(0).getId())
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 15)).get(0).getId())
                 .isEqualTo(request2.getId());
     }
 
@@ -230,9 +231,9 @@ class SingleTableWaitingListTest {
         repo.save(request);
         repo.save(request2);
         repo.save(request3);
-        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 17)).get(0).getId())
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 17)).get(0).getId())
                 .isEqualTo(request2.getId());
-        assertThat(repo.getAllRequestsWithThisDeadline(LocalDate.of(2022, 12, 17)).get(1).getId())
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 17)).get(1).getId())
                 .isEqualTo(request3.getId());
 
     }

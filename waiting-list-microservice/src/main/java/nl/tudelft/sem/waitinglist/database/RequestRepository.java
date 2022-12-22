@@ -18,7 +18,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Request getRequestById(Long id);
 
     @Query(value = "SELECT p FROM Request p WHERE p.deadline = ?1 ORDER BY p.id ASC")
-    List<Request> getAllRequestsWithThisDeadline(LocalDate deadline);
+    List<Request> getAllRequestsByDeadline(LocalDate deadline);
 
     @Transactional
     List<Request> deleteByDeadline(LocalDate deadline);

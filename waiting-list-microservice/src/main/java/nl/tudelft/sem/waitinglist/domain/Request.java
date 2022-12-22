@@ -44,11 +44,6 @@ public class Request {
     @Getter
     private LocalDate deadline;
 
-    @Column(name = "planned_date")
-    @Getter
-    @Setter
-    private LocalDate plannedDate;
-
     @Column(name = "status")
     @Getter
     private RequestStatus status;
@@ -109,14 +104,13 @@ public class Request {
      *
      * @param plannedDate - date on which the request is planned.
      */
-    public void setPlannedDate(LocalDate plannedDate, LocalDate currentDate) {
-        if (plannedDate.isAfter(this.deadline)) {
+    public static LocalDate checkPlannedDate(LocalDate plannedDate, LocalDate currentDate, LocalDate deadline) {
+        if (plannedDate.isAfter(deadline)) {
             throw new IllegalArgumentException("Planned date is after deadline");
         } else if (plannedDate.isBefore(currentDate)) {
             throw new IllegalArgumentException("Current date is after the planned date");
         } else {
-            this.plannedDate = plannedDate;
+            return plannedDate;
         }
-
     }
 }
