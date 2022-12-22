@@ -2,7 +2,7 @@ package nl.tudelft.sem.common.models.response.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 
 @Data
 @AllArgsConstructor

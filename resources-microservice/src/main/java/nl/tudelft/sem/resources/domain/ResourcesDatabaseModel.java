@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

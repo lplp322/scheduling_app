@@ -1,7 +1,7 @@
 package nl.tudelft.sem.resources.controllers;
 
 import nl.tudelft.sem.common.models.request.resources.*;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.common.models.response.resources.NodesResponseModel;
 import nl.tudelft.sem.resources.authentication.AuthManager;

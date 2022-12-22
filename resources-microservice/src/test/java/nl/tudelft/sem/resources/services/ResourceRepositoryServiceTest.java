@@ -1,7 +1,7 @@
 package nl.tudelft.sem.resources.services;
 
 import nl.tudelft.sem.common.models.Node;
-import nl.tudelft.sem.common.models.request.waitinglist.ResourcesModel;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.resources.database.ResourceAllocationRepository;
 import nl.tudelft.sem.resources.database.UsedResourceRepository;
 import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
