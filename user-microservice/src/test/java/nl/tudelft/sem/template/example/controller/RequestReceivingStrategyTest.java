@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class RequestReceivingStrategyTest {
     ArgumentCaptor<RequestModelWaitingList> requestCaptor;
 
     @Test
-    public void testRequestFromText() {
+    public void testRequestFromXml() {
         try {
             String serialisedRequest = " <RequestModelWaitingList><name>ivank</name><description>testThis</description>"
                 + "<faculty>CSE</faculty><resources><cpu>3</cpu><gpu>2</gpu><ram>1</ram></resources>"

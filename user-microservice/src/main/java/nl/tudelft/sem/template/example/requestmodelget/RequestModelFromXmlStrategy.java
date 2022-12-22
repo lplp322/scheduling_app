@@ -15,7 +15,6 @@ public class RequestModelFromXmlStrategy implements RequestModelCreatorStrategy 
 
     @Override
     public RequestModelWaitingList createRequestModel(HttpServletRequest httpRequest) throws Exception {
-        System.out.println("here");
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.registerModule(new JavaTimeModule());
         return xmlMapper.readValue(httpRequest.getReader(),
