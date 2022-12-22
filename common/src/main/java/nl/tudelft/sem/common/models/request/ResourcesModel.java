@@ -11,4 +11,12 @@ public class ResourcesModel {
     private int cpu;
     private int gpu;
     private int ram;
+
+    public boolean enoughAvailable(ResourcesModel availableResources) {
+        if (this.cpu > availableResources.cpu || this.gpu > availableResources.gpu
+                || this.ram > availableResources.ram) {
+            return false;
+        }
+        return true;
+    }
 }

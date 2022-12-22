@@ -3,10 +3,12 @@ package nl.tudelft.sem.template.schedule.controllers;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
+import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +37,20 @@ public class ScheduleController {
 
     private final transient TimeProvider timeProvider;
 
+    private final transient ResourcesInterface resourcesInterface;
+
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider) {
+    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider,
+                              ResourcesInterface resourcesInterface) {
         this.authManager = authManager;
         this.scheduleService = scheduleService;
         this.timeProvider = timeProvider;
+        this.resourcesInterface = resourcesInterface;
     }
 
     /**
@@ -94,12 +100,18 @@ public class ScheduleController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule any requests for this date anymore.");
             }
+            ResourcesModel requiredResources = request.getResources();
+            ResourcesModel availableResources = resourcesInterface.getAvailableResources(
+                    new DateModel(plannedDate)).getBody();
+            if (!requiredResources.enoughAvailable(availableResources)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "There are not enough resources available on this date for this request.");
+            }
             scheduleService.scheduleRequest(request);
+            resourcesInterface.updateUsedResources(requiredResources);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();
     }
-
-    //TODO: Check for enough resources and if approved, subtract used resources from resources.
 }
