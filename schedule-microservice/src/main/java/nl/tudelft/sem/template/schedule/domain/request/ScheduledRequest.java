@@ -114,7 +114,7 @@ public class ScheduledRequest extends HasEvents {
     }
 
     /**
-     * Equality is only based on the identifier.
+     * Equality is only based on the id of the request.
      */
     @Override
     public boolean equals(Object o) {

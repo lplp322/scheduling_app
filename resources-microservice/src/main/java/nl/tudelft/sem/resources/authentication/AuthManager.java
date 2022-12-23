@@ -1,7 +1,10 @@
 package nl.tudelft.sem.resources.authentication;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
 
 /**
  * Authentication Manager.
@@ -15,5 +18,9 @@ public class AuthManager {
      */
     public String getNetId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    public Collection<? extends GrantedAuthority> getRoles() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities();
     }
 }
