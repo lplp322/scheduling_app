@@ -71,8 +71,7 @@ public class ResourcesController {
             @RequestBody AvailableResourcesRequestModel request) {
         ResourcesModel resources;
         try {
-            if (!request.getFaculty().equals("released"))
-            {
+            if (!request.getFaculty().equals("released")) {
                 resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
             } else {
                 resources = resourceRepositoryService.getAvailableResources(request.getDate());
