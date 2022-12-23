@@ -54,16 +54,6 @@ public class ScheduleController {
     }
 
     /**
-     * Gets example by id.
-     *
-     * @return the example found in the database with the given id
-     */
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
-    }
-
-    /**
      * Endpoint to retrieve the schedule of a specific date.
      *
      * @param request The date from which the requests should be retrieved.
@@ -100,15 +90,21 @@ public class ScheduleController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule any requests for this date anymore.");
             }
+
             ResourcesModel requiredResources = request.getResources();
+            if (requiredResources.getCpu() < requiredResources.getGpu() + requiredResources.getRam()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "You cannot schedule a request requiring more GPU and memory resources than CPU resources");
+            }
+
             ResourcesModel availableResources = resourcesInterface.getAvailableResources(
                     new DateModel(plannedDate)).getBody();
             if (!requiredResources.enoughAvailable(availableResources)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "There are not enough resources available on this date for this request.");
             }
+            resourcesInterface.updateAvailableResources(requiredResources);
             scheduleService.scheduleRequest(request);
-            resourcesInterface.updateUsedResources(requiredResources);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

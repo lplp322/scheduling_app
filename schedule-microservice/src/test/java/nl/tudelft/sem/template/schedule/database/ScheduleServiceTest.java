@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.schedule.database;
 
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
-import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.RequestRepository;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest

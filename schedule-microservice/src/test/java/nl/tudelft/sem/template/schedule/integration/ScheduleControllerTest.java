@@ -12,6 +12,7 @@ import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
+import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.cert.ocsp.Req;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,11 +45,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({"test", "mockTime", "mockScheduleService"})
+@ActiveProfiles({"test", "mockTime", "mockScheduleService", "mockResourcesInterface"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ScheduleControllerTest {
@@ -58,6 +63,9 @@ public class ScheduleControllerTest {
 
     @Autowired
     private ScheduleService mockScheduleService;
+
+    @Autowired
+    private ResourcesInterface resourcesInterface;
 
     @Test
     void scheduleRequestSuccessfully() throws Exception {
@@ -77,6 +85,9 @@ public class ScheduleControllerTest {
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
         when(mockTime.now()).thenReturn(currentDateTime);
+        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
+                ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
+        when(resourcesInterface.updateAvailableResources(resourcesModel)).thenReturn(ResponseEntity.ok().build());
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -87,6 +98,37 @@ public class ScheduleControllerTest {
                         .andReturn();
 
         Mockito.verify(mockScheduleService).scheduleRequest(requestModel);
+    }
+
+    @Test
+    void scheduleRequestWithInvalidResources() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 4;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
+        when(mockTime.now()).thenReturn(currentDateTime);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        String error = mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException().getMessage();
+
+        assertTrue(StringUtils.contains(error,
+                "You cannot schedule a request requiring more GPU and memory resources than CPU resources"));
     }
 
     @Test
@@ -167,6 +209,71 @@ public class ScheduleControllerTest {
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 25, 0, 0);
         when(mockTime.now()).thenReturn(currentDateTime);
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    void scheduleRequestNotEnoughResources() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
+        when(mockTime.now()).thenReturn(currentDateTime);
+        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
+                ResponseEntity.ok(new ResourcesModel(4, 2, 3)));
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        String error = mockMvc.perform(post("/schedule")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResolvedException().getMessage();
+
+        assertTrue(StringUtils.contains(error,
+                "There are not enough resources available on this date for this request."));
+    }
+
+    @Test
+    void scheduleRequestUpdateResourcesFails() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        int cpu = 5;
+        int gpu = 2;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 25);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelSchedule requestModel = new RequestModelSchedule(0, name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
+        when(mockTime.now()).thenReturn(currentDateTime);
+        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
+                ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
+        when(resourcesInterface.updateAvailableResources(resourcesModel)).thenThrow(
+                ResponseStatusException.class);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
