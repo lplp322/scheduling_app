@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Profile("!test")
 @FeignClient(name = "resourcesMicroservice", url = "${resources.service.url}")
 public interface ResourcesInterface {
-    @GetMapping("/available-resources")
+    @PostMapping("/get-available-resources")
     ResponseEntity<ResourcesModel> getAvailableResources(@RequestBody AvailableResourcesRequestModel request);
 
     @PostMapping("available-resources")
