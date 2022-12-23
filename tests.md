@@ -62,9 +62,13 @@
 
 ### Getting requests by faculty
 
-* Successfully getting requests
+* Successfully getting requests for EEMCS.
+
+![EEMCS requests](postman_tests/requests_by_faculty_EEMCS.png)
 
 * User not admin of the faculty
+
+![Reqeusts by faculty unauthorised](postman_tests/requests_by_faculty_unauthorised.png)
 
 ### Rejecting requests
 
