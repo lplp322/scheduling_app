@@ -10,6 +10,7 @@ import nl.tudelft.sem.resources.domain.resources.ResourceRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import nl.tudelft.sem.common.models.Node;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Clock;
 
 /**
  * Main controller for the Resources microservice.
@@ -54,7 +54,7 @@ public class ResourcesController {
         try {
             nodeRepositoryService.addNode(node, authManager.getNetId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         resourceRepositoryService.updateResourceAllocation(node);
         return new ResponseEntity(HttpStatus.OK);
@@ -71,7 +71,11 @@ public class ResourcesController {
             @RequestBody AvailableResourcesRequestModel request) {
         ResourcesModel resources;
         try {
-            resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
+            if (!request.getFaculty().equals("released")) {
+                resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
+            } else {
+                resources = resourceRepositoryService.getAvailableResources(request.getDate()); //NOPMD
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Faculty does not exist", e);
         }
@@ -99,6 +103,9 @@ public class ResourcesController {
      */
     @GetMapping("/nodes")
     public ResponseEntity<NodesResponseModel> getNodes() {
+        if (authManager.getRoles().stream().noneMatch(a -> a.equals(new SimpleGrantedAuthority("sysadmin")))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
         return ResponseEntity.ok(new NodesResponseModel(nodeRepositoryService.getAllNodes()));
     }
 
@@ -115,16 +122,5 @@ public class ResourcesController {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-    }
-
-    /** Endpoint for releasing every resource on a given day. Implementation is hacky, unsafe and can be improved.
-     *
-     * @param request release all request object.
-     * @return 200 OK if all resources could be released.
-     */
-    @PostMapping("/release-all")
-    public ResponseEntity releaseAllResources(@RequestBody ReleaseAllRequestModel request) {
-        resourceRepositoryService.releaseAll(request.getDay());
-        return new ResponseEntity(HttpStatus.OK);
     }
 }
