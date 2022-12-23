@@ -2,7 +2,9 @@ package nl.tudelft.sem.template.example.controllers;
 
 import feign.FeignException;
 import nl.tudelft.sem.common.models.RequestStatus;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.request.resources.ReleaseRequestModel;
+import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.ResourcesInterface;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
@@ -112,6 +114,27 @@ public class FacultyAdminController {
         }
         try {
             return resourcesInterface.releaseResources(request);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());
+        }
+    }
+
+    /**
+     * Check for available resources.
+     *
+     * @param request - DataTransferObject
+     * @return available resources
+     */
+    @GetMapping("/available-resources")
+    ResponseEntity<AvailableResourcesResponseModel> getAvailableResources(
+        @RequestBody AvailableResourcesRequestModel request) {
+        if (authManager == null || authManager.getRoles().stream()
+            .noneMatch(a -> a.getAuthority().contains("admin_" + request.getFaculty()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
+        try {
+            System.out.println("here");
+            return resourcesInterface.getAvailableResources(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());
         }
