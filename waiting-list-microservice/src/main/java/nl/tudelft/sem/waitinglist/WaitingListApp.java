@@ -6,8 +6,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"nl.tudelft.sem.waitinglist.external"})
-public class Application {
+public class WaitingListApp {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(WaitingListApp.class, args);
     }
 }

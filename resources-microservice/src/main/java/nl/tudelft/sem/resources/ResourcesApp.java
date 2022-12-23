@@ -9,8 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"nl.tudelft.sem.resources.feigninterfaces"})
-public class Application {
+public class ResourcesApp {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ResourcesApp.class, args);
     }
 }

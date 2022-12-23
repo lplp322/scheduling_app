@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.example.config;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
