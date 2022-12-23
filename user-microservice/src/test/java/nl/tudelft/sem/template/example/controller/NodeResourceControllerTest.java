@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
+import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.ResourcesInterface;
@@ -101,6 +103,22 @@ public class NodeResourceControllerTest {
                     .content(serialisedRequest))
                 .andExpect(result -> assertTrue(result.getResolvedException()
                     instanceof ResponseStatusException));
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testGetResourcesForTomorrow() {
+        try {
+            when(resourcesInterface.getAvailableResources(any()))
+                .thenReturn(ResponseEntity.ok(new AvailableResourcesResponseModel(1, 1, 1)));
+            mockMvc
+                .perform(get("/resources/get-resources-for-tomorrow").header("Authorization", "Bearer MockedToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("EEMCS"))
+                .andExpect(status().isOk());
         } catch (Exception e) {
             assertEquals(1, 0);
         }
