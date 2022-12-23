@@ -95,7 +95,7 @@ public class ScheduleController {
 
             ResourcesModel requiredResources = request.getResources();
             if (requiredResources.getCpu() < requiredResources.getGpu()
-                    || requiredResources.getGpu() < requiredResources.getRam()) {
+                    || requiredResources.getCpu() < requiredResources.getRam()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule a request requiring more GPU or memory resources than CPU resources");
             }
