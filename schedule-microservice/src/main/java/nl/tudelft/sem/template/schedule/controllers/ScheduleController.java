@@ -3,10 +3,14 @@ package nl.tudelft.sem.template.schedule.controllers;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
+import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
+import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,26 +39,20 @@ public class ScheduleController {
 
     private final transient TimeProvider timeProvider;
 
+    private final transient ResourcesInterface resourcesInterface;
+
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider) {
+    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider,
+                              ResourcesInterface resourcesInterface) {
         this.authManager = authManager;
         this.scheduleService = scheduleService;
         this.timeProvider = timeProvider;
-    }
-
-    /**
-     * Gets example by id.
-     *
-     * @return the example found in the database with the given id
-     */
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
+        this.resourcesInterface = resourcesInterface;
     }
 
     /**
@@ -98,12 +96,27 @@ public class ScheduleController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "You cannot schedule any requests for this date anymore.");
             }
+
+            ResourcesModel requiredResources = request.getResources();
+            if (requiredResources.getCpu() < requiredResources.getGpu()
+                    || requiredResources.getCpu() < requiredResources.getRam()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "You cannot schedule a request requiring more GPU or memory resources than CPU resources");
+            }
+
+            ResourcesModel availableResources = resourcesInterface.getAvailableResources(
+                    new AvailableResourcesRequestModel(request.getFaculty(), plannedDate)).getBody();
+            if (!requiredResources.enoughAvailable(availableResources)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "There are not enough resources available on this date for this request.");
+            }
+            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(request.getPlannedDate(),
+                    request.getFaculty(), requiredResources.getCpu(), requiredResources.getGpu(),
+                    requiredResources.getRam()));
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();
     }
-
-    //TODO: Check for enough resources and if approved, subtract used resources from resources.
 }
