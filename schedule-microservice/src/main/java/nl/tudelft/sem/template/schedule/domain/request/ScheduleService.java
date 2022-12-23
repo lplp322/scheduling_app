@@ -28,8 +28,8 @@ public class ScheduleService {
     /**
      * Get the schedule on a specific date from the repository.
      *
-     * @param date The date from which the schedule should be fethced.
-     * @return
+     * @param date The date from which the schedule should be fetched.
+     * @return The list of requests scheduled at the specific date.
      */
     public List<ScheduledRequest> getSchedule(LocalDate date) {
         return requestRepository.findByDate(date);

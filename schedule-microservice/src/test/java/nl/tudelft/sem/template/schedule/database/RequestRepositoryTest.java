@@ -115,6 +115,9 @@ public class RequestRepositoryTest {
         assertThat(requestList).containsExactlyInAnyOrder(request1, request3);
     }
 
+    /**
+     * Test if no requests are fetched from a specific date where no requests are scheduled.
+     */
     @Test
     @Transactional
     void testFindByDateEmpty() {
