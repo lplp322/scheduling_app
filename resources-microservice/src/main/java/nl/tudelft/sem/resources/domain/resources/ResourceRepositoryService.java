@@ -88,17 +88,20 @@ public class ResourceRepositoryService {
         for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
             UsedResourcesModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, from))
                     .orElse(new UsedResourcesModel(faculty, from, 0, 0, 0));
-            if (facultyUsedResources.getResources().getRam() < releasedResources.getRam()
-                    || facultyUsedResources.getResources().getGpu() < releasedResources.getGpu()
-                    || facultyUsedResources.getResources().getCpu() < releasedResources.getCpu()) {
+            if (facultyAllocatedResources.getRam() - facultyUsedResources.getResources().getRam()
+                    < releasedResources.getRam()
+                    || facultyAllocatedResources.getGpu() - facultyUsedResources.getResources().getGpu()
+                    < releasedResources.getGpu()
+                    || facultyAllocatedResources.getCpu() - facultyUsedResources.getResources().getCpu()
+                    < releasedResources.getCpu()) {
                 return false;
             }
             facultyUsedResources.getResources().setCpu(
-                    facultyUsedResources.getResources().getCpu() - releasedResources.getCpu());
+                    facultyUsedResources.getResources().getCpu() + releasedResources.getCpu());
             facultyUsedResources.getResources().setGpu(
-                    facultyUsedResources.getResources().getGpu() - releasedResources.getGpu());
+                    facultyUsedResources.getResources().getGpu() + releasedResources.getGpu());
             facultyUsedResources.getResources().setRam(
-                    facultyUsedResources.getResources().getRam() - releasedResources.getRam());
+                    facultyUsedResources.getResources().getRam() + releasedResources.getRam());
 
             UsedResourcesModel oldReleasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, from))
                     .orElse(new UsedResourcesModel(RELEASED, from, 0, 0, 0));
@@ -109,6 +112,7 @@ public class ResourceRepositoryService {
             oldReleasedResources.getResources().setRam(
                 oldReleasedResources.getResources().getRam() + releasedResources.getRam());
 
+            res.add(facultyUsedResources);
             res.add(oldReleasedResources);
         }
 
@@ -212,5 +216,15 @@ public class ResourceRepositoryService {
         ram = facultyAllocatedResources.getRam() - facultyUsedResources.getRam() + releasedResources.getRam();
 
         return new ResourcesModel(cpu, gpu, ram);
+    }
+
+    /** Method for retrieving all released resources on a date.
+     *
+     * @param date date on which to retrieve resources.
+     * @return released resources on that day.
+     */
+    public ResourcesModel getAvailableResources(LocalDate date) {
+        return usedResourceRepository.findById(new ResourceId(RELEASED, date))
+                .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources();
     }
 }

@@ -54,7 +54,7 @@ public class ResourcesController {
         try {
             nodeRepositoryService.addNode(node, authManager.getNetId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         resourceRepositoryService.updateResourceAllocation(node);
         return new ResponseEntity(HttpStatus.OK);
@@ -71,7 +71,12 @@ public class ResourcesController {
             @RequestBody AvailableResourcesRequestModel request) {
         ResourcesModel resources;
         try {
-            resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
+            if (!request.getFaculty().equals("released"))
+            {
+                resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
+            } else {
+                resources = resourceRepositoryService.getAvailableResources(request.getDate());
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Faculty does not exist", e);
         }
