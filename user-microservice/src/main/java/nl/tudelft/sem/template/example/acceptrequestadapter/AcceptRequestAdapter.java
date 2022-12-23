@@ -6,7 +6,7 @@ import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import org.springframework.http.ResponseEntity;
 
 /**
- * Main adapter class that implements AcceptRequest interface and has WaitingListInterface as parameter
+ * Main adapter class that implements AcceptRequest interface and has WaitingListInterface as parameter.
  */
 public class AcceptRequestAdapter implements AcceptRequest {
 
