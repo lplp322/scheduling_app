@@ -1,5 +1,6 @@
 package nl.tudelft.sem.waitinglist.controllers;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,6 +89,7 @@ public class WaitingListController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
         }
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         List<Request> requestListByFaculty = waitingList.getAllRequestsByFaculty(faculty);
         try {
             String json = mapper.writeValueAsString(requestListByFaculty);

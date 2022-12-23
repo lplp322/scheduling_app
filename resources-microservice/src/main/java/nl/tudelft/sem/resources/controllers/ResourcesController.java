@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import nl.tudelft.sem.common.models.Node;
@@ -66,7 +67,7 @@ public class ResourcesController {
      *                to get available resources.
      * @return the available resources of the given faculty on the given date.
      */
-    @GetMapping("/available-resources")
+    @PostMapping("/get-available-resources")
     public ResponseEntity<AvailableResourcesResponseModel> getAvailableResources(
             @RequestBody AvailableResourcesRequestModel request) {
         ResourcesModel resources;
