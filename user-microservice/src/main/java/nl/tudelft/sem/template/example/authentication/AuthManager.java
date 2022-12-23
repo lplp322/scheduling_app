@@ -20,6 +20,11 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    /**
+     * Get the roles of the user making the request to check if the user is authorized.
+     *
+     * @return The roles that the user has.
+     */
     public Collection<? extends GrantedAuthority> getRoles() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities();
     }
