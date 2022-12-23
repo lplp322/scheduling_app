@@ -74,7 +74,15 @@
 
 * Successfully rejecting requests
 
+![Rejection successful](postman_tests/reject_success.png)
+
+![Rejected request status](postman_tests/reject_status.png)
+
 * User not admin of the faculty
+
+![Rejection unauthorised](postman_tests/reject_unauthorised.png)
+
+![Request still pending](postman_tests/reject_unauthorised_status.png)
 
 * Request not in waiting list
 
