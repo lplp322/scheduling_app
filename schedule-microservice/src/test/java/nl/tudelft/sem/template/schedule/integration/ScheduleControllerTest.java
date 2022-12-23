@@ -10,6 +10,8 @@ import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
@@ -85,9 +87,10 @@ public class ScheduleControllerTest {
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
         when(mockTime.now()).thenReturn(currentDateTime);
-        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
-                ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
-        when(resourcesInterface.updateAvailableResources(resourcesModel)).thenReturn(ResponseEntity.ok().build());
+        when(resourcesInterface.getAvailableResources(new AvailableResourcesRequestModel(faculty, deadline)))
+                .thenReturn(ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
+        when(resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(deadline,
+                faculty, cpu, gpu, ram))).thenReturn(ResponseEntity.ok().build());
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -237,8 +240,8 @@ public class ScheduleControllerTest {
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
         when(mockTime.now()).thenReturn(currentDateTime);
-        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
-                ResponseEntity.ok(new ResourcesModel(4, 2, 3)));
+        when(resourcesInterface.getAvailableResources(new AvailableResourcesRequestModel(faculty, deadline)))
+                .thenReturn(ResponseEntity.ok(new ResourcesModel(4, 2, 3)));
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 
@@ -270,10 +273,10 @@ public class ScheduleControllerTest {
 
         LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 24, 23, 55);
         when(mockTime.now()).thenReturn(currentDateTime);
-        when(resourcesInterface.getAvailableResources(new DateModel(deadline))).thenReturn(
-                ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
-        when(resourcesInterface.updateAvailableResources(resourcesModel)).thenThrow(
-                ResponseStatusException.class);
+        when(resourcesInterface.getAvailableResources(new AvailableResourcesRequestModel(faculty, deadline)))
+                .thenReturn(ResponseEntity.ok(new ResourcesModel(5, 2, 3)));
+        when(resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(deadline,
+                faculty, cpu, gpu, ram))).thenThrow(ResponseStatusException.class);
 
         String serialised = objectMapper.writeValueAsString(requestModel);
 

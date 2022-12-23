@@ -4,6 +4,8 @@ import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
@@ -98,12 +100,14 @@ public class ScheduleController {
             }
 
             ResourcesModel availableResources = resourcesInterface.getAvailableResources(
-                    new DateModel(plannedDate)).getBody();
+                    new AvailableResourcesRequestModel(request.getFaculty(), plannedDate)).getBody();
             if (!requiredResources.enoughAvailable(availableResources)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "There are not enough resources available on this date for this request.");
             }
-            resourcesInterface.updateAvailableResources(requiredResources);
+            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(request.getPlannedDate(),
+                    request.getFaculty(), requiredResources.getCpu(), requiredResources.getGpu(),
+                    requiredResources.getRam()));
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

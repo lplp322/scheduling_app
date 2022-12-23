@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.schedule.external;
 
 import nl.tudelft.sem.common.models.request.DateModel;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -15,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Profile("!test")
 @FeignClient(name = "resourcesMicroservice", url = "${resources.service.url}")
 public interface ResourcesInterface {
-    //TODO: Use real endpoints!
     @GetMapping("/available-resources")
-    ResponseEntity<ResourcesModel> getAvailableResources(@RequestBody DateModel request);
+    ResponseEntity<ResourcesModel> getAvailableResources(@RequestBody AvailableResourcesRequestModel request);
 
     @PostMapping("available-resources")
-    ResponseEntity updateAvailableResources(@RequestBody ResourcesModel request);
+    ResponseEntity updateAvailableResources(@RequestBody UpdateAvailableResourcesRequestModel request);
 }
