@@ -17,6 +17,9 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     @Query(value = "SELECT p FROM Request p WHERE p.id = ?1")
     Request getRequestById(Long id);
 
+    @Query(value = "SELECT p FROM Request p WHERE p.deadline = ?1 ORDER BY p.id ASC")
+    List<Request> getAllRequestsByDeadline(LocalDate deadline);
+
     @Transactional
     List<Request> deleteByDeadline(LocalDate deadline);
 }
