@@ -19,6 +19,9 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Tests for the integration of the database with the microservice.
+ */
 @DataJpaTest
 @ActiveProfiles({"test"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -33,6 +36,9 @@ public class RequestRepositoryTest {
     ScheduledRequest request4;
     ScheduledRequest request5;
 
+    /**
+     * Set up a few request to use in testing the repository by saving and fetching them.
+     */
     @BeforeEach
     void setup() {
         //Request 1
@@ -96,6 +102,9 @@ public class RequestRepositoryTest {
                 gpuUsage5, memoryUsage5, deadline5);
     }
 
+    /**
+     * Test if the right requests are fetched from a specific date.
+     */
     @Test
     @Transactional
     void testFindByDate() {

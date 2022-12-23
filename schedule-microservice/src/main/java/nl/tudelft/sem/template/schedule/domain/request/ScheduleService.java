@@ -25,6 +25,12 @@ public class ScheduleService {
         this.requestRepository = requestRepository;
     }
 
+    /**
+     * Get the schedule on a specific date from the repository.
+     *
+     * @param date The date from which the schedule should be fethced.
+     * @return
+     */
     public List<ScheduledRequest> getSchedule(LocalDate date) {
         return requestRepository.findByDate(date);
     }
