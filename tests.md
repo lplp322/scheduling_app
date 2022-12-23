@@ -155,3 +155,21 @@
 ### Adding a node with same name
 
 ![Adding a node with same name](postman_tests/add_node_same_name.png)
+
+## Releasing resources
+
+### Successfully releasing resources
+
+![IDE resources before releasing](postman_tests/release_ide_before.png)
+
+![Releasing EEMCS resources](postman_tests/release_eemcs_success.png)
+
+![IDE resources after releasing](postman_tests/release_ide_after.png)
+
+### Releasing more than available resources
+
+![EEMCS resources before releasing](postman_tests/release_eemcs_before.png)
+
+![Failed release attempt](postman_tests/release_not_enough_resources.png)
+
+![EEMCS resources after failed release attempt](postman_tests/release_eemcs_before.png)
