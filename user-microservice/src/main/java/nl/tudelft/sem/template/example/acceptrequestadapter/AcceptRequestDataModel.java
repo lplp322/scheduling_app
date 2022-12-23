@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data model that is used by FacultyAdminController and AcceptRequest interface
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
