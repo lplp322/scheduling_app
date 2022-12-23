@@ -14,6 +14,7 @@ import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.waitinglist.authentication.AuthManager;
+
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.WaitingList;
 import nl.tudelft.sem.waitinglist.external.SchedulerService;
@@ -80,7 +81,7 @@ public class WaitingListController {
      * @param faculty - String - faculty for which the request is.
      * @return String - list of all the pending requests for the faculty mapped to JSON format.
      */
-    @GetMapping("/get-requests-by-faculty")
+    @PostMapping("/get-requests-by-faculty")
     public ResponseEntity<String> getRequestsByFaculty(@RequestBody String faculty) {
         if (authManager == null || authManager.getRoles().stream()
             .noneMatch(a -> a.getAuthority().contains("admin_" + faculty))) {
@@ -134,14 +135,14 @@ public class WaitingListController {
                     .noneMatch(a -> a.getAuthority().contains("admin_" + acceptedRequest.getFaculty())))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");
             }
-            LocalDate currentDate = LocalDate.ofInstant(clock.instant(), clock.getZone());
-            acceptedRequest.setPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
-                    .asText()), currentDate);
             ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),
                     acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam());
             RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),
                     acceptedRequest.getName(), acceptedRequest.getDescription(),
-                    acceptedRequest.getFaculty(), resourcesModel, acceptedRequest.getPlannedDate());
+                    acceptedRequest.getFaculty(), resourcesModel,
+                    Request.checkPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
+                    .asText()), LocalDate.ofInstant(clock.instant(),
+                    clock.getZone()), acceptedRequest.getDeadline()));
             if (schedulerService.scheduleRequest(requestModelSchedule).getStatusCode() == HttpStatus.OK) {
                 waitingList.removeRequest(id);
                 return ResponseEntity.ok().build();
@@ -152,6 +153,5 @@ public class WaitingListController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-
 
 }

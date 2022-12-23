@@ -9,17 +9,19 @@ import java.time.ZoneOffset;
 import nl.tudelft.sem.common.models.ChangeRequestStatus;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
+import nl.tudelft.sem.waitinglist.external.SchedulerService;
 import nl.tudelft.sem.waitinglist.external.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -35,6 +37,8 @@ class SingleTableWaitingListTest {
     private Clock clock;
     @MockBean
     private UserService userService;
+    @MockBean
+    private SchedulerService schedulerService;
     private Request request;
 
     @BeforeEach
@@ -194,5 +198,215 @@ class SingleTableWaitingListTest {
     void requestNullId() {
         assertThatThrownBy(() -> waitingList.removeRequest(null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getAllRequestsWithDeadlineSingle() {
+        String name2 = "name2";
+        String description2 = "description2";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 15);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
+        Request request2 = new Request(name2, description2, faculty, resources, deadline, currentDateTime);
+        repo.save(request2);
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 15)).get(0).getId())
+                .isEqualTo(request2.getId());
+    }
+
+    @Test
+    void getAllRequestsWithDeadlineMultiple() {
+        String name2 = "name2";
+        String description2 = "description2";
+        String faculty = "ewi";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 17);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 23, 22);
+        Request request2 = new Request(name2, description2, faculty, resources, deadline, currentDateTime);
+        String name3 = "name3";
+        String description3 = "description3";
+        Resources resources3 = new Resources(6, 5, 1);
+        LocalDate deadline3 = LocalDate.of(2022, 12, 17);
+        Request request3 = new Request(name3, description3, faculty, resources3, deadline3, currentDateTime);
+        repo.save(request);
+        repo.save(request2);
+        repo.save(request3);
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 17)).get(0).getId())
+                .isEqualTo(request2.getId());
+        assertThat(repo.getAllRequestsByDeadline(LocalDate.of(2022, 12, 17)).get(1).getId())
+                .isEqualTo(request3.getId());
+
+    }
+
+    @Test
+    void tryToScheduleInLastSixHoursMultiple() {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "faculty2";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 13, 19, 22);
+
+        // ID 1: deadline 15
+        repo.save(request);
+        Long id1 = repo.save(request).getId();
+
+        // ID 2: deadline 14
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        Long id2 = repo.save(request2).getId();
+
+        // ID 3: deadline 14
+        Request request3 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        repo.save(request3);
+        Long id3 = repo.save(request3).getId();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        // Current date: 13
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        waitingList.tryToScheduleInLastSixHours();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isFalse();
+        assertThat(repo.existsById(id3)).isFalse();
+
+        verify(schedulerService, times(2)).scheduleRequest(any());
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id1, RequestStatus.ACCEPTED));
+        verify(userService, times(1)).changeRequestStatus(new ChangeRequestStatus(id2, RequestStatus.ACCEPTED));
+        verify(userService, times(1)).changeRequestStatus(new ChangeRequestStatus(id3, RequestStatus.ACCEPTED));
+    }
+
+    @Test
+    void tryToScheduleInLastSixHoursSingle() {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "faculty2";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 13, 19, 22);
+
+        // ID 1: deadline 15
+        repo.save(request);
+        Long id1 = repo.save(request).getId();
+
+        // ID 2: deadline 14
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        Long id2 = repo.save(request2).getId();
+
+        // ID 3: deadline 17
+        Request request3 = new Request(name, description, faculty, resources,
+                deadline.plusDays(3), currentDateTime.plusDays(3));
+        repo.save(request3);
+        Long id3 = repo.save(request3).getId();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        // Current date: 13
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        waitingList.tryToScheduleInLastSixHours();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isFalse();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        verify(schedulerService, times(1)).scheduleRequest(any());
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id1, RequestStatus.ACCEPTED));
+        verify(userService, times(1)).changeRequestStatus(new ChangeRequestStatus(id2, RequestStatus.ACCEPTED));
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id3, RequestStatus.ACCEPTED));
+    }
+
+    @Test
+    void tryToScheduleInLastSixHoursSchedulerFull() {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "faculty2";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 13, 19, 22);
+
+        // ID 1: deadline 15
+        repo.save(request);
+        Long id1 = repo.save(request).getId();
+
+        // ID 2: deadline 14
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        Long id2 = repo.save(request2).getId();
+
+        // ID 3: deadline 14
+        Request request3 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        repo.save(request3);
+        Long id3 = repo.save(request3).getId();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        // Current date: 13
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        waitingList.tryToScheduleInLastSixHours();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id1, RequestStatus.ACCEPTED));
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id2, RequestStatus.ACCEPTED));
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id3, RequestStatus.ACCEPTED));
+    }
+
+    @Test
+    void tryToScheduleInLastSixHoursSchedulerFullCheckOnlySmallerRequests() {
+        String name = "name2";
+        String description = "description2";
+        String faculty = "faculty2";
+        Resources resources = new Resources(6, 5, 1);
+        LocalDate deadline = LocalDate.of(2022, 12, 14);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 13, 19, 22);
+
+        // ID 1: deadline 15
+        repo.save(request);
+        Long id1 = repo.save(request).getId();
+
+        // ID 2: deadline 14
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        Long id2 = repo.save(request2).getId();
+
+        // ID 3: deadline 14
+        Request request3 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+        repo.save(request3);
+        Long id3 = repo.save(request3).getId();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        // Current date: 13
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        waitingList.tryToScheduleInLastSixHours();
+
+        assertThat(repo.existsById(id1)).isTrue();
+        assertThat(repo.existsById(id2)).isTrue();
+        assertThat(repo.existsById(id3)).isTrue();
+
+        verify(schedulerService, times(1)).scheduleRequest(any());
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id1, RequestStatus.ACCEPTED));
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id2, RequestStatus.ACCEPTED));
+        verify(userService, never()).changeRequestStatus(new ChangeRequestStatus(id3, RequestStatus.ACCEPTED));
     }
 }

@@ -1,5 +1,6 @@
 package nl.tudelft.sem.waitinglist.domain;
 
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.List;
 
@@ -45,4 +46,5 @@ public interface WaitingList {
      * @return request associated with the given id number
      */
     public Request getRequestById(Long id);
+
 }
