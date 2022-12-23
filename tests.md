@@ -137,3 +137,21 @@
 ## Getting all requests of user
 
 ![All user requests](postman_tests/user_all_requests.png)
+
+## Adding a node
+
+### Successfully adding a node
+
+![EEMCS resources before new node](postman_tests/add_node_eemcs_resources_before.png)
+
+![IDE resources before new node](postman_tests/add_node_ide_resources.png)
+
+![Add new node to EEMCS](postman_tests/add_node_success.png)
+
+![EEMCS resources after new node](postman_tests/add_node_eemcs_resources_after.png)
+
+![IDE resources after new node](postman_tests/add_node_ide_resources.png)
+
+### Adding a node with same name
+
+![Adding a node with same name](postman_tests/add_node_same_name.png)
