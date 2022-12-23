@@ -11,8 +11,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EntityScan
 @EnableFeignClients(basePackages = {"nl.tudelft.sem.template.example.feigninterfaces"})
-public class Application {
+public class UserApp {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(UserApp.class, args);
     }
 }

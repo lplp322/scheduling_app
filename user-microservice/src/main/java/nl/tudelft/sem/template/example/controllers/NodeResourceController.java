@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
 import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
-import nl.tudelft.sem.template.example.GetDate;
+import nl.tudelft.sem.template.example.config.GetDate;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.ResourcesInterface;
 import org.springframework.beans.factory.annotation.Autowired;
