@@ -5,15 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
+import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
 import nl.tudelft.sem.common.models.request.resources.ReleaseRequestModel;
+import nl.tudelft.sem.common.models.response.AddResponseModel;
+import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.ResourcesInterface;
@@ -120,6 +126,49 @@ public class ReleaseResourceFacultyAdminTest {
                 .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Here"));
             mockMvc
                 .perform(post("/faculty-admin/release-resources").header("Authorization", "Bearer MockedToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(serialisedRequest))
+                .andExpect(result -> assertTrue(result.getResolvedException()
+                    instanceof ResponseStatusException));
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void checkResources() {
+        AvailableResourcesRequestModel request =
+            new AvailableResourcesRequestModel("EEMCS", LocalDate.parse("2023-01-01"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            String serialisedRequest = objectMapper.writeValueAsString(request);
+            when(resourcesInterface.getAvailableResources(any()))
+                .thenReturn(ResponseEntity.ok(new AvailableResourcesResponseModel(1, 1, 1)));
+            mockMvc
+                .perform(get("/faculty-admin/available-resources").header("Authorization", "Bearer MockedToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(serialisedRequest))
+                .andExpect(status().isOk());
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void checkResourcesExeption() {
+        AvailableResourcesRequestModel request =
+            new AvailableResourcesRequestModel("EEMCS", LocalDate.parse("2023-01-01"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            String serialisedRequest = objectMapper.writeValueAsString(request);
+            when(resourcesInterface.getAvailableResources(any()))
+                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Check"));
+            mockMvc
+                .perform(get("/faculty-admin/available-resources").header("Authorization", "Bearer MockedToken")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(serialisedRequest))
                 .andExpect(result -> assertTrue(result.getResolvedException()

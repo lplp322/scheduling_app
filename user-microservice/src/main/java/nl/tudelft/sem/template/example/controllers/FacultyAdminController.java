@@ -133,7 +133,6 @@ public class FacultyAdminController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
         }
         try {
-            System.out.println("here");
             return resourcesInterface.getAvailableResources(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e.getCause());
