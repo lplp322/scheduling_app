@@ -3,12 +3,12 @@ package nl.tudelft.sem.waitinglist.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import aj.org.objectweb.asm.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
@@ -27,20 +26,21 @@ import nl.tudelft.sem.waitinglist.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.waitinglist.database.RequestRepository;
 import nl.tudelft.sem.waitinglist.domain.Request;
 import nl.tudelft.sem.waitinglist.domain.Resources;
+import nl.tudelft.sem.waitinglist.external.SchedulerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.web.JsonPath;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -61,6 +61,10 @@ class WaitingListControllerTest {
 
     @Autowired
     private transient AuthManager mockAuthenticationManager;
+
+    @MockBean
+    private SchedulerService schedulerService;
+
 
     /**
      * Configuration before tests.
@@ -233,7 +237,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                         .andExpect(status().isOk())
@@ -264,7 +268,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                 .andExpect(status().isOk())
@@ -290,7 +294,7 @@ class WaitingListControllerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
 
-        MvcResult result = mockMvc.perform(get("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+        MvcResult result = mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("EEMCS"))
                 .andExpect(status().isOk())
@@ -352,5 +356,154 @@ class WaitingListControllerTest {
 
         assertThat(repo.existsById(1L)).isFalse();
         assertThat(repo.existsById(2L)).isTrue();
+    }
+
+    @Test
+    void acceptRequestNoSuchId() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 2, "
+                                + "\"plannedDate\": \"2023-12-10\" "
+                                + "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+
+    @Test
+    void acceptRequestAccepted() throws Exception {
+        String name = "John";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+        assertThat(repo.existsById(1L)).isTrue();
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2023-12-10\" "
+                                + "}"))
+                .andExpect(status().isOk());
+        assertThat(repo.existsById(1L)).isFalse();
+    }
+
+    @Test
+    void acceptRequestDatePassedDeadline() throws Exception {
+        String name = "name";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2023-12-10\" "
+                                + "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+
+    @Test
+    void acceptRequestDateBeforeCurrentDate() throws Exception {
+        String name = "John";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2022-12-09\" "
+                                + "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
+    }
+
+    @Test
+    void acceptRequestSchedulerRejects() throws Exception {
+        String name = "John";
+        String description = "description";
+        String faculty = "EEMCS";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2022-12-23\" "
+                                + "}"))
+                .andExpect(status().isBadRequest());
+
+        assertThat(repo.existsById(1L)).isTrue();
     }
 }

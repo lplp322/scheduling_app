@@ -1,22 +1,27 @@
 package nl.tudelft.sem.template.example.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import nl.tudelft.sem.common.models.ChangeRequestStatus;
+import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
+import nl.tudelft.sem.template.example.requests.RequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -47,6 +52,9 @@ public class FacultyAdminControllerTest {
     @MockBean
     private WaitingListInterface waitingListInterface;
 
+    @MockBean
+    private RequestService requestService;
+
     @Autowired
     private transient JwtTokenVerifier mockJwtTokenVerifier;
 
@@ -69,38 +77,90 @@ public class FacultyAdminControllerTest {
 
     @Test
     @Transactional
-    public void testDeleteRequest() {
-        RequestModelWaitingList request = new RequestModelWaitingList();
-        request.setName("John");
-        request.setFaculty("EEMCS");
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        try {
-            String serialisedRequest = objectMapper.writeValueAsString(request);
-            when(waitingListInterface.addRequest(any())).thenReturn(ResponseEntity.ok(new AddResponseModel(1L)));
-            mockMvc
-                .perform(post("/request").header("Authorization", "Bearer MockedToken")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(serialisedRequest))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Your request was created. Request ID: 1"));
-        } catch (Exception e) {
-            assertEquals(1, 0);
-        }
+    public void testDeleteRequestApproved() {
         try {
             when(waitingListInterface.rejectRequest(1L)).thenReturn(ResponseEntity.ok("Yes"));
             mockMvc.perform(delete("/faculty-admin/reject-request").header("Authorization", "Bearer MockedToken")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("1")).andExpect(status().isOk());
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("1")).andExpect(status().isOk());
+            verify(requestService, times(1)).updateRequestStatus(1L, RequestStatus.REJECTED);
         } catch (Exception e) {
             assertEquals(1, 0);
         }
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteRequestRejected() {
         try {
             when(waitingListInterface.rejectRequest(1L)).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST));
             mockMvc.perform(delete("/faculty-admin/reject-request").header("Authorization", "Bearer MockedToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("1")).andExpect(result -> assertTrue(result.getResolvedException()
                 instanceof ResponseStatusException));
+            verify(requestService, never()).updateRequestStatus(1L, RequestStatus.REJECTED);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testAcceptedRequestAccepted() {
+        try {
+            when(waitingListInterface.acceptRequest(any())).thenReturn(ResponseEntity.ok("Yes"));
+            mockMvc.perform(post("/faculty-admin/accept-request").header("Authorization", "Bearer MockedToken")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{"
+                                    + "\"id\": 1, "
+                                    + "\"plannedDate\": \"2022-12-23\" "
+                                    + "}"))
+                    .andExpect(status().isOk());
+            verify(requestService, times(1)).updateRequestStatus(1L, RequestStatus.ACCEPTED);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testAcceptedRequestRejected() {
+        try {
+            when(waitingListInterface.acceptRequest(any())).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST));
+            mockMvc.perform(post("/faculty-admin/accept-request").header("Authorization", "Bearer MockedToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{"
+                            + "\"id\": 1, "
+                            + "\"plannedDate\": \"2022-12-23\" "
+                            + "}"))
+                    .andExpect(result -> assertTrue(result.getResolvedException()
+                    instanceof ResponseStatusException));
+            verify(requestService, never()).updateRequestStatus(1L, RequestStatus.ACCEPTED);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testGetRequestByFaculty() {
+        try {
+            when(waitingListInterface.getRequestsByFaculty(any())).thenReturn(ResponseEntity.ok("string"));
+            mockMvc.perform(get("/faculty-admin/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("faculty"))
+                    .andExpect(status().isOk());
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+        try {
+            when(waitingListInterface.getRequestsByFaculty(any()))
+                    .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST));
+            mockMvc.perform(get("/faculty-admin/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("wrong faculty"))
+                    .andExpect(result -> assertTrue(result.getResolvedException()
+                            instanceof ResponseStatusException));
         } catch (Exception e) {
             assertEquals(1, 0);
         }

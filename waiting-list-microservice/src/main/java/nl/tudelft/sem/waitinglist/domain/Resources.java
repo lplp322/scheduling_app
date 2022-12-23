@@ -59,4 +59,18 @@ public class Resources {
     public Resources(@NonNull ResourcesModel resourcesModel) {
         this(resourcesModel.getCpu(), resourcesModel.getGpu(), resourcesModel.getRam());
     }
+
+    /**
+     * Checks if the resources are smaller than a specific resource.
+     *
+     * @param other - Resources - resources which is compared.
+     * @return boolean - false if not smaller
+     */
+    public boolean isResourceSmaller(Resources other) {
+        if (this.cpu >= other.getCpu() && this.gpu >= other.getGpu() && this.ram >= other.getRam()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
