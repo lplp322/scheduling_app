@@ -107,7 +107,7 @@ public class Request {
     public static LocalDate checkPlannedDate(LocalDate plannedDate, LocalDate currentDate, LocalDate deadline) {
         if (plannedDate.isAfter(deadline)) {
             throw new IllegalArgumentException("Planned date is after deadline");
-        } else if (plannedDate.isBefore(currentDate)) {
+        } else if (!plannedDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Current date is after the planned date");
         } else {
             return plannedDate;
