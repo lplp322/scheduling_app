@@ -71,4 +71,31 @@ class ResourcesTest {
         assertThat(resources.getGpu()).isEqualTo(5);
         assertThat(resources.getRam()).isEqualTo(1);
     }
+
+    @Test
+    void isResourceSmallerTrue() {
+        ResourcesModel resourcesModel = new ResourcesModel(6, 5, 2);
+        Resources resources = new Resources(resourcesModel);
+        ResourcesModel resourcesModel2 = new ResourcesModel(4, 3, 1);
+        Resources resources2 = new Resources(resourcesModel2);
+        assertThat(resources2.isResourceSmaller(resources)).isTrue();
+    }
+
+    @Test
+    void isResourceSmallerFalse() {
+        ResourcesModel resourcesModel = new ResourcesModel(6, 5, 2);
+        Resources resources = new Resources(resourcesModel);
+        ResourcesModel resourcesModel2 = new ResourcesModel(4, 3, 1);
+        Resources resources2 = new Resources(resourcesModel2);
+        assertThat(resources.isResourceSmaller(resources2)).isFalse();
+    }
+
+    @Test
+    void isResourceSmallerEqual() {
+        ResourcesModel resourcesModel = new ResourcesModel(6, 5, 2);
+        Resources resources = new Resources(resourcesModel);
+        ResourcesModel resourcesModel2 = new ResourcesModel(6, 5, 2);
+        Resources resources2 = new Resources(resourcesModel2);
+        assertThat(resources.isResourceSmaller(resources2)).isFalse();
+    }
 }

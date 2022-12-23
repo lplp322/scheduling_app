@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import nl.tudelft.sem.common.models.RequestStatus;
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 
@@ -43,10 +44,6 @@ public class Request {
     @Getter
     private LocalDate deadline;
 
-    @Column(name = "planned_date")
-    @Getter
-    private LocalDate plannedDate;
-
     @Column(name = "status")
     @Getter
     private RequestStatus status;
@@ -54,11 +51,11 @@ public class Request {
     /**
      * Creates a new request object.
      *
-     * @param name request name
+     * @param name        request name
      * @param description request description
-     * @param faculty request faculty
-     * @param resources requested resources
-     * @param deadline request deadline
+     * @param faculty     request faculty
+     * @param resources   requested resources
+     * @param deadline    request deadline
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
                    @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
@@ -100,5 +97,20 @@ public class Request {
     public Request(@NonNull RequestModelWaitingList requestModel, @NonNull LocalDateTime currentDateTime) {
         this(requestModel.getName(), requestModel.getDescription(), requestModel.getFaculty(),
                 new Resources(requestModel.getResources()), requestModel.getDeadline(), currentDateTime);
+    }
+
+    /**
+     * Sets the planned date of a request.
+     *
+     * @param plannedDate - date on which the request is planned.
+     */
+    public static LocalDate checkPlannedDate(LocalDate plannedDate, LocalDate currentDate, LocalDate deadline) {
+        if (plannedDate.isAfter(deadline)) {
+            throw new IllegalArgumentException("Planned date is after deadline");
+        } else if (!plannedDate.isAfter(currentDate)) {
+            throw new IllegalArgumentException("Current date is after the planned date");
+        } else {
+            return plannedDate;
+        }
     }
 }
