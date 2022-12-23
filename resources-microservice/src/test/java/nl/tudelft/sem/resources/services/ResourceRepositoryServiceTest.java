@@ -86,7 +86,7 @@ class ResourceRepositoryServiceTest {
     }
 
     @Test
-    void releaseAll() throws MalformedURLException{
+    void releaseAll() throws MalformedURLException {
         resourceRepositoryService.updateResourceAllocation(node);
         Node node2 = new Node("node2", new URL("http://localhost"), "token2", new ResourcesModel(8, 2, 2), "IDE");
         resourceRepositoryService.updateResourceAllocation(node2);
@@ -94,7 +94,8 @@ class ResourceRepositoryServiceTest {
         Optional<UsedResourcesModel> released = usedResourceRepository.findById(new ResourceId("released", LocalDate.now()));
         assertTrue(released.isPresent());
         assertEquals(new ResourcesModel(18, 8, 6), released.get().getResources());
-        assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
+        assertEquals(new ResourcesModel(18, 8, 6),
+                resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
         assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
     }
 
@@ -103,15 +104,21 @@ class ResourceRepositoryServiceTest {
         resourceRepositoryService.updateResourceAllocation(node);
         Node node2 = new Node("node2", new URL("http://localhost"), "token2", new ResourcesModel(8, 2, 2), "IDE");
         resourceRepositoryService.updateResourceAllocation(node2);
-        assertEquals(new ResourcesModel(10, 6, 4), resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
+        assertEquals(new ResourcesModel(10, 6, 4),
+                resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
         assertEquals(new ResourcesModel(8, 2, 2), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
         assertTrue(resourceRepositoryService.releaseResources(
                 new ResourcesModel(4, 2, 2), "EEMCS", LocalDate.now(), LocalDate.now().plusDays(3)));
-        assertEquals(new ResourcesModel(10, 6, 4), resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
-        assertEquals(new ResourcesModel(12, 4, 4), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
-        assertEquals(new ResourcesModel(10, 6, 4), resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now().plusDays(3)));
-        assertEquals(new ResourcesModel(12, 4, 4), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now().plusDays(3)));
-        assertEquals(new ResourcesModel(8, 2, 2), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now().plusDays(4)));
+        assertEquals(new ResourcesModel(10, 6, 4),
+                resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
+        assertEquals(new ResourcesModel(12, 4, 4),
+                resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
+        assertEquals(new ResourcesModel(10, 6, 4),
+                resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now().plusDays(3)));
+        assertEquals(new ResourcesModel(12, 4, 4),
+                resourceRepositoryService.getAvailableResources("IDE", LocalDate.now().plusDays(3)));
+        assertEquals(new ResourcesModel(8, 2, 2),
+                resourceRepositoryService.getAvailableResources("IDE", LocalDate.now().plusDays(4)));
     }
 
 

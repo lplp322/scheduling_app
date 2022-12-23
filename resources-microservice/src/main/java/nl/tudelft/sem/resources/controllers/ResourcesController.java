@@ -74,7 +74,7 @@ public class ResourcesController {
             if (!request.getFaculty().equals("released")) {
                 resources = resourceRepositoryService.getAvailableResources(request.getFaculty(), request.getDate()); //NOPMD
             } else {
-                resources = resourceRepositoryService.getAvailableResources(request.getDate());
+                resources = resourceRepositoryService.getAvailableResources(request.getDate()); //NOPMD
             }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Faculty does not exist", e);
