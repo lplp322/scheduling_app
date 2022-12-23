@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.getrequestadapter;
+package nl.tudelft.sem.template.example.acceptrequestadapter;
 
 import org.springframework.http.ResponseEntity;
 

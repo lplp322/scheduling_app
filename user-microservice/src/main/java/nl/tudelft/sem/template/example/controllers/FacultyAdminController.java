@@ -1,13 +1,11 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import feign.FeignException;
 import nl.tudelft.sem.common.models.RequestStatus;
-import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
-import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequest;
-import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequestAdapter;
-import nl.tudelft.sem.template.example.getrequestadapter.AcceptRequestDataModel;
+import nl.tudelft.sem.template.example.acceptrequestadapter.AcceptRequest;
+import nl.tudelft.sem.template.example.acceptrequestadapter.AcceptRequestAdapter;
+import nl.tudelft.sem.template.example.acceptrequestadapter.AcceptRequestDataModel;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,5 @@
-package nl.tudelft.sem.template.example.getrequestadapter;
+package nl.tudelft.sem.template.example.acceptrequestadapter;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
