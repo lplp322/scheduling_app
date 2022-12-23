@@ -6,6 +6,7 @@ import nl.tudelft.sem.resources.database.ResourceAllocationRepository;
 import nl.tudelft.sem.resources.database.UsedResourceRepository;
 import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +38,11 @@ public class ResourceRepositoryService {
         allocatedResources.getResources().setGpu(allocatedResources.getResources().getGpu() + node.getResources().getGpu());
         allocatedResources.getResources().setRam(allocatedResources.getResources().getRam() + node.getResources().getRam());
         resourceAllocationRepository.save(allocatedResources);
+    }
+
+    @Scheduled(cron = "59 59 17 * * *")
+    private void releaseDaily() {
+        releaseAll(LocalDate.now().plusDays(1));
     }
 
     /** Releases all remaining resources for a specific day, to be used when 6 hours are left until the next day.
