@@ -79,15 +79,32 @@ public class RequestReceivingController {
             Exception e = new Exception("Unsupported type of body for this request");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
+        return createRequest(httpRequest, requestCreator);
+    }
 
+    private ResponseEntity<String> createRequest(HttpServletRequest httpRequest,
+                                                 RequestModelCreatorStrategy requestCreator) {
         try {
             //create request model from httpRequest
-            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest); //NOPMD
-            if (authManager == null || !authManager.getNetId().equals(request.getName())
-                    || authManager.getRoles().stream().noneMatch(a ->
-                    a.getAuthority().contains("employee_" + request.getFaculty()))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to submit this request.");
-            }
+            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest);
+            checkAuthorization(request);
+            return contactWaitingList(request);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Your request was raising an exception: " + ex.getMessage(), ex);
+        }
+    }
+
+    private void checkAuthorization(RequestModelWaitingList request) {
+        if (authManager == null || !authManager.getNetId().equals(request.getName())
+            || authManager.getRoles().stream().noneMatch(a ->
+            a.getAuthority().contains("employee_" + request.getFaculty()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to submit this request.");
+        }
+    }
+
+    private ResponseEntity<String> contactWaitingList(RequestModelWaitingList request) {
+        try {
             //contact WaitingList microservice
             ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
             if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
@@ -96,11 +113,8 @@ public class RequestReceivingController {
             }
             return ResponseEntity.ok("Your request returned: " + waitingListResponse.getStatusCode()
                 + " With body: " + waitingListResponse.getBody());
-        } catch (ResponseStatusException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Your request was raising an exception: " + e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
