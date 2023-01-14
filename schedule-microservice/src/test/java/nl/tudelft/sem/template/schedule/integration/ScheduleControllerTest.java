@@ -404,7 +404,7 @@ public class ScheduleControllerTest {
                         .header("Authorization", "Bearer MockedToken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialised))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andReturn().getResolvedException().getMessage();
 
         // Assert that the correct error message is send.
