@@ -56,36 +56,17 @@ public class Request {
      * @param faculty     request faculty
      * @param resources   requested resources
      * @param deadline    request deadline
+     *
+     * @throws IllegalArgumentException if one of the arguments is invalid
      */
     public Request(@NonNull String name, @NonNull String description, @NonNull String faculty,
                    @NonNull Resources resources, LocalDate deadline, @NonNull LocalDateTime currentDateTime) {
 
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("Request name cannot be blank");
-        }
-        if (description.isBlank()) {
-            throw new IllegalArgumentException("Request description cannot be blank");
-        }
-        if (faculty.isBlank()) {
-            throw new IllegalArgumentException("Request faculty cannot be blank");
-        }
-        if (deadline != null) {
-            LocalDate currentDate = currentDateTime.toLocalDate();
-            if (!deadline.isAfter(currentDate)) {
-                throw new IllegalArgumentException("Deadline cannot be in the past");
-            }
-            if (deadline.isEqual(currentDate.plusDays(1))
-                    && !currentDateTime.isBefore(currentDate.atTime(23, 55))) {
-                throw new IllegalArgumentException("Deadline cannot be set to next day "
-                        + "less than 5 minutes before start of day");
-            }
-        }
-
-        this.name = name;
-        this.description = description;
-        this.faculty = faculty;
+        this.name = RequestValidator.validateName(name);
+        this.description = RequestValidator.validateDescription(description);
+        this.faculty = RequestValidator.validateFaculty(faculty);
         this.resources = resources;
-        this.deadline = deadline;
+        this.deadline = RequestValidator.validateDeadline(deadline, currentDateTime);
         this.status = RequestStatus.PENDING;
     }
 
