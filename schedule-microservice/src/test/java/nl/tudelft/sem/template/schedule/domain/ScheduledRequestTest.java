@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.schedule.domain;
 
+import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
@@ -19,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ScheduledRequestTest {
 
     ScheduledRequest request;
+
+    RequestModel requestModel;
+    ResourcesModel resourcesModel;
 
     long id;
     String name;
@@ -41,9 +45,10 @@ public class ScheduledRequestTest {
         cpuUsage = 5;
         gpuUsage = 5;
         memoryUsage = 0;
+        resourcesModel = new ResourcesModel(cpuUsage, gpuUsage, memoryUsage);
+        requestModel = new RequestModel(name, description, faculty, resourcesModel);
         date = LocalDate.of(2022, 12, 19);
-        request = new ScheduledRequest(id, name, description, faculty, cpuUsage,
-                gpuUsage, memoryUsage, date);
+        request = new ScheduledRequest(id, requestModel, date);
     }
 
     /**
@@ -55,51 +60,11 @@ public class ScheduledRequestTest {
     }
 
     /**
-     * Test if the name of the request is correctly set upon construction.
+     * Test if the request information of the scheduled request is correctly set upon construction.
      */
     @Test
-    void testConstructorName() {
-        assertThat(request.getName()).isEqualTo(name);
-    }
-
-    /**
-     * Test if the description of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorDescription() {
-        assertThat(request.getDescription()).isEqualTo(description);
-    }
-
-    /**
-     * Test if the faculty of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorFaculty() {
-        assertThat(request.getFaculty()).isEqualTo(faculty);
-    }
-
-    /**
-     * Test if the CPU usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorCpu() {
-        assertThat(request.getCpuUsage()).isEqualTo(cpuUsage);
-    }
-
-    /**
-     * Test if the GPU usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorGpu() {
-        assertThat(request.getGpuUsage()).isEqualTo(gpuUsage);
-    }
-
-    /**
-     * Test if the memory usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorMemory() {
-        assertThat(request.getMemoryUsage()).isEqualTo(memoryUsage);
+    void testConstructorRequest() {
+        assertThat(request.getRequest()).isEqualTo(requestModel);
     }
 
     /**

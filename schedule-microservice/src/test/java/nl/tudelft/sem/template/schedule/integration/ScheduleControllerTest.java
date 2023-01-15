@@ -8,6 +8,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
+import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
@@ -434,11 +435,11 @@ public class ScheduleControllerTest {
         int cpuUsage1 = 6;
         int gpuUsage1 = 2;
         int memoryUsage1 = 3;
+        ResourcesModel resourcesModel1 = new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1);
+        RequestModel requestModel1 = new RequestModel(name1, description1, faculty1, resourcesModel1);
         LocalDate deadline1 = LocalDate.of(2022, 12, 19);
-        requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1,
-                new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1), deadline1));
-        scheduledRequests.add(new ScheduledRequest(id1, name1, description1, faculty1,
-                cpuUsage1, gpuUsage1, memoryUsage1, deadline1));
+        requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1, resourcesModel1, deadline1));
+        scheduledRequests.add(new ScheduledRequest(id1, requestModel1, deadline1));
 
         // Create request 2.
         long id2 = 1;
@@ -448,11 +449,12 @@ public class ScheduleControllerTest {
         int cpuUsage2 = 3;
         int gpuUsage2 = 0;
         int memoryUsage2 = 0;
+        ResourcesModel resourcesModel2 = new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2);
+        RequestModel requestModel2 = new RequestModel(name2, description2, faculty2, resourcesModel2);
         LocalDate deadline2 = LocalDate.of(2022, 12, 19);
         requestModels.add(new RequestModelSchedule(id2, name2, description2, faculty2,
-                new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2), deadline2));
-        scheduledRequests.add(new ScheduledRequest(id2, name2, description2, faculty2,
-                cpuUsage2, gpuUsage2, memoryUsage2, deadline2));
+                resourcesModel2, deadline2));
+        scheduledRequests.add(new ScheduledRequest(id2, requestModel2, deadline2));
 
         // Create date to get the schedule from.
         LocalDate date = LocalDate.of(2022, 12, 25);

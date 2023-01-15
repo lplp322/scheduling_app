@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.schedule.database;
 
+import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.RequestRepository;
@@ -56,8 +57,8 @@ public class ScheduleServiceTest {
         request.setPlannedDate(LocalDate.of(2022, 12, 25));
 
         // Create the request that should have been scheduled.
-        ScheduledRequest expected = new ScheduledRequest(1, "Bink", "Test", "CSE",
-                5, 3, 2, LocalDate.of(2022, 12, 25));
+        ScheduledRequest expected = new ScheduledRequest(1, new RequestModel("Bink", "Test", "CSE",
+                new ResourcesModel(5, 3, 2)), LocalDate.of(2022, 12, 25));
 
         //Capture request that should be saved.
         ArgumentCaptor<ScheduledRequest> captor =
