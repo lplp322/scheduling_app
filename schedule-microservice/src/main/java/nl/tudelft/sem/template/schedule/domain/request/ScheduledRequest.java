@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
-import nl.tudelft.sem.common.models.request.ResourcesModel;
-import nl.tudelft.sem.template.schedule.domain.HasEvents;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "scheduledRequests")
 @NoArgsConstructor
-public class ScheduledRequest extends HasEvents {
+public class ScheduledRequest {
 
     /**
      * Identifier for the scheduled request.
@@ -50,7 +48,6 @@ public class ScheduledRequest extends HasEvents {
         this.id = id;
         this.request = request;
         this.date = date;
-        this.recordThat(new RequestWasScheduledEvent(this));
     }
 
     public RequestModelSchedule convert() {
