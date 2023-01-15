@@ -231,6 +231,6 @@ public class ResourceRepositoryService {
      */
     public ResourcesModel getAvailableResources(LocalDate date) {
         return usedResourceRepository.findById(new ResourceId(RELEASED, date))
-                .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources();
+                .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources().toResourcesModel();
     }
 }

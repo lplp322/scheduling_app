@@ -93,7 +93,7 @@ class ResourceRepositoryServiceTest {
         resourceRepositoryService.releaseAll(LocalDate.now());
         Optional<UsedResourcesModel> released = usedResourceRepository.findById(new ResourceId("released", LocalDate.now()));
         assertTrue(released.isPresent());
-        assertEquals(new ResourcesModel(18, 8, 6), released.get().getResources());
+        assertEquals(new ResourcesDatabaseModel(18, 8, 6), released.get().getResources());
         assertEquals(new ResourcesModel(18, 8, 6),
                 resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
         assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
@@ -130,7 +130,7 @@ class ResourceRepositoryServiceTest {
         resourceRepositoryService.releaseAll(LocalDate.now());
         Optional<UsedResourcesModel> released = usedResourceRepository.findById(new ResourceId("released", LocalDate.now()));
         assertTrue(released.isPresent());
-        assertEquals(new ResourcesModel(18, 8, 6), released.get().getResources());
+        assertEquals(new ResourcesDatabaseModel(18, 8, 6), released.get().getResources());
         assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources(LocalDate.now()));
     }
 
