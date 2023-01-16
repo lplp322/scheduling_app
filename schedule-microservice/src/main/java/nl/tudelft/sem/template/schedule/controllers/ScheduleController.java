@@ -63,11 +63,11 @@ public class ScheduleController {
      */
     @GetMapping("/schedule")
     public ResponseEntity<GetScheduledRequestsResponseModel> getSchedule(@RequestBody DateModel request) {
+        if (authManager == null || authManager.getRoles().stream()
+                .noneMatch(a -> a.getAuthority().contains("sysadmin"))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only sysadmins can view the schedules.");
+        }
         try {
-            if (authManager == null || authManager.getRoles().stream()
-                    .noneMatch(a -> a.getAuthority().contains("sysadmin"))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only sysadmins can view the schedules.");
-            }
             List<ScheduledRequest> requests = scheduleService.getSchedule(request.getDate());
             List<RequestModelSchedule> requestModels = new ArrayList<>();
             for (ScheduledRequest scheduledRequest : requests) {
