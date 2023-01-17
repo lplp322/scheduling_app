@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Embeddable
 public class Resources {
 
@@ -25,19 +26,6 @@ public class Resources {
     @Column(name = "memory_resources")
     @Getter
     private int ram;
-
-    /**
-     * Creates a new resources object.
-     *
-     * @param cpu CPU resources
-     * @param gpu GPU resources
-     * @param ram memory resources
-     */
-    public Resources(int cpu, int gpu, int ram) {
-        this.cpu = cpu;
-        this.gpu = gpu;
-        this.ram = ram;
-    }
 
     public ResourcesModel convert() {
         return new ResourcesModel(this.cpu, this.gpu, this.ram);
