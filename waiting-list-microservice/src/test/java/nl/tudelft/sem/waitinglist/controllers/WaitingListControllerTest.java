@@ -1,7 +1,8 @@
 package nl.tudelft.sem.waitinglist.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import nl.tudelft.sem.common.models.request.RequestModelWaitingList;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
@@ -36,11 +38,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,6 +68,9 @@ class WaitingListControllerTest {
 
     @MockBean
     private SchedulerService schedulerService;
+
+    @MockBean
+    private AuthManager authManager;
 
 
     /**
@@ -506,4 +513,61 @@ class WaitingListControllerTest {
 
         assertThat(repo.existsById(1L)).isTrue();
     }
+
+    @Test
+    void adminAuthorityWrongFacultyTest() {
+        Collection<SimpleGrantedAuthority> roleList2 = new ArrayList<>();
+        roleList2.add(new SimpleGrantedAuthority("employee_EWI"));
+        roleList2.add(new SimpleGrantedAuthority("admin_EWI"));
+        Mockito.doReturn(roleList2).when(authManager).getRoles();
+        String name = "John";
+        String description = "description";
+        String faculty = "notEWI";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        assertThatThrownBy(() ->
+            WaitingListController.adminAuthority(request, authManager)
+        ).isInstanceOf(ResponseStatusException.class);
+
+        assertDoesNotThrow(() -> WaitingListController.adminAuthority(null, authManager));
+
+        assertThatThrownBy(() ->
+                WaitingListController.adminAuthority(request, null)
+        ).isInstanceOf(ResponseStatusException.class);
+    }
+
+    @Test
+    void adminAuthorityAuthorizedTest() {
+        Collection<SimpleGrantedAuthority> roleList2 = new ArrayList<>();
+        roleList2.add(new SimpleGrantedAuthority("employee_ewi"));
+        roleList2.add(new SimpleGrantedAuthority("admin_ewi"));
+        Mockito.doReturn(roleList2).when(authManager).getRoles();
+        String name = "John";
+        String description = "description";
+        String faculty = "ewi";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        assertDoesNotThrow(() -> WaitingListController.adminAuthority(request, authManager));
+    }
+
 }
