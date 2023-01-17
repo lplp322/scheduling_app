@@ -49,7 +49,7 @@ public class ResourcesController {
      * @return 200 OK if node could be added, 400 BAD REQUEST otherwise
      */
     @PostMapping("/nodes")
-    public ResponseEntity addNode(@RequestBody PostNodeRequestModel request) {
+    public ResponseEntity addNode(@RequestBody Node request) {
         Node node = new Node(request.getName(), request.getUrl(), request.getToken(),
                 request.getResources(), request.getFaculty());
         try {

@@ -1,8 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import java.time.LocalDate;
+
+import nl.tudelft.sem.common.models.Node;
 import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
-import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
 import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.template.example.config.GetDate;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -49,7 +50,7 @@ public class NodeResourceController {
      * @return -response from Resources or UNAUTHORIZED
      */
     @PostMapping("/add-node")
-    ResponseEntity addNode(@RequestBody PostNodeRequestModel request) {
+    ResponseEntity addNode(@RequestBody Node request) {
         try {
             return resourcesInterface.addNode(request);
         } catch (Exception e) {

@@ -14,7 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.ArrayList;
 import java.util.Collection;
-import nl.tudelft.sem.common.models.request.resources.PostNodeRequestModel;
+
+import nl.tudelft.sem.common.models.Node;
 import nl.tudelft.sem.common.models.response.AddResponseModel;
 import nl.tudelft.sem.common.models.response.resources.AvailableResourcesResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -72,7 +73,7 @@ public class NodeResourceControllerTest {
     @Test
     @Transactional
     public void testAddNode() {
-        PostNodeRequestModel data = new PostNodeRequestModel();
+        Node data = new Node();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
@@ -91,7 +92,7 @@ public class NodeResourceControllerTest {
 
     @Test
     public void testAddNodeException() {
-        PostNodeRequestModel data = new PostNodeRequestModel();
+        Node data = new Node();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
