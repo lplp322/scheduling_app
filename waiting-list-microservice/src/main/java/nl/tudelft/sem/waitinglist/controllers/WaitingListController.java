@@ -131,11 +131,10 @@ public class WaitingListController {
             Long id = objectNode.get("id").asLong();
             Request acceptedRequest = waitingList.getRequestById(id);
             adminAuthority(acceptedRequest, authManager);
-            ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),
-                    acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam());
             RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),
                     acceptedRequest.getName(), acceptedRequest.getDescription(),
-                    acceptedRequest.getFaculty(), resourcesModel,
+                    acceptedRequest.getFaculty(), new ResourcesModel(acceptedRequest.getResources().getCpu(),
+                    acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam()),
                     Request.checkPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
                     .asText()), LocalDate.ofInstant(clock.instant(),
                     clock.getZone()), acceptedRequest.getDeadline()));
