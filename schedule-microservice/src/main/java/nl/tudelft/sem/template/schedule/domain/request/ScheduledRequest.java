@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.common.models.request.RequestModel;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 
 import javax.persistence.Column;
@@ -31,7 +30,7 @@ public class ScheduledRequest {
 
     @Column(name = "request", nullable = false)
     @Getter
-    private RequestModel request;
+    private Request request;
 
     @Column(name = "date", nullable = false)
     @Getter
@@ -44,7 +43,7 @@ public class ScheduledRequest {
      * @param request Request that is scheduled.
      * @param date Planned date of the request.
      */
-    public ScheduledRequest(long id, RequestModel request, LocalDate date) {
+    public ScheduledRequest(long id, Request request, LocalDate date) {
         this.id = id;
         this.request = request;
         this.date = date;
@@ -52,7 +51,7 @@ public class ScheduledRequest {
 
     public RequestModelSchedule convert() {
         return new RequestModelSchedule(this.id, this.request.getName(), this.request.getDescription(),
-                this.request.getFaculty(), this.request.getResources(), this.date);
+                this.request.getFaculty(), this.request.getResources().convert(), this.date);
     }
 
     /**

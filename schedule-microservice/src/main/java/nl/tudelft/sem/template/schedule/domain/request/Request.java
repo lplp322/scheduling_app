@@ -1,4 +1,4 @@
-package nl.tudelft.sem.common.models.request;
+package nl.tudelft.sem.template.schedule.domain.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class RequestModel {
+public class Request {
 
     @Column(name = "name", nullable = false)
     @Getter
@@ -31,5 +31,5 @@ public class RequestModel {
 
     @Column(name = "resources", nullable = false)
     @Getter
-    private ResourcesModel resources;
+    private Resources resources;
 }

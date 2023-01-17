@@ -5,28 +5,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import nl.tudelft.sem.common.models.providers.TimeProvider;
 import nl.tudelft.sem.common.models.request.DateModel;
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.template.schedule.domain.request.Request;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
 import nl.tudelft.sem.template.schedule.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.schedule.domain.request.Resources;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.cert.ocsp.Req;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +51,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -435,11 +432,12 @@ public class ScheduleControllerTest {
         int cpuUsage1 = 6;
         int gpuUsage1 = 2;
         int memoryUsage1 = 3;
-        ResourcesModel resourcesModel1 = new ResourcesModel(cpuUsage1, gpuUsage1, memoryUsage1);
-        RequestModel requestModel1 = new RequestModel(name1, description1, faculty1, resourcesModel1);
+        Resources resources1 = new Resources(cpuUsage1, gpuUsage1, memoryUsage1);
+        Request request1 = new Request(name1, description1, faculty1, resources1);
         LocalDate deadline1 = LocalDate.of(2022, 12, 19);
-        requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1, resourcesModel1, deadline1));
-        scheduledRequests.add(new ScheduledRequest(id1, requestModel1, deadline1));
+        requestModels.add(new RequestModelSchedule(id1, name1, description1, faculty1, resources1.convert(),
+                deadline1));
+        scheduledRequests.add(new ScheduledRequest(id1, request1, deadline1));
 
         // Create request 2.
         long id2 = 1;
@@ -449,12 +447,12 @@ public class ScheduleControllerTest {
         int cpuUsage2 = 3;
         int gpuUsage2 = 0;
         int memoryUsage2 = 0;
-        ResourcesModel resourcesModel2 = new ResourcesModel(cpuUsage2, gpuUsage2, memoryUsage2);
-        RequestModel requestModel2 = new RequestModel(name2, description2, faculty2, resourcesModel2);
+        Resources resources2 = new Resources(cpuUsage2, gpuUsage2, memoryUsage2);
+        Request request2 = new Request(name2, description2, faculty2, resources2);
         LocalDate deadline2 = LocalDate.of(2022, 12, 19);
         requestModels.add(new RequestModelSchedule(id2, name2, description2, faculty2,
-                resourcesModel2, deadline2));
-        scheduledRequests.add(new ScheduledRequest(id2, requestModel2, deadline2));
+                resources2.convert(), deadline2));
+        scheduledRequests.add(new ScheduledRequest(id2, request2, deadline2));
 
         // Create date to get the schedule from.
         LocalDate date = LocalDate.of(2022, 12, 25);

@@ -14,19 +14,10 @@ import javax.persistence.Embeddable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Embeddable
 public class ResourcesModel {
 
-    @Column(name = "cpu_resources")
-    @Getter
     private int cpu;
-
-    @Column(name = "gpu_resources")
-    @Getter
     private int gpu;
-
-    @Column(name = "memory_resources")
-    @Getter
     private int ram;
 
     /**

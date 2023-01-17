@@ -1,8 +1,9 @@
 package nl.tudelft.sem.template.schedule.domain;
 
-import nl.tudelft.sem.common.models.request.RequestModel;
+import nl.tudelft.sem.template.schedule.domain.request.Request;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.template.schedule.domain.request.Resources;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class ScheduledRequestTest {
 
-    ScheduledRequest request;
+    ScheduledRequest scheduledRequest;
 
-    RequestModel requestModel;
-    ResourcesModel resourcesModel;
+    Request request;
+    Resources resources;
 
     long id;
     String name;
@@ -45,10 +46,10 @@ public class ScheduledRequestTest {
         cpuUsage = 5;
         gpuUsage = 5;
         memoryUsage = 0;
-        resourcesModel = new ResourcesModel(cpuUsage, gpuUsage, memoryUsage);
-        requestModel = new RequestModel(name, description, faculty, resourcesModel);
+        resources = new Resources(cpuUsage, gpuUsage, memoryUsage);
+        request = new Request(name, description, faculty, resources);
         date = LocalDate.of(2022, 12, 19);
-        request = new ScheduledRequest(id, requestModel, date);
+        scheduledRequest = new ScheduledRequest(id, request, date);
     }
 
     /**
@@ -56,7 +57,7 @@ public class ScheduledRequestTest {
      */
     @Test
     void testConstructorId() {
-        assertThat(request.getId()).isEqualTo(id);
+        assertThat(scheduledRequest.getId()).isEqualTo(id);
     }
 
     /**
@@ -64,7 +65,7 @@ public class ScheduledRequestTest {
      */
     @Test
     void testConstructorRequest() {
-        assertThat(request.getRequest()).isEqualTo(requestModel);
+        assertThat(scheduledRequest.getRequest()).isEqualTo(request);
     }
 
     /**
@@ -72,7 +73,7 @@ public class ScheduledRequestTest {
      */
     @Test
     void testConstructorDate() {
-        assertThat(request.getDate()).isEqualTo(date);
+        assertThat(scheduledRequest.getDate()).isEqualTo(date);
     }
 
     /**
@@ -82,7 +83,7 @@ public class ScheduledRequestTest {
     void testConvert() {
         RequestModelSchedule requestModel = new RequestModelSchedule(id, name, description, faculty,
                 new ResourcesModel(cpuUsage, gpuUsage, memoryUsage), date);
-        assertThat(request.convert()).isEqualTo(requestModel);
+        assertThat(scheduledRequest.convert()).isEqualTo(requestModel);
     }
 
     @Test
