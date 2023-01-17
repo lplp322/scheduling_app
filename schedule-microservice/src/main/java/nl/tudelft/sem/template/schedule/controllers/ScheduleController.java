@@ -8,6 +8,7 @@ import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestM
 import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
+import nl.tudelft.sem.template.schedule.domain.request.RequestValidationService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
@@ -37,7 +38,7 @@ public class ScheduleController {
 
     private final transient ScheduleService scheduleService;
 
-    private final transient TimeProvider timeProvider;
+    private final transient RequestValidationService validationService;
 
     private final transient ResourcesInterface resourcesInterface;
 
@@ -47,11 +48,11 @@ public class ScheduleController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider,
-                              ResourcesInterface resourcesInterface) {
+    public ScheduleController(AuthManager authManager, ScheduleService scheduleService,
+                              RequestValidationService validationService, ResourcesInterface resourcesInterface) {
         this.authManager = authManager;
         this.scheduleService = scheduleService;
-        this.timeProvider = timeProvider;
+        this.validationService = validationService;
         this.resourcesInterface = resourcesInterface;
     }
 
@@ -89,73 +90,21 @@ public class ScheduleController {
     public ResponseEntity scheduleRequest(@RequestBody RequestModelSchedule request) {
         try {
             LocalDate plannedDate = request.getPlannedDate();
-            validDate(plannedDate); //Throws exception if not.
+            validationService.validDate(plannedDate); //Throws exception if not valid.
 
             ResourcesModel requiredResources = request.getResources();
-            validResources(requiredResources); //Throws exception if not.
+            validationService.validResources(requiredResources); //Throws exception if not valid.
 
             String faculty = request.getFaculty();
-            enoughResources(requiredResources, plannedDate, faculty); //Throws exception if not.
+            validationService.enoughResources(requiredResources, plannedDate, faculty); //Throws exception if not enough.
 
-            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(request.getPlannedDate(),
-                    request.getFaculty(), requiredResources.getCpu(), requiredResources.getGpu(),
-                    requiredResources.getRam()));
+            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(
+                    request.getPlannedDate(), request.getFaculty(), requiredResources.getCpu(),
+                    requiredResources.getGpu(), requiredResources.getRam()));
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Throws a ResponseStatusException when the planned date for the request has already passed or if it is the next
-     * day when it is already passed 23:55.
-     *
-     * @param plannedDate The date the request is planned on.
-     * @throws ResponseStatusException
-     */
-    private void validDate(LocalDate plannedDate) throws ResponseStatusException {
-        LocalDate currDate = timeProvider.now().toLocalDate();
-        LocalTime currTime = timeProvider.now().toLocalTime();
-        if (!plannedDate.isAfter(currDate) || (plannedDate.minusDays(1).isEqual(currDate)
-                && currTime.isAfter(LocalTime.of(23, 55)))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "You cannot schedule any requests for this date anymore.");
-        }
-    }
-
-    /**
-     * Throws a ResponseStatusException when the request to be scheduled needs more GPU resources than CPU resources
-     * or more memory resources than CPU resources, which is not possible.
-     *
-     * @param requiredResources The resources that are required for the request.
-     * @throws ResponseStatusException
-     */
-    private void validResources(ResourcesModel requiredResources) throws ResponseStatusException {
-        if (requiredResources.getCpu() < requiredResources.getGpu()
-                || requiredResources.getCpu() < requiredResources.getRam()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "You cannot schedule a request requiring more GPU or memory resources than CPU resources");
-        }
-    }
-
-    /**
-     * Throws an ResponseStatusException when there are not enough available resources for the request to be scheduled
-     * on a specific day with resources of a specific faculty (plus free resources), since the request needs more
-     * resources.
-     *
-     * @param requiredResources The resources that are required for the request.
-     * @param plannedDate The date the request is planned on.
-     * @param faculty The faculty from which the request should use the resources.
-     * @throws ResponseStatusException
-     */
-    private void enoughResources(ResourcesModel requiredResources, LocalDate plannedDate, String faculty)
-            throws ResponseStatusException {
-        ResourcesModel availableResources = resourcesInterface.getAvailableResources(
-                new AvailableResourcesRequestModel(faculty, plannedDate)).getBody();
-        if (!requiredResources.enoughAvailable(availableResources)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "There are not enough resources available on this date for this request.");
-        }
     }
 }
