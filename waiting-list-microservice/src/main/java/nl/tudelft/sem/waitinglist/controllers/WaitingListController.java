@@ -155,7 +155,7 @@ public class WaitingListController {
      * @param request - The request that is handled.
      * @param authManager - The authManager of this class.
      */
-    public static void adminAuthority(Request request, AuthManager authManager) {
+    private static void adminAuthority(Request request, AuthManager authManager) {
         if (request != null && (authManager == null || authManager.getRoles().stream()
                 .noneMatch(a -> a.getAuthority().contains("admin_" + request.getFaculty())))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");

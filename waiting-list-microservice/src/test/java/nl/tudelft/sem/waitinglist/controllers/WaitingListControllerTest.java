@@ -515,39 +515,39 @@ class WaitingListControllerTest {
     }
 
     @Test
-    void adminAuthorityWrongFacultyTest() {
+    void adminAuthorityWrongFacultyTest() throws Exception {
         Collection<SimpleGrantedAuthority> roleList2 = new ArrayList<>();
         roleList2.add(new SimpleGrantedAuthority("employee_EWI"));
         roleList2.add(new SimpleGrantedAuthority("admin_EWI"));
         Mockito.doReturn(roleList2).when(authManager).getRoles();
         String name = "John";
         String description = "description";
-        String faculty = "notEWI";
+        String faculty = "NOTEWI";
         int cpu = 5;
         int gpu = 5;
         int ram = 5;
         Resources resources = new Resources(cpu, gpu, ram);
-        LocalDate deadline = LocalDate.of(2022, 12, 12);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
 
         LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
-        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
-        assertThatThrownBy(() ->
-            WaitingListController.adminAuthority(request, authManager)
-        ).isInstanceOf(ResponseStatusException.class);
-
-        assertDoesNotThrow(() -> WaitingListController.adminAuthority(null, authManager));
-
-        assertThatThrownBy(() ->
-                WaitingListController.adminAuthority(request, null)
-        ).isInstanceOf(ResponseStatusException.class);
+        repo.save(request);
+        assertThat(repo.existsById(1L)).isTrue();
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2023-12-10\" "
+                                + "}"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void adminAuthorityAuthorizedTest() {
+    void adminAuthorityAuthorizedTest() throws Exception {
         Collection<SimpleGrantedAuthority> roleList2 = new ArrayList<>();
         roleList2.add(new SimpleGrantedAuthority("employee_ewi"));
         roleList2.add(new SimpleGrantedAuthority("admin_ewi"));
@@ -559,15 +559,23 @@ class WaitingListControllerTest {
         int gpu = 5;
         int ram = 5;
         Resources resources = new Resources(cpu, gpu, ram);
-        LocalDate deadline = LocalDate.of(2022, 12, 12);
+        LocalDate deadline = LocalDate.of(2023, 12, 12);
 
         LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
-        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.badRequest().build());
+        when(schedulerService.scheduleRequest(any())).thenReturn(ResponseEntity.ok().build());
 
         Request request = new Request(name, description, faculty, resources, deadline, currentDate);
-        assertDoesNotThrow(() -> WaitingListController.adminAuthority(request, authManager));
+        repo.save(request);
+        assertThat(repo.existsById(1L)).isTrue();
+        mockMvc.perform(post("/accept-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"
+                                + "\"id\": 1, "
+                                + "\"plannedDate\": \"2023-12-10\" "
+                                + "}"))
+                .andExpect(status().isOk());
+        assertThat(repo.existsById(1L)).isFalse();
     }
-
 }
