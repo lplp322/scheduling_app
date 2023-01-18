@@ -36,7 +36,7 @@ public class NodeRepositoryService {
 
     public Collection<Node> getAllNodes() {
         return nodeRepository.findAll().stream().map(a -> new Node(a.getName(), a.getUrl(), a.getToken(),
-                a.getResources(), a.getFaculty())).collect(Collectors.toList());
+                a.getResources().toResourceModel(), a.getFaculty())).collect(Collectors.toList());
     }
 
 }

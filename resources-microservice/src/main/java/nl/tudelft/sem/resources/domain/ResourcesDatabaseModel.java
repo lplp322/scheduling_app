@@ -1,18 +1,16 @@
 package nl.tudelft.sem.resources.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+@EqualsAndHashCode
 @Setter
 @Embeddable
 @NoArgsConstructor
-public class ResourcesDatabaseModel extends ResourcesModel {
+public class ResourcesDatabaseModel {
     @Column(name = "cpu_resources")
     @Getter
     private int cpu;
@@ -46,5 +44,9 @@ public class ResourcesDatabaseModel extends ResourcesModel {
      */
     public ResourcesDatabaseModel(@NonNull ResourcesModel resourcesModel) {
         this(resourcesModel.getCpu(), resourcesModel.getGpu(), resourcesModel.getRam());
+    }
+
+    public ResourcesModel toResourceModel() {
+        return new ResourcesModel(this.getCpu(), this.getGpu(), this.getRam());
     }
 }

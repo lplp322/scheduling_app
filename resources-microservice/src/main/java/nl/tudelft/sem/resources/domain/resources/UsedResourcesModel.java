@@ -22,6 +22,7 @@ public class UsedResourcesModel {
     @Id
     private LocalDate date;
 
+    @Setter
     @Embedded
     @Column(name = "resources", nullable = false)
     private ResourcesDatabaseModel resources;
