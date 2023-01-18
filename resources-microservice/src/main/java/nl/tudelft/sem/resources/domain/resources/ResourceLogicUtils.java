@@ -39,8 +39,9 @@ public abstract class ResourceLogicUtils {
         }
         ResourcesModel res = new ResourcesModel(from.getCpu() - by.getCpu(),
                 from.getGpu() - by.getGpu(), from.getRam() - by.getRam());
-        if(!checkValidity(res))
+        if (!checkValidity(res)) {
             return null;
+        }
         return res;
     }
 
