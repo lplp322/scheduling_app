@@ -2,16 +2,14 @@ package nl.tudelft.sem.template.schedule.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import nl.tudelft.sem.template.schedule.domain.request.Request;
 import nl.tudelft.sem.template.schedule.domain.request.RequestRepository;
+import nl.tudelft.sem.template.schedule.domain.request.Resources;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -49,9 +47,10 @@ public class RequestRepositoryTest {
         int cpuUsage1 = 6;
         int gpuUsage1 = 2;
         int memoryUsage1 = 3;
+        Resources resources1 = new Resources(cpuUsage1, gpuUsage1, memoryUsage1);
+        Request request1 = new Request(name1, description1, faculty1, resources1);
         LocalDate deadline1 = LocalDate.of(2022, 12, 19);
-        request1 = new ScheduledRequest(id1, name1, description1, faculty1, cpuUsage1,
-                gpuUsage1, memoryUsage1, deadline1);
+        this.request1 = new ScheduledRequest(id1, request1, deadline1);
 
         //Request 2
         long id2 = 1;
@@ -61,9 +60,10 @@ public class RequestRepositoryTest {
         int cpuUsage2 = 3;
         int gpuUsage2 = 0;
         int memoryUsage2 = 0;
+        Resources resources2 = new Resources(cpuUsage2, gpuUsage2, memoryUsage2);
+        Request request2 = new Request(name2, description2, faculty2, resources2);
         LocalDate deadline2 = LocalDate.of(2022, 12, 19);
-        request2 = new ScheduledRequest(id2, name2, description2, faculty2, cpuUsage2,
-                gpuUsage2, memoryUsage2, deadline2);
+        this.request2 = new ScheduledRequest(id2, request2, deadline2);
 
         //Request 3
         long id3 = 2;
@@ -73,9 +73,10 @@ public class RequestRepositoryTest {
         int cpuUsage3 = 5;
         int gpuUsage3 = 5;
         int memoryUsage3 = 0;
+        Resources resources3 = new Resources(cpuUsage3, gpuUsage3, memoryUsage3);
+        Request request3 = new Request(name3, description3, faculty3, resources3);
         LocalDate deadline3 = LocalDate.of(2022, 12, 19);
-        request3 = new ScheduledRequest(id3, name3, description3, faculty3, cpuUsage3,
-                gpuUsage3, memoryUsage3, deadline3);
+        this.request3 = new ScheduledRequest(id3, request3, deadline3);
 
         //Request 4
         long id4 = 3;
@@ -85,9 +86,10 @@ public class RequestRepositoryTest {
         int cpuUsage4 = 8;
         int gpuUsage4 = 2;
         int memoryUsage4 = 6;
+        Resources resources4 = new Resources(cpuUsage4, gpuUsage4, memoryUsage4);
+        Request request4 = new Request(name4, description4, faculty4, resources4);
         LocalDate deadline4 = LocalDate.of(2022, 12, 20);
-        request4 = new ScheduledRequest(id4, name4, description4, faculty4, cpuUsage4,
-                gpuUsage4, memoryUsage4, deadline4);
+        this.request4 = new ScheduledRequest(id4, request4, deadline4);
 
         //Request 5
         long id5 = 4;
@@ -97,9 +99,10 @@ public class RequestRepositoryTest {
         int cpuUsage5 = 9;
         int gpuUsage5 = 3;
         int memoryUsage5 = 4;
+        Resources resources5 = new Resources(cpuUsage5, gpuUsage5, memoryUsage5);
+        Request request5 = new Request(name5, description5, faculty5, resources5);
         LocalDate deadline5 = LocalDate.of(2022, 12, 20);
-        request5 = new ScheduledRequest(id5, name5, description5, faculty5, cpuUsage5,
-                gpuUsage5, memoryUsage5, deadline5);
+        this.request5 = new ScheduledRequest(id5, request5, deadline5);
     }
 
     /**

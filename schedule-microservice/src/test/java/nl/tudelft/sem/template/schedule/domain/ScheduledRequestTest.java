@@ -1,7 +1,9 @@
 package nl.tudelft.sem.template.schedule.domain;
 
+import nl.tudelft.sem.template.schedule.domain.request.Request;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
+import nl.tudelft.sem.template.schedule.domain.request.Resources;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class ScheduledRequestTest {
 
-    ScheduledRequest request;
+    ScheduledRequest scheduledRequest;
+
+    Request request;
+    Resources resources;
 
     long id;
     String name;
@@ -41,9 +46,10 @@ public class ScheduledRequestTest {
         cpuUsage = 5;
         gpuUsage = 5;
         memoryUsage = 0;
+        resources = new Resources(cpuUsage, gpuUsage, memoryUsage);
+        request = new Request(name, description, faculty, resources);
         date = LocalDate.of(2022, 12, 19);
-        request = new ScheduledRequest(id, name, description, faculty, cpuUsage,
-                gpuUsage, memoryUsage, date);
+        scheduledRequest = new ScheduledRequest(id, request, date);
     }
 
     /**
@@ -51,55 +57,15 @@ public class ScheduledRequestTest {
      */
     @Test
     void testConstructorId() {
-        assertThat(request.getId()).isEqualTo(id);
+        assertThat(scheduledRequest.getId()).isEqualTo(id);
     }
 
     /**
-     * Test if the name of the request is correctly set upon construction.
+     * Test if the request information of the scheduled request is correctly set upon construction.
      */
     @Test
-    void testConstructorName() {
-        assertThat(request.getName()).isEqualTo(name);
-    }
-
-    /**
-     * Test if the description of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorDescription() {
-        assertThat(request.getDescription()).isEqualTo(description);
-    }
-
-    /**
-     * Test if the faculty of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorFaculty() {
-        assertThat(request.getFaculty()).isEqualTo(faculty);
-    }
-
-    /**
-     * Test if the CPU usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorCpu() {
-        assertThat(request.getCpuUsage()).isEqualTo(cpuUsage);
-    }
-
-    /**
-     * Test if the GPU usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorGpu() {
-        assertThat(request.getGpuUsage()).isEqualTo(gpuUsage);
-    }
-
-    /**
-     * Test if the memory usage of the request is correctly set upon construction.
-     */
-    @Test
-    void testConstructorMemory() {
-        assertThat(request.getMemoryUsage()).isEqualTo(memoryUsage);
+    void testConstructorRequest() {
+        assertThat(scheduledRequest.getRequest()).isEqualTo(request);
     }
 
     /**
@@ -107,7 +73,7 @@ public class ScheduledRequestTest {
      */
     @Test
     void testConstructorDate() {
-        assertThat(request.getDate()).isEqualTo(date);
+        assertThat(scheduledRequest.getDate()).isEqualTo(date);
     }
 
     /**
@@ -117,7 +83,7 @@ public class ScheduledRequestTest {
     void testConvert() {
         RequestModelSchedule requestModel = new RequestModelSchedule(id, name, description, faculty,
                 new ResourcesModel(cpuUsage, gpuUsage, memoryUsage), date);
-        assertThat(request.convert()).isEqualTo(requestModel);
+        assertThat(scheduledRequest.convert()).isEqualTo(requestModel);
     }
 
     @Test

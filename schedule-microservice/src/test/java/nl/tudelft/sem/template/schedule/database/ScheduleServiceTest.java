@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.schedule.database;
 
+import nl.tudelft.sem.template.schedule.domain.request.Request;
 import nl.tudelft.sem.common.models.request.RequestModelSchedule;
 import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.template.schedule.domain.request.RequestRepository;
+import nl.tudelft.sem.template.schedule.domain.request.Resources;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,8 +58,8 @@ public class ScheduleServiceTest {
         request.setPlannedDate(LocalDate.of(2022, 12, 25));
 
         // Create the request that should have been scheduled.
-        ScheduledRequest expected = new ScheduledRequest(1, "Bink", "Test", "CSE",
-                5, 3, 2, LocalDate.of(2022, 12, 25));
+        ScheduledRequest expected = new ScheduledRequest(1, new Request("Bink", "Test", "CSE",
+                new Resources(5, 3, 2)), LocalDate.of(2022, 12, 25));
 
         //Capture request that should be saved.
         ArgumentCaptor<ScheduledRequest> captor =
