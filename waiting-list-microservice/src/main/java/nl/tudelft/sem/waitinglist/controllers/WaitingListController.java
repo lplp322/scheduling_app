@@ -110,10 +110,7 @@ public class WaitingListController {
     public ResponseEntity<String> rejectRequest(@RequestBody Long id) {
         try {
             Request request = waitingList.getRequestById(id); //NOPMD
-            if (request != null && (authManager == null || authManager.getRoles().stream()
-                    .noneMatch(a -> a.getAuthority().contains("admin_" + request.getFaculty())))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
-            }
+            adminAuthority(request, authManager);
             waitingList.removeRequest(id);
         } catch (IllegalArgumentException | NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -133,15 +130,11 @@ public class WaitingListController {
         try {
             Long id = objectNode.get("id").asLong();
             Request acceptedRequest = waitingList.getRequestById(id);
-            if (acceptedRequest != null && (authManager == null || authManager.getRoles().stream()
-                    .noneMatch(a -> a.getAuthority().contains("admin_" + acceptedRequest.getFaculty())))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");
-            }
-            ResourcesModel resourcesModel = new ResourcesModel(acceptedRequest.getResources().getCpu(),
-                    acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam());
+            adminAuthority(acceptedRequest, authManager);
             RequestModelSchedule requestModelSchedule = new RequestModelSchedule(acceptedRequest.getId(),
                     acceptedRequest.getName(), acceptedRequest.getDescription(),
-                    acceptedRequest.getFaculty(), resourcesModel,
+                    acceptedRequest.getFaculty(), new ResourcesModel(acceptedRequest.getResources().getCpu(),
+                    acceptedRequest.getResources().getGpu(), acceptedRequest.getResources().getRam()),
                     Request.checkPlannedDate(LocalDate.parse(objectNode.get("plannedDate")
                     .asText()), LocalDate.ofInstant(clock.instant(),
                     clock.getZone()), acceptedRequest.getDeadline()));
@@ -153,6 +146,19 @@ public class WaitingListController {
             }
         } catch (IllegalArgumentException | NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Checks if the person making a request is an admin that is authorized.
+     *
+     * @param request - The request that is handled.
+     * @param authManager - The authManager of this class.
+     */
+    private static void adminAuthority(Request request, AuthManager authManager) {
+        if (request != null && (authManager == null || authManager.getRoles().stream()
+                .noneMatch(a -> a.getAuthority().contains("admin_" + request.getFaculty())))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only faculty admins can accept a request!");
         }
     }
 
