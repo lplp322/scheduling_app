@@ -11,7 +11,6 @@ import javax.persistence.Embeddable;
 /**
  * Basic request information.
  */
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
