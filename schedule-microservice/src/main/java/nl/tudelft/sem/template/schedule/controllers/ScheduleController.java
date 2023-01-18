@@ -8,6 +8,7 @@ import nl.tudelft.sem.common.models.request.resources.AvailableResourcesRequestM
 import nl.tudelft.sem.common.models.request.resources.UpdateAvailableResourcesRequestModel;
 import nl.tudelft.sem.common.models.response.GetScheduledRequestsResponseModel;
 import nl.tudelft.sem.template.schedule.authentication.AuthManager;
+import nl.tudelft.sem.template.schedule.domain.request.RequestValidationService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduleService;
 import nl.tudelft.sem.template.schedule.domain.request.ScheduledRequest;
 import nl.tudelft.sem.template.schedule.external.ResourcesInterface;
@@ -37,7 +38,7 @@ public class ScheduleController {
 
     private final transient ScheduleService scheduleService;
 
-    private final transient TimeProvider timeProvider;
+    private final transient RequestValidationService validationService;
 
     private final transient ResourcesInterface resourcesInterface;
 
@@ -47,11 +48,11 @@ public class ScheduleController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ScheduleController(AuthManager authManager, ScheduleService scheduleService, TimeProvider timeProvider,
-                              ResourcesInterface resourcesInterface) {
+    public ScheduleController(AuthManager authManager, ScheduleService scheduleService,
+                              RequestValidationService validationService, ResourcesInterface resourcesInterface) {
         this.authManager = authManager;
         this.scheduleService = scheduleService;
-        this.timeProvider = timeProvider;
+        this.validationService = validationService;
         this.resourcesInterface = resourcesInterface;
     }
 
@@ -89,30 +90,17 @@ public class ScheduleController {
     public ResponseEntity scheduleRequest(@RequestBody RequestModelSchedule request) {
         try {
             LocalDate plannedDate = request.getPlannedDate();
-            LocalDate currDate = timeProvider.now().toLocalDate();
-            LocalTime currTime = timeProvider.now().toLocalTime();
-            if (!plannedDate.isAfter(currDate) || (plannedDate.minusDays(1).isEqual(currDate)
-                    && currTime.isAfter(LocalTime.of(23, 55)))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "You cannot schedule any requests for this date anymore.");
-            }
+            validationService.validDate(plannedDate); //Throws exception if not valid.
 
             ResourcesModel requiredResources = request.getResources();
-            if (requiredResources.getCpu() < requiredResources.getGpu()
-                    || requiredResources.getCpu() < requiredResources.getRam()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "You cannot schedule a request requiring more GPU or memory resources than CPU resources");
-            }
+            validationService.validResources(requiredResources); //Throws exception if not valid.
 
-            ResourcesModel availableResources = resourcesInterface.getAvailableResources(
-                    new AvailableResourcesRequestModel(request.getFaculty(), plannedDate)).getBody();
-            if (!requiredResources.enoughAvailable(availableResources)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "There are not enough resources available on this date for this request.");
-            }
-            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(request.getPlannedDate(),
-                    request.getFaculty(), requiredResources.getCpu(), requiredResources.getGpu(),
-                    requiredResources.getRam()));
+            String faculty = request.getFaculty();
+            validationService.enoughResources(requiredResources, plannedDate, faculty); //Throws exception if not enough.
+
+            resourcesInterface.updateAvailableResources(new UpdateAvailableResourcesRequestModel(
+                    request.getPlannedDate(), request.getFaculty(), requiredResources.getCpu(),
+                    requiredResources.getGpu(), requiredResources.getRam()));
             scheduleService.scheduleRequest(request);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
