@@ -44,7 +44,7 @@ public class ResourceReleaseService {
                     .orElse(new UsedResourcesModel(i.getFaculty(), day, 0, 0, 0));
             releasedResources.setResources(new ResourcesDatabaseModel(
                     ResourceLogicService.subtractResources(ResourceLogicService.addResources(
-                                    releasedResources.getResources().toResourcesModel(), i.getResources().toResourcesModel()),
+                            releasedResources.getResources().toResourcesModel(), i.getResources().toResourcesModel()),
                             usedResources.getResources().toResourcesModel())));
 
             usedResources.setResources(i.getResources());
