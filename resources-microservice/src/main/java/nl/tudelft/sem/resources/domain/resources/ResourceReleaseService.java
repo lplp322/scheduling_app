@@ -43,7 +43,7 @@ public class ResourceReleaseService {
             UsedResourcesModel usedResources = usedResourceRepository.findById(new ResourceId(i.getFaculty(), day))
                     .orElse(new UsedResourcesModel(i.getFaculty(), day, 0, 0, 0));
             releasedResources.setResources(new ResourcesDatabaseModel(
-                    ResourceLogicService.subtractResources(ResourceLogicService.addResources(
+                    ResourceLogicUtils.subtractResources(ResourceLogicUtils.addResources(
                             releasedResources.getResources().toResourcesModel(), i.getResources().toResourcesModel()),
                             usedResources.getResources().toResourcesModel())));
 
@@ -75,16 +75,16 @@ public class ResourceReleaseService {
         for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
             UsedResourcesModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, from))
                     .orElse(new UsedResourcesModel(faculty, from, 0, 0, 0));
-            if (!ResourceLogicService.canRelease(facultyAllocatedResources.toResourcesModel(),
+            if (!ResourceLogicUtils.canRelease(facultyAllocatedResources.toResourcesModel(),
                     facultyUsedResources.getResources().toResourcesModel(), releasedResources)) {
                 return false;
             }
-            facultyUsedResources.setResources(new ResourcesDatabaseModel(ResourceLogicService.addResources(
+            facultyUsedResources.setResources(new ResourcesDatabaseModel(ResourceLogicUtils.addResources(
                     facultyUsedResources.getResources().toResourcesModel(), releasedResources)));
 
             UsedResourcesModel oldReleasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, from))
                     .orElse(new UsedResourcesModel(RELEASED, from, 0, 0, 0));
-            oldReleasedResources.setResources(new ResourcesDatabaseModel(ResourceLogicService.addResources(
+            oldReleasedResources.setResources(new ResourcesDatabaseModel(ResourceLogicUtils.addResources(
                     oldReleasedResources.getResources().toResourcesModel(), releasedResources)));
 
             res.add(facultyUsedResources);

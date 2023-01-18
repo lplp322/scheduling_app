@@ -4,8 +4,7 @@ import nl.tudelft.sem.common.models.request.ResourcesModel;
 import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
 import org.springframework.stereotype.Service;
 
-@Service
-public class ResourceLogicService {
+public abstract class ResourceLogicUtils {
 
     /** Adds resources from inputs and returns their sum.
      *

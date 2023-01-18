@@ -32,7 +32,7 @@ public class ResourceAllocationService {
         ResourceAllocationModel allocatedResources = this.resourceAllocationRepository.findById(node.getFaculty())
                 .orElse(new ResourceAllocationModel(node.getFaculty(), 0, 0, 0));
         allocatedResources.setResources(
-                new ResourcesDatabaseModel(ResourceLogicService.addResources(allocatedResources
+                new ResourcesDatabaseModel(ResourceLogicUtils.addResources(allocatedResources
                         .getResources().toResourcesModel(), node.getResources())));
         resourceAllocationRepository.save(allocatedResources);
     }
@@ -52,7 +52,7 @@ public class ResourceAllocationService {
         ResourcesDatabaseModel releasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, date))
                 .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources();
 
-        boolean res = ResourceLogicService.updateResources(usedResources, facultyUsedResources,
+        boolean res = ResourceLogicUtils.updateResources(usedResources, facultyUsedResources,
                 facultyAllocatedResources, releasedResources);
 
         if (!res) {
@@ -78,7 +78,7 @@ public class ResourceAllocationService {
         ResourcesDatabaseModel releasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, date))
                 .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources();
 
-        return ResourceLogicService.subtractResources(ResourceLogicService.addResources(
+        return ResourceLogicUtils.subtractResources(ResourceLogicUtils.addResources(
                 facultyAllocatedResources.toResourcesModel(), releasedResources.toResourcesModel()),
                 facultyUsedResources.toResourcesModel());
     }
