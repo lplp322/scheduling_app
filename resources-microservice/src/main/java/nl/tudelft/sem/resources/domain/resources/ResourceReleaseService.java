@@ -62,8 +62,8 @@ public class ResourceReleaseService {
      * @return true if resources could be released on every day, false otherwise
      */
     public boolean releaseResources(ResourcesModel releasedResources, String faculty, LocalDate from, LocalDate until) {
-        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty)
-                .orElseThrow().getResources();
+        ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty) //NOPMD
+                .orElseThrow().getResources(); //NOPMD
 
         ArrayList<UsedResourcesModel> res = new ArrayList<>(); //NOPMD
         for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
