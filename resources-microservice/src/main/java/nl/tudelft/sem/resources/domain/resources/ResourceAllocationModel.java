@@ -2,6 +2,7 @@ package nl.tudelft.sem.resources.domain.resources;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nl.tudelft.sem.resources.domain.ResourcesDatabaseModel;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ public class ResourceAllocationModel {
     @Id
     private String faculty;
 
+    @Setter
     @Embedded
     @Column(name = "resources", nullable = false)
     private ResourcesDatabaseModel resources;

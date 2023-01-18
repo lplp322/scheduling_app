@@ -9,7 +9,6 @@ import nl.tudelft.sem.resources.domain.resources.ResourceAllocationModel;
 import nl.tudelft.sem.resources.domain.resources.ResourceId;
 import nl.tudelft.sem.resources.domain.resources.ResourceRepositoryService;
 import nl.tudelft.sem.resources.domain.resources.UsedResourcesModel;
-import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +50,10 @@ class ResourceRepositoryServiceTest {
     @lombok.SneakyThrows
     @BeforeEach
     void setUp()  throws MalformedURLException {
+        usedResourceRepository.deleteAll();
+        usedResourceRepository.flush();
+        resourceAllocationRepository.deleteAll();
+        resourceAllocationRepository.flush();
         node = new Node("node", new URL("http://localhost"), "token",
                 new ResourcesModel(10, 6, 4), "EEMCS");
     }
@@ -93,7 +96,7 @@ class ResourceRepositoryServiceTest {
         resourceRepositoryService.releaseAll(LocalDate.now());
         Optional<UsedResourcesModel> released = usedResourceRepository.findById(new ResourceId("released", LocalDate.now()));
         assertTrue(released.isPresent());
-        assertEquals(new ResourcesDatabaseModel(18, 8, 6), released.get().getResources());
+        assertEquals(new ResourcesModel(18, 8, 6), released.get().getResources().toResourcesModel());
         assertEquals(new ResourcesModel(18, 8, 6),
                 resourceRepositoryService.getAvailableResources("EEMCS", LocalDate.now()));
         assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources("IDE", LocalDate.now()));
@@ -130,7 +133,7 @@ class ResourceRepositoryServiceTest {
         resourceRepositoryService.releaseAll(LocalDate.now());
         Optional<UsedResourcesModel> released = usedResourceRepository.findById(new ResourceId("released", LocalDate.now()));
         assertTrue(released.isPresent());
-        assertEquals(new ResourcesDatabaseModel(18, 8, 6), released.get().getResources());
+        assertEquals(new ResourcesModel(18, 8, 6), released.get().getResources().toResourcesModel());
         assertEquals(new ResourcesModel(18, 8, 6), resourceRepositoryService.getAvailableResources(LocalDate.now()));
     }
 
