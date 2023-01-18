@@ -8,19 +8,17 @@ import javax.persistence.Embeddable;
 
 @EqualsAndHashCode
 @Setter
+@Getter
 @Embeddable
 @NoArgsConstructor
 public class ResourcesDatabaseModel {
     @Column(name = "cpu_resources")
-    @Getter
     private int cpu;
 
     @Column(name = "gpu_resources")
-    @Getter
     private int gpu;
 
     @Column(name = "memory_resources")
-    @Getter
     private int ram;
 
     /**
@@ -31,7 +29,6 @@ public class ResourcesDatabaseModel {
      * @param ram memory resources
      */
     public ResourcesDatabaseModel(int cpu, int gpu, int ram) {
-
         this.cpu = cpu;
         this.gpu = gpu;
         this.ram = ram;
@@ -46,7 +43,12 @@ public class ResourcesDatabaseModel {
         this(resourcesModel.getCpu(), resourcesModel.getGpu(), resourcesModel.getRam());
     }
 
+    /**
+     * Function to transfer ResourcesDatabaseModel into ResourcesModel.
+     *
+     * @return new ResourcesModel object
+     */
     public ResourcesModel toResourcesModel() {
-        return new ResourcesModel(this.getCpu(), this.getGpu(), this.getRam());
+        return new ResourcesModel(this.cpu, this.gpu, this.ram);
     }
 }

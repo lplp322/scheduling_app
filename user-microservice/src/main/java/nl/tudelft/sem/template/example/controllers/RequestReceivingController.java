@@ -11,6 +11,7 @@ import nl.tudelft.sem.template.example.feigninterfaces.WaitingListInterface;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelCreatorStrategy;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromJsonStrategy;
 import nl.tudelft.sem.template.example.requestmodelget.RequestModelFromXmlStrategy;
+import nl.tudelft.sem.template.example.requests.AddNewRequestService;
 import nl.tudelft.sem.template.example.requests.RequestService;
 import nl.tudelft.sem.template.example.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- * Hello World example controller.
- * <p>
- * This controller shows how you can extract information from the JWT token.
- * </p>
- */
+
 @RestController
 public class RequestReceivingController {
 
@@ -33,20 +29,22 @@ public class RequestReceivingController {
 
     private final transient RequestService requestService;
 
-    private final transient WaitingListInterface waitingListInterface;
+    private final transient AddNewRequestService addNewRequestService;
 
     /**
-     * Instantiates a new controller.
+     * Instantiates a new controller to recieve user request.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param requestService service to work with request status database
+     * @param addNewRequestService service to add new requests and contact Waiting List microservice
      */
 
     @Autowired
     public RequestReceivingController(AuthManager authManager, RequestService requestService,
-                                      WaitingListInterface waitingListInterface) {
+                                      AddNewRequestService addNewRequestService) {
         this.authManager = authManager;
         this.requestService = requestService;
-        this.waitingListInterface = waitingListInterface;
+        this.addNewRequestService = addNewRequestService;
     }
 
 
@@ -79,29 +77,7 @@ public class RequestReceivingController {
             Exception e = new Exception("Unsupported type of body for this request");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-
-        try {
-            //create request model from httpRequest
-            RequestModelWaitingList request = requestCreator.createRequestModel(httpRequest); //NOPMD
-            if (authManager == null || !authManager.getNetId().equals(request.getName())
-                    || authManager.getRoles().stream().noneMatch(a ->
-                    a.getAuthority().contains("employee_" + request.getFaculty()))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to submit this request.");
-            }
-            //contact WaitingList microservice
-            ResponseEntity<AddResponseModel> waitingListResponse = waitingListInterface.addRequest(request);
-            if (waitingListResponse.getStatusCode() == HttpStatus.OK) {
-                return ResponseEntity.ok("Your request was created. Request ID: "
-                    + requestService.saveRequest(request, waitingListResponse.getBody().getId()));
-            }
-            return ResponseEntity.ok("Your request returned: " + waitingListResponse.getStatusCode()
-                + " With body: " + waitingListResponse.getBody());
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Your request was raising an exception: " + e.getMessage(), e);
-        }
+        return addNewRequestService.createRequest(httpRequest, requestCreator);
     }
 
     /**
