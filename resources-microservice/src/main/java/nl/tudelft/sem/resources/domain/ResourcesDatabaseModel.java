@@ -46,7 +46,7 @@ public class ResourcesDatabaseModel {
         this(resourcesModel.getCpu(), resourcesModel.getGpu(), resourcesModel.getRam());
     }
 
-    public ResourcesModel toResourceModel() {
+    public ResourcesModel toResourcesModel() {
         return new ResourcesModel(this.getCpu(), this.getGpu(), this.getRam());
     }
 }

@@ -33,7 +33,7 @@ public class ResourceAllocationService {
                 .orElse(new ResourceAllocationModel(node.getFaculty(), 0, 0, 0));
         allocatedResources.setResources(
                 new ResourcesDatabaseModel(ResourceLogicService.addResources(allocatedResources
-                        .getResources().toResourceModel(), node.getResources())));
+                        .getResources().toResourcesModel(), node.getResources())));
         resourceAllocationRepository.save(allocatedResources);
     }
 
@@ -79,8 +79,8 @@ public class ResourceAllocationService {
                 .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources();
 
         return ResourceLogicService.subtractResources(ResourceLogicService.addResources(
-                facultyAllocatedResources.toResourceModel(), releasedResources.toResourceModel()),
-                facultyUsedResources.toResourceModel());
+                facultyAllocatedResources.toResourcesModel(), releasedResources.toResourcesModel()),
+                facultyUsedResources.toResourcesModel());
     }
 
     /** Method for retrieving all released resources on a date.
@@ -90,6 +90,6 @@ public class ResourceAllocationService {
      */
     public ResourcesModel getAvailableResources(LocalDate date) {
         return usedResourceRepository.findById(new ResourceId(RELEASED, date))
-                .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources().toResourceModel();
+                .orElse(new UsedResourcesModel(RELEASED, date, 0, 0, 0)).getResources().toResourcesModel();
     }
 }

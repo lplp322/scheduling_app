@@ -44,8 +44,8 @@ public class ResourceReleaseService {
                     .orElse(new UsedResourcesModel(i.getFaculty(), day, 0, 0, 0));
             releasedResources.setResources(new ResourcesDatabaseModel(
                     ResourceLogicService.subtractResources(ResourceLogicService.addResources(
-                                    releasedResources.getResources().toResourceModel(), i.getResources().toResourceModel()),
-                            usedResources.getResources().toResourceModel())));
+                                    releasedResources.getResources().toResourcesModel(), i.getResources().toResourcesModel()),
+                            usedResources.getResources().toResourcesModel())));
 
             usedResources.setResources(i.getResources());
             usedResourceRepository.save(usedResources);
@@ -75,17 +75,17 @@ public class ResourceReleaseService {
         for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
             UsedResourcesModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, from))
                     .orElse(new UsedResourcesModel(faculty, from, 0, 0, 0));
-            if (!ResourceLogicService.canRelease(facultyAllocatedResources.toResourceModel(),
-                    facultyUsedResources.getResources().toResourceModel(), releasedResources)) {
+            if (!ResourceLogicService.canRelease(facultyAllocatedResources.toResourcesModel(),
+                    facultyUsedResources.getResources().toResourcesModel(), releasedResources)) {
                 return false;
             }
             facultyUsedResources.setResources(new ResourcesDatabaseModel(ResourceLogicService.addResources(
-                    facultyUsedResources.getResources().toResourceModel(), releasedResources)));
+                    facultyUsedResources.getResources().toResourcesModel(), releasedResources)));
 
             UsedResourcesModel oldReleasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, from))
                     .orElse(new UsedResourcesModel(RELEASED, from, 0, 0, 0));
             oldReleasedResources.setResources(new ResourcesDatabaseModel(ResourceLogicService.addResources(
-                    oldReleasedResources.getResources().toResourceModel(), releasedResources)));
+                    oldReleasedResources.getResources().toResourcesModel(), releasedResources)));
 
             res.add(facultyUsedResources);
             res.add(oldReleasedResources);
