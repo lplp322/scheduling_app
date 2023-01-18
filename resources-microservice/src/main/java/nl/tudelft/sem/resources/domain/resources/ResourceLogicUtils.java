@@ -37,12 +37,16 @@ public abstract class ResourceLogicUtils {
         if (by == null) {
             return from;
         }
-        if (from.getCpu() < by.getCpu() || from.getGpu() < from.getGpu() || from.getRam() < from.getRam()
-                || from.getCpu() - by.getCpu() < from.getGpu() - by.getGpu()
-                || from.getCpu() - by.getCpu() < from.getRam() - by.getRam()) {
+        ResourcesModel res = new ResourcesModel(from.getCpu() - by.getCpu(),
+                from.getGpu() - by.getGpu(), from.getRam() - by.getRam());
+        if(!checkValidity(res))
             return null;
-        }
-        return new ResourcesModel(from.getCpu() - by.getCpu(), from.getGpu() - by.getGpu(), from.getRam() - by.getRam());
+        return res;
+    }
+
+    public static boolean checkValidity(ResourcesModel resources) {
+        return resources.getRam() >= 0 && resources.getCpu() >= 0 && resources.getGpu() >= 0
+                && resources.getGpu() <= resources.getCpu() && resources.getRam() <= resources.getCpu();
     }
 
     /** Checks if resources can be released.

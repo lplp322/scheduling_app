@@ -65,16 +65,12 @@ public class ResourceReleaseService {
         ResourcesDatabaseModel facultyAllocatedResources = resourceAllocationRepository.findById(faculty)
                 .orElseThrow().getResources();
 
-        if (facultyAllocatedResources.getRam() < releasedResources.getRam()
-                || facultyAllocatedResources.getGpu() < releasedResources.getGpu()
-                || facultyAllocatedResources.getCpu() < releasedResources.getCpu()) {
-            return false;
-        }
-
         ArrayList<UsedResourcesModel> res = new ArrayList<>(); //NOPMD
         for (; from.isBefore(until) || from.equals(until); from = from.plusDays(1)) {
+
             UsedResourcesModel facultyUsedResources = usedResourceRepository.findById(new ResourceId(faculty, from))
                     .orElse(new UsedResourcesModel(faculty, from, 0, 0, 0));
+
             if (!ResourceLogicUtils.canRelease(facultyAllocatedResources.toResourcesModel(),
                     facultyUsedResources.getResources().toResourcesModel(), releasedResources)) {
                 return false;
@@ -84,6 +80,7 @@ public class ResourceReleaseService {
 
             UsedResourcesModel oldReleasedResources = usedResourceRepository.findById(new ResourceId(RELEASED, from))
                     .orElse(new UsedResourcesModel(RELEASED, from, 0, 0, 0));
+
             oldReleasedResources.setResources(new ResourcesDatabaseModel(ResourceLogicUtils.addResources(
                     oldReleasedResources.getResources().toResourcesModel(), releasedResources)));
 
