@@ -13,11 +13,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for the schedule service.
@@ -81,6 +85,17 @@ public class ScheduleServiceTest {
         LocalDate date = LocalDate.of(2023, 02, 04);
         scheduleService.getSchedule(date);
         verify(mockRepo).findByDate(date);
+    }
+
+    @Test
+    public void getScheduleList() {
+        LocalDate date = LocalDate.of(2023, 02, 04);
+        List<ScheduledRequest> scheduledRequestList = new ArrayList<>();
+        Request request = new Request("name", "description", "faculty", new Resources(3, 2, 2));
+        ScheduledRequest scheduledRequest = new ScheduledRequest(1, request, date);
+        scheduledRequestList.add(scheduledRequest);
+        when(mockRepo.findByDate(date)).thenReturn(scheduledRequestList);
+        assertThat(scheduleService.getSchedule(date)).isEqualTo(scheduledRequestList);
     }
 
     /**
