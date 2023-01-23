@@ -61,6 +61,24 @@ class SingleTableWaitingListTest {
     }
 
     @Test
+    void addMultipleRequestsSuccessfully() {
+        String name = "name";
+        String description = "description";
+        String faculty = "faculty";
+        Resources resources = new Resources(3, 1, 2);
+        LocalDate deadline = LocalDate.of(2022, 12, 20);
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 14, 19, 19);
+        Request request2 = new Request(name, description, faculty, resources, deadline, currentDateTime);
+
+        Long id1 = waitingList.addRequest(request);
+        Long id2 = waitingList.addRequest(request2);
+
+        assertThat(repo.findById(id1).isPresent()).isTrue();
+        assertThat(repo.findById(id2).isPresent()).isTrue();
+        assertThat(id1).isNotEqualTo(id2);
+    }
+
+    @Test
     void getAllRequestsEmpty() {
         assertThat(waitingList.getAllRequests().isEmpty()).isTrue();
     }
