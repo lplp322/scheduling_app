@@ -118,20 +118,15 @@ public class RequestReceivingControllerTest {
         request.setFaculty("EEMCS");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        try {
-            String serialisedRequest = objectMapper.writeValueAsString(request);
-            when(waitingListInterface.addRequest(any()))
-                .thenReturn(new ResponseEntity<>(new AddResponseModel(1L), HttpStatus.BAD_REQUEST));
-
-            mockMvc
-                .perform(post("/request").header("Authorization", "Bearer MockedToken")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(serialisedRequest))
-                .andExpect(status().isOk())
-                .andExpect(content()
-                    .string("Your request returned: 400 BAD_REQUEST With body: AddResponseModel(id=1)"));
-        } catch (Exception e) {
-            assertEquals(1, 0);
-        }
+        String serialisedRequest = objectMapper.writeValueAsString(request);
+        when(waitingListInterface.addRequest(any()))
+            .thenReturn(new ResponseEntity<>(new AddResponseModel(1L), HttpStatus.BAD_REQUEST));
+        mockMvc
+            .perform(post("/request").header("Authorization", "Bearer MockedToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialisedRequest))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .string("Your request returned: 400 BAD_REQUEST With body: AddResponseModel(id=1)"));
     }
 }
