@@ -42,50 +42,37 @@ class NodeRepositoryServiceTest {
     private NodeRepositoryService nodeRepositoryService;
 
 
-    @SneakyThrows
     @BeforeEach
-    void setUp()  throws MalformedURLException {
+    void setUp() {
         nodeRepository.deleteAll();
         nodeRepository.flush();
 
     }
 
     @Test
-    void addNode() {
-        try {
-            Node node = new Node("node", new URL("http://localhost"), "token",
-                new ResourcesModel(10, 6, 4), "EEMCS");
-            ResourceNode resourceNode = nodeRepositoryService.addNode(node, "John");
-            assertEquals("node", resourceNode.getName());
-        } catch (Exception e) {
-            assertEquals(1, 0);
-        }
+    void addNode() throws Exception {
+        Node node = new Node("node", new URL("http://localhost"), "token",
+            new ResourcesModel(10, 6, 4), "EEMCS");
+        ResourceNode resourceNode = nodeRepositoryService.addNode(node, "John");
+        assertEquals("node", resourceNode.getName());
     }
 
     @Test
-    void addNodeException() {
-        try {
-            Node node = new Node("node", new URL("http://localhost"), "token",
-                new ResourcesModel(10, 6, 4), "EEMCS");
-            nodeRepositoryService.addNode(node, "John");
-            assertThatThrownBy(() ->
-                nodeRepositoryService.addNode(node, "John")).isInstanceOf(NameAlreadyInUseException.class);
-        } catch (Exception e) {
-            assertEquals(1, 0);
-        }
+    void addNodeException() throws Exception {
+        Node node = new Node("node", new URL("http://localhost"), "token",
+            new ResourcesModel(10, 6, 4), "EEMCS");
+        nodeRepositoryService.addNode(node, "John");
+        assertThatThrownBy(() ->
+            nodeRepositoryService.addNode(node, "John")).isInstanceOf(NameAlreadyInUseException.class);
     }
 
     @Test
-    void getAllNodes() {
-        try {
-            Node node = new Node("node", new URL("http://localhost"), "token",
-                new ResourcesModel(10, 6, 4), "EEMCS");
-            nodeRepositoryService.addNode(node, "John");
-            Collection<Node> nodes = nodeRepositoryService.getAllNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("node", nodes.iterator().next().getName());
-        } catch (Exception e) {
-            assertEquals(1, 0);
-        }
+    void getAllNodes() throws Exception {
+        Node node = new Node("node", new URL("http://localhost"), "token",
+            new ResourcesModel(10, 6, 4), "EEMCS");
+        nodeRepositoryService.addNode(node, "John");
+        Collection<Node> nodes = nodeRepositoryService.getAllNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("node", nodes.iterator().next().getName());
     }
 }
