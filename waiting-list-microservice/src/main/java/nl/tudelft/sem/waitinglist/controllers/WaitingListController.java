@@ -61,17 +61,16 @@ public class WaitingListController {
      */
     @PostMapping("/add-request")
     public ResponseEntity<AddResponseModel> addRequest(@RequestBody RequestModelWaitingList requestModel) {
+        if (authManager == null || !authManager.getNetId().equals(requestModel.getName()) || authManager.getRoles()
+                .stream().noneMatch(a -> a.getAuthority().contains("employee_" + requestModel.getFaculty()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
+        }
         try {
-            if (authManager == null || !authManager.getNetId().equals(requestModel.getName()) || authManager.getRoles()
-                    .stream().noneMatch(a -> a.getAuthority().contains("employee_" + requestModel.getFaculty()))) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to make this request!");
-            }
             LocalDateTime currentDateTime = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
             Request request = new Request(requestModel, currentDateTime);
             Long id = waitingList.addRequest(request);
             return ResponseEntity.ok(new AddResponseModel(id));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
@@ -95,9 +94,8 @@ public class WaitingListController {
             String json = mapper.writeValueAsString(requestListByFaculty);
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong :(");
         }
-        return ResponseEntity.ok().build();
     }
 
     /**

@@ -130,6 +130,44 @@ class WaitingListControllerTest {
     }
 
     @Test
+    void addRequestUnauthorised() throws Exception {
+        when(mockAuthenticationManager.getNetId()).thenReturn("Peter");
+        Collection<SimpleGrantedAuthority> roleList = new ArrayList<>();
+        roleList.add(new SimpleGrantedAuthority("employee_EEMCS"));
+        Mockito.doReturn(roleList).when(mockAuthenticationManager).getRoles();
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("Peter");
+
+        String name = "Peter";
+        String description = "desc";
+        String faculty = "IDE";
+        int cpu = 10;
+        int gpu = 5;
+        int ram = 3;
+        ResourcesModel resourcesModel = new ResourcesModel(cpu, gpu, ram);
+
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        RequestModelWaitingList requestModel = new RequestModelWaitingList(name, description, faculty,
+                resourcesModel, deadline);
+
+        LocalDateTime currentDateTime = LocalDateTime.of(2022, 12, 10, 23, 59, 59);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDateTime.toInstant(ZoneOffset.UTC));
+
+        String serialised = objectMapper.writeValueAsString(requestModel);
+
+        mockMvc.perform(post("/add-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialised))
+                .andExpect(status().isUnauthorized());
+
+        assertThat(repo.findAll()).isEmpty();
+    }
+
+    @Test
     void addForNextDay5MinutesBefore() throws Exception {
         String name = "John";
         String description = "description";
@@ -310,6 +348,14 @@ class WaitingListControllerTest {
     }
 
     @Test
+    void getRequestListUnauthorised() throws Exception {
+        mockMvc.perform(post("/get-requests-by-faculty").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("IDE"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void rejectNoSuchId() throws Exception {
         String name = "John";
         String description = "description";
@@ -363,6 +409,32 @@ class WaitingListControllerTest {
 
         assertThat(repo.existsById(1L)).isFalse();
         assertThat(repo.existsById(2L)).isTrue();
+    }
+
+    @Test
+    void rejectUnauthorised() throws Exception {
+        String name = "Charles";
+        String description = "description";
+        String faculty = "IDE";
+        int cpu = 5;
+        int gpu = 5;
+        int ram = 5;
+        Resources resources = new Resources(cpu, gpu, ram);
+        LocalDate deadline = LocalDate.of(2022, 12, 12);
+
+        LocalDateTime currentDate = LocalDateTime.of(2022, 12, 10, 22, 15);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(currentDate.toInstant(ZoneOffset.UTC));
+
+        Request request = new Request(name, description, faculty, resources, deadline, currentDate);
+        repo.save(request);
+
+        mockMvc.perform(delete("/reject-request").header("Authorization", "Bearer MockedToken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("1"))
+                .andExpect(status().isUnauthorized());
+
+        assertThat(repo.existsById(1L)).isTrue();
     }
 
     @Test
