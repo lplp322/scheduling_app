@@ -165,4 +165,22 @@ public class FacultyAdminControllerTest {
             assertEquals(1, 0);
         }
     }
+
+    @Test
+    @Transactional
+    public void testAcceptRequestBadRequest() {
+        try {
+            when(waitingListInterface.acceptRequest(any())).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST));
+            mockMvc.perform(post("/faculty-admin/accept-request").header("Authorization", "Bearer MockedToken")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{"
+                                    + "\"id\": 1, "
+                                    + "\"plannedDate\": \"2022-12-23\" "
+                                    + "}"))
+                    .andExpect(status().isBadRequest());
+            verify(requestService, never()).updateRequestStatus(1L, RequestStatus.ACCEPTED);
+        } catch (Exception e) {
+            assertEquals(1, 0);
+        }
+    }
 }
