@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import nl.tudelft.sem.common.models.RequestStatus;
@@ -108,5 +109,24 @@ public class RequestReceivingControllerTest {
         } catch (Exception e) {
             assertEquals(1, 0);
         }
+    }
+
+    @Test
+    public void testAddRequestBadRequest() throws Exception {
+        RequestModelWaitingList request = new RequestModelWaitingList();
+        request.setName("John");
+        request.setFaculty("EEMCS");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String serialisedRequest = objectMapper.writeValueAsString(request);
+        when(waitingListInterface.addRequest(any()))
+            .thenReturn(new ResponseEntity<>(new AddResponseModel(1L), HttpStatus.BAD_REQUEST));
+        mockMvc
+            .perform(post("/request").header("Authorization", "Bearer MockedToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialisedRequest))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .string("Your request returned: 400 BAD_REQUEST With body: AddResponseModel(id=1)"));
     }
 }
