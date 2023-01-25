@@ -55,6 +55,15 @@ public class RequestValidationServiceTest {
     }
 
     @Test
+    void validTimeOnLastDayTest() {
+        LocalDateTime currDateTime = LocalDateTime.of(2023, 01, 18, 23, 55);
+        when(mockTime.now()).thenReturn(currDateTime);
+
+        LocalDate plannedDate = LocalDate.of(2023, 01, 19);
+        assertDoesNotThrow(() -> requestValidationService.validDate(plannedDate));
+    }
+
+    @Test
     void passedDateTest() {
         LocalDateTime currDateTime = LocalDateTime.of(2023, 01, 17, 00, 00);
         when(mockTime.now()).thenReturn(currDateTime);
